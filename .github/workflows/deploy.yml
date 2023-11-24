@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.PRODUCTION_SERVER_HOST }}
+          port: ${{ vars.PRODUCTION_SERVER_PORT }}
+          username: ${{ vars.PRODUCTION_SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /srv/nightel-core
+            git reset --hard HEAD^
+            git pull
+            docker compose restart
