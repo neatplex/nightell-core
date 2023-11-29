@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://nightel.neatplex.com"
+      "url": "https://nightel.neatplex.com/api/v1/"
     }
   ],
   "paths": {
