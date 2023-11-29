@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:9001"
+      "url": "https://nightel.neatplex.com"
     }
   ],
   "paths": {
