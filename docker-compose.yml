@@ -21,3 +21,11 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - ./.docker/mysql:/var/lib/mysql
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    environment:
+      - SWAGGER_JSON_URL=https://nightel.neatplex.com/swagger.json
+    restart: always
+    ports:
+      - ${SWAGGER_EXPOSED_PORT:-0}:8080
