@@ -178,6 +178,26 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "parameters": {
+      "accept": {
+        "in": "header",
+        "name": "Accept",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "application/json"
+          ]
+        },
+        "example": "application/json"
+      }
+    },
     "schemas": {
       "User": {
         "allOf": [
