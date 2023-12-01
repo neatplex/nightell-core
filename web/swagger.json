@@ -123,6 +123,67 @@
         }
       }
     },
+    "/files": {
+      "post": {
+        "operationId": "files-store",
+        "description": "Store (upload) a new file",
+        "tags": [
+          "Files"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File to upload"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "mp3",
+                      "jpg"
+                    ],
+                    "example": "mp3",
+                    "description": "Type of the file"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The file uploaded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/stories": {
       "get": {
         "operationId": "stories-index",
@@ -136,18 +197,45 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "authenticated-at": {
-                      "$ref": "#/components/schemas/User"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Story"
                   }
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "stories-store",
+        "description": "Store a new story",
+        "tags": [
+          "Stories"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewStory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new story created."
           },
           "default": {
             "description": "Error!",
@@ -226,6 +314,97 @@
             }
           }
         ]
+      },
+      "File": {
+        "type": "object",
+        "description": "Uploaded audio or image file",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "example": "2023/12/22/audio_1691_4b3a_847f_76b2ed0f00ec.mp3",
+            "description": "File path in server storage"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "mp3",
+              "jpg"
+            ],
+            "example": "mp3",
+            "description": "File type (audio and image files are supported)"
+          }
+        }
+      },
+      "Story": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NewStory"
+          },
+          {
+            "type": "object",
+            "required": [
+              "identity",
+              "user",
+              "likes_count",
+              "comments_count",
+              "created_at"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "example": "identity_1691_4b3a_847f_76b2ed0f00ec",
+                "description": "Unique identity"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "likes_count": {
+                "type": "integer",
+                "example": 0,
+                "description": "Numbers of likes"
+              },
+              "comments_count": {
+                "type": "integer",
+                "example": 0,
+                "description": "Numbers of comments"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2023-11-28T13:36:30.956Z",
+                "description": "Registration time"
+              }
+            }
+          }
+        ]
+      },
+      "NewStory": {
+        "type": "object",
+        "required": [
+          "caption",
+          "audio",
+          "is_published"
+        ],
+        "properties": {
+          "caption": {
+            "type": "string",
+            "example": "This is my first story! #first_story",
+            "description": "The story caption/description/content"
+          },
+          "is_published": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether the story is or should be visible to public"
+          },
+          "audio": {
+            "$ref": "#/components/schemas/File"
+          },
+          "image": {
+            "$ref": "#/components/schemas/File"
+          }
+        }
       },
       "NewUser": {
         "type": "object",

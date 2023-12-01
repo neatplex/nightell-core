@@ -15,13 +15,19 @@ func (s *Server) registerRoutes() {
 	{
 		public := v1Api.Group("", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))
 		{
+			// auth
 			public.POST("/auth/sign-up", v1.AuthSignUp(s.container))
 			public.POST("/auth/sign-in", v1.AuthSignIn(s.container))
 		}
 
 		private := v1Api.Group("", mw.Authorize(s.container))
 		{
+			// stories
+			private.POST("/stories", v1.StoriesIndex(s.container))
 			private.GET("/stories", v1.StoriesIndex(s.container))
+			private.POST("/stories", v1.StoriesStore(s.container))
+			// files
+			private.POST("/files", v1.FilesStore(s.container))
 		}
 	}
 }

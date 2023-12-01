@@ -34,6 +34,8 @@ func (d *Database) Connect() {
 
 	if d.handler, err = gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{}); err != nil {
 		d.logger.Fatal("cannot connect to database", zap.Error(err))
+	} else {
+		d.logger.Debug("connection established with database")
 	}
 }
 
@@ -61,9 +63,12 @@ func (d *Database) Migrate() {
 		&models.User{},
 		&models.Token{},
 		&models.Story{},
+		&models.File{},
 	)
 	if err != nil {
 		d.logger.Fatal("cannot run database migrations", zap.Error(err))
+	} else {
+		d.logger.Debug("migrations ran successfully")
 	}
 }
 

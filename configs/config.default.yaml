@@ -1,18 +1,24 @@
-timezone: Asia/Tehran
+environment: "production"
+timezone: "Asia/Tehran"
 logger:
-  level: debug
-  path: ./storage/log/app.log
+  level: "debug"
+  path: "./storage/log/app.log"
 httpServer:
-  listen: 0.0.0.0:8080
-  readTimeout: 2s
-  writeTimeout: 3s
-  readHeaderTimeout: 1s
-  idleTimeout: 3m
+  listen: "0.0.0.0:8080"
+  readTimeout: "2s"
+  writeTimeout: "3s"
+  readHeaderTimeout: "1s"
+  idleTimeout: "3m"
 database:
-  driver: mysql
-  host: mysql
+  driver: "mysql"
+  host: "mysql"
   port: 3306
-  name: app
-  user: root
-  password: password
+  name: "app"
+  user: "root"
+  password: "password"
   timeout: 10
+s3:
+  accessKey: ""
+  secretKey: ""
+  region: "eu-central-1"
+  bucket: "nightel-f1.neatplex.com"

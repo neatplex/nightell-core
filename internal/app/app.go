@@ -6,6 +6,7 @@ import (
 	"github.com/neatplex/nightel-core/internal/database"
 	httpServer "github.com/neatplex/nightel-core/internal/http/server"
 	"github.com/neatplex/nightel-core/internal/logger"
+	"github.com/neatplex/nightel-core/internal/s3"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"go.uber.org/zap"
 	"os"
@@ -18,6 +19,7 @@ type App struct {
 	context    context.Context
 	Config     *config.Config
 	Logger     *logger.Logger
+	S3         *s3.S3
 	HttpServer *httpServer.Server
 	Database   *database.Database
 	Container  *container.Container
@@ -40,7 +42,8 @@ func New(configPath string) (a *App, err error) {
 	a.Logger.Engine.Debug("config & logger initialized")
 
 	a.Database = database.New(a.Config, a.Logger.Engine)
-	a.Container = container.New(a.Database)
+	a.S3 = s3.New(a.Config, a.Logger.Engine)
+	a.Container = container.New(a.Database, a.S3)
 	a.HttpServer = httpServer.New(a.Config, a.Logger.Engine, a.Container)
 
 	a.Logger.Engine.Debug("application modules initialized")
@@ -54,6 +57,7 @@ func New(configPath string) (a *App, err error) {
 func (a *App) Boot() error {
 	a.Database.Connect()
 	a.Database.Migrate()
+	a.S3.Connect()
 	return nil
 }
 

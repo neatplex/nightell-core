@@ -15,11 +15,20 @@ const AppVersion = "v0.1.0"
 
 // Config is the project root level configuration.
 type Config struct {
-	Timezone   string     `yaml:"timezone" validate:"required"`
-	Logger     Logger     `yaml:"logger" validate:"required"`
-	Database   Database   `yaml:"database" validate:"required"`
-	HTTPServer HTTPServer `yaml:"httpServer" validate:"required"`
+	Environment Environment `yaml:"environment" validate:"required"`
+	Timezone    string      `yaml:"timezone" validate:"required"`
+	Logger      Logger      `yaml:"logger" validate:"required"`
+	Database    Database    `yaml:"database" validate:"required"`
+	HTTPServer  HTTPServer  `yaml:"httpServer" validate:"required"`
+	S3          S3          `yaml:"s3" validate:"required"`
 }
+
+type Environment string
+
+const (
+	EnvironmentProduction  = "production"
+	EnvironmentDevelopment = "development"
+)
 
 // Logger is the logging configuration.
 type Logger struct {
@@ -60,6 +69,14 @@ type HTTPServer struct {
 	IdleTimeout       string `yaml:"idleTimeout" validate:"required"`
 }
 
+// S3 is file storage by AWS.
+type S3 struct {
+	AccessKey string `yaml:"accessKey" validate:"required"`
+	SecretKey string `yaml:"secretKey" validate:"required"`
+	Region    string `yaml:"region" validate:"required"`
+	Bucket    string `yaml:"bucket" validate:"required"`
+}
+
 // New creates a new configuration instance.
 func New(path string) (*Config, error) {
 	c := new(Config)
@@ -78,6 +95,8 @@ func New(path string) (*Config, error) {
 	if err := v.Unmarshal(c); err != nil {
 		return nil, err
 	}
+
+	fmt.Println("configuration", *c)
 
 	return c, validator.New().Struct(c)
 }

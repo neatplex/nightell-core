@@ -1,8 +1,8 @@
 package models
 
 type Token struct {
-	ID     uint `gorm:"primaryKey"`
-	UserID uint
-	User   User   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Value  string `gorm:"unique"`
+	ID     uint64 `gorm:"primaryKey" json:"-"`
+	UserID uint64 `json:"user_id"`
+	User   User   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
+	Value  string `gorm:"unique" json:"value"`
 }

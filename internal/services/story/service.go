@@ -13,9 +13,12 @@ type Service struct {
 	database *database.Database
 }
 
-func (s *Service) Index(userId uint) ([]models.Story, error) {
+func (s *Service) Index(userId uint64) ([]models.Story, error) {
 	var stories []models.Story
-	r := s.database.Handler().Where("user_id = ?", userId).Find(&stories)
+	r := s.database.Handler().
+		Where("user_id = ?", userId).
+		Preload("Audio").Preload("Image").
+		Find(&stories)
 	if r.Error != nil {
 		return nil, errors.New(fmt.Sprintf("cannot query to index stories: %v", r.Error))
 	}
