@@ -5,20 +5,14 @@ import (
 )
 
 type User struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
+	ID        uint      `gorm:"primaryKey" json:"-"`
+	Identity  string    `gorm:"unique" json:"identity"`
 	Name      string    `json:"name"`
 	Username  string    `gorm:"unique" json:"username"`
 	Password  string    `json:"-"`
 	Email     string    `gorm:"unique" json:"email"`
-	Status    Status    `gorm:"index" json:"status"`
 	IsTeller  bool      `gorm:"index" json:"is_teller"`
+	IsBanned  bool      `gorm:"index" json:"is_banned"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
 }
-
-type Status string
-
-const (
-	StatusRegistered Status = "Registered"
-	StatusDeleted    Status = "Deleted"
-)

@@ -35,6 +35,7 @@ type Database struct {
 	Name     string `yaml:"name" validate:"required"`
 	User     string `yaml:"user" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
+	Timeout  int    `yaml:"timeout" validate:"required"`
 }
 
 // DSN returns the database DSN.

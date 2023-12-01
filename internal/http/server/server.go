@@ -6,10 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/neatplex/nightel-core/internal/config"
-	"github.com/neatplex/nightel-core/internal/http/handlers"
-	"github.com/neatplex/nightel-core/internal/http/handlers/v1"
-	mw "github.com/neatplex/nightel-core/internal/http/middleware"
-	"github.com/neatplex/nightel-core/internal/http/validator"
+	"github.com/neatplex/nightel-core/internal/http/server/validator"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
@@ -43,21 +40,7 @@ func (s *Server) Serve() {
 	s.E.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
 	s.E.Use(middleware.BodyLimit("20M"))
 
-	s.E.GET("/healthz", handlers.Healthz)
-
-	v1Api := s.E.Group("/api/v1", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(5)))
-	{
-		public := v1Api.Group("", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))
-		{
-			public.POST("/auth/sign-up", v1.AuthSignUp(s.container))
-			public.POST("/auth/sign-in", v1.AuthSignIn(s.container))
-		}
-
-		private := v1Api.Group("", mw.Authorize(s.container))
-		{
-			private.GET("/stories", v1.StoriesIndex(s.container))
-		}
-	}
+	s.registerRoutes()
 
 	go func() {
 		listen := s.config.HTTPServer.Listen

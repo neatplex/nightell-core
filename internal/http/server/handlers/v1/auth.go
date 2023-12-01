@@ -1,13 +1,11 @@
 package v1
 
 import (
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"strings"
 )
 
 type SignUpRequest struct {
@@ -39,8 +37,14 @@ func AuthSignIn(ctr *container.Container) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		if user != nil && user.Status != models.StatusDeleted {
+		if user != nil {
 			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password)); err == nil {
+				if user.IsBanned {
+					return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+						"message": "Your account is banned.",
+					})
+				}
+
 				token, err := ctr.TokenService.FindOrCreate(user)
 				if err != nil {
 					return err
@@ -90,10 +94,9 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 
 		err = ctr.UserService.Create(&models.User{
 			Name:     r.Name,
-			Username: strings.ReplaceAll(uuid.NewString(), "-", "_"),
 			Email:    r.Email,
 			IsTeller: false,
-			Status:   models.StatusRegistered,
+			IsBanned: false,
 			Password: string(hashedPassword),
 		})
 		if err != nil {

@@ -3,9 +3,11 @@ package user
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type Service struct {
@@ -25,6 +27,13 @@ func (s *Service) FindByEmail(email string) (*models.User, error) {
 }
 
 func (s *Service) Create(user *models.User) error {
+	if user.Identity == "" {
+		user.Identity = strings.ReplaceAll(uuid.NewString(), "-", "0")
+	}
+	if user.Username == "" {
+		user.Username = strings.ReplaceAll(uuid.NewString(), "-", "_")
+	}
+
 	r := s.database.Handler().Create(user)
 	if r.Error != nil {
 		return errors.New(fmt.Sprintf("cannot query to create user: %v", r.Error))

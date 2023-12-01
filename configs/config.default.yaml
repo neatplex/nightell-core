@@ -15,3 +15,4 @@ database:
   name: app
   user: root
   password: password
+  timeout: 10
