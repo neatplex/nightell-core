@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: neatplex/nightel-core
+
 jobs:
   build:
     runs-on: ubuntu-latest
