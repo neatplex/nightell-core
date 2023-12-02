@@ -12,6 +12,9 @@ RUN go build -o nightel-core
 ## Deploy
 FROM ghcr.io/getimages/debian:bullseye-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+RUN update-ca-certificates
+
 WORKDIR /app
 
 COPY --from=build /app/nightel-core nightel-core
