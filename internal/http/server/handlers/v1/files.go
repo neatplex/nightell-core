@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -11,10 +12,10 @@ func FilesStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		fileType, err := ctr.FileService.ToFileType(ctx.FormValue("type"))
+		extension, err := ctr.FileService.ToExtension(ctx.FormValue("extension"))
 		if err != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": "File type is not supported.",
+				"message": fmt.Sprintf("Extension ``%s is not supported.", ctx.FormValue("extension")),
 			})
 		}
 
@@ -38,9 +39,9 @@ func FilesStore(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		err = ctr.FileService.Create(&models.File{
-			UserID: user.ID,
-			Type:   fileType,
-			Path:   path,
+			UserID:    user.ID,
+			Extension: extension,
+			Path:      path,
 		})
 		if err != nil {
 			return err

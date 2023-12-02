@@ -15,12 +15,24 @@ type Service struct {
 	s3       *s3.S3
 }
 
-func (s *Service) ToFileType(typeName string) (models.FileType, error) {
-	switch typeName {
-	case "mp3":
-		return models.FileTypeMp3, nil
+func (s *Service) ToExtension(extensionName string) (models.FileExt, error) {
+	switch extensionName {
+	case "MP3":
+		return models.FileExtMp3, nil
+	case "JPG":
+		return models.FileExtMp3, nil
 	}
-	return "", errors.New("invalid file type")
+	return "", errors.New(fmt.Sprintf("cannot convert `%s` to models.FileExt", extensionName))
+}
+
+func (s *Service) ToType(extension models.FileExt) (models.FileType, error) {
+	switch extension {
+	case models.FileExtMp3:
+		return models.FileTypeAudio, nil
+	case models.FileExtJpg:
+		return models.FileTypeImage, nil
+	}
+	return "", errors.New(fmt.Sprintf("cannot convert `%v` to models.FileType", extension))
 }
 
 func (s *Service) Download(path string) ([]byte, error) {

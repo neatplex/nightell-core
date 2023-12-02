@@ -137,7 +137,7 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "type",
+                  "extension",
                   "file"
                 ],
                 "properties": {
@@ -146,13 +146,13 @@
                     "format": "binary",
                     "description": "File to upload"
                   },
-                  "type": {
+                  "extension": {
                     "type": "string",
                     "enum": [
-                      "mp3",
-                      "jpg"
+                      "MP3",
+                      "JPG"
                     ],
-                    "example": "mp3",
+                    "example": "MP3",
                     "description": "Type of the file"
                   }
                 }
@@ -327,14 +327,14 @@
             "example": "2023/12/22/audio_1691_4b3a_847f_76b2ed0f00ec.mp3",
             "description": "File path in server storage"
           },
-          "type": {
+          "extension": {
             "type": "string",
             "enum": [
-              "mp3",
-              "jpg"
+              "MP3",
+              "JPG"
             ],
-            "example": "mp3",
-            "description": "File type (audio and image files are supported)"
+            "example": "MP3",
+            "description": "File extension"
           }
         }
       },
