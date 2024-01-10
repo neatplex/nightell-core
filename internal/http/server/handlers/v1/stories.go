@@ -104,3 +104,79 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 		return ctx.JSON(http.StatusCreated, story)
 	}
 }
+
+type StoriesUpdateCaptionRequest struct {
+	Caption string `json:"caption" validate:"required"`
+}
+
+func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r StoriesUpdateCaptionRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		story, err := ctr.StoryService.FindByIdentity(ctx.Param("identity"))
+		if err != nil {
+			return err
+		}
+		if story == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		if story.UserID != user.ID {
+			return ctx.JSON(http.StatusForbidden, map[string]string{
+				"message": "You do not have permission to perform this action.",
+			})
+		}
+
+		s := ctr.StoryService.UpdateCaption(story, r.Caption)
+
+		return ctx.JSON(http.StatusCreated, s)
+	}
+}
+
+func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r StoriesUpdateCaptionRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		story, err := ctr.StoryService.FindByIdentity(ctx.Param("identity"))
+		if err != nil {
+			return err
+		}
+		if story == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		if story.UserID != user.ID {
+			return ctx.JSON(http.StatusForbidden, map[string]string{
+				"message": "You do not have permission to perform this action.",
+			})
+		}
+
+		ctr.StoryService.Delete(story)
+
+		return ctx.NoContent(http.StatusNoContent)
+	}
+}

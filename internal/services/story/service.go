@@ -38,6 +38,10 @@ func (s *Service) Create(story *models.Story) (string, error) {
 	return story.Identity, nil
 }
 
+func (s *Service) Delete(story *models.Story) {
+	s.database.Handler().Delete(story)
+}
+
 func (s *Service) FindByIdentity(identity string) (*models.Story, error) {
 	var story models.Story
 	r := s.database.Handler().
