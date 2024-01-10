@@ -42,4 +42,5 @@ jobs:
             docker compose pull
             git reset --hard HEAD^
             git pull
-            docker compose restart
+            docker compose down
+            docker compose up -d
