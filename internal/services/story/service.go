@@ -40,7 +40,10 @@ func (s *Service) Create(story *models.Story) (string, error) {
 
 func (s *Service) FindByIdentity(identity string) (*models.Story, error) {
 	var story models.Story
-	r := s.database.Handler().Where("identity = ?", identity).First(&story)
+	r := s.database.Handler().
+		Where("identity = ?", identity).
+		Preload("Audio").Preload("Image").
+		First(&story)
 	if r.Error != nil {
 		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
