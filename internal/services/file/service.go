@@ -3,11 +3,13 @@ package file
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/s3"
 	"gorm.io/gorm"
 	"io"
+	"time"
 )
 
 type Service struct {
@@ -40,7 +42,7 @@ func (s *Service) Download(path string) ([]byte, error) {
 }
 
 func (s *Service) Upload(reader io.Reader, extension models.FileExt) (string, error) {
-	path := "random." + extension.String()
+	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + extension.String()
 	return path, s.s3.Put(path, reader)
 }
 

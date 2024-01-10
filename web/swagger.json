@@ -123,6 +123,37 @@
         }
       }
     },
+    "/profile": {
+      "get": {
+        "operationId": "profile-show",
+        "description": "Show the current user profile",
+        "tags": [
+          "Profile"
+        ],
+        "responses": {
+          "200": {
+            "description": "The user signed in successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/files": {
       "post": {
         "operationId": "files-store",

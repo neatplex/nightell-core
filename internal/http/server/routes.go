@@ -22,6 +22,8 @@ func (s *Server) registerRoutes() {
 
 		private := v1Api.Group("", mw.Authorize(s.container))
 		{
+			// profile
+			private.GET("/profile", v1.ProfileShow())
 			// stories
 			private.POST("/stories", v1.StoriesIndex(s.container))
 			private.GET("/stories", v1.StoriesIndex(s.container))
