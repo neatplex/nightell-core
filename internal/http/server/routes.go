@@ -27,7 +27,7 @@ func (s *Server) registerRoutes() {
 			private.GET("/stories", v1.StoriesIndex(s.container))
 			private.POST("/stories", v1.StoriesStore(s.container))
 			// files
-			private.POST("/files", v1.FilesStore(s.container))
+			private.POST("/files", v1.FilesStore(s.container, s.log))
 		}
 	}
 }

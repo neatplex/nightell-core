@@ -20,7 +20,7 @@ func (s *Service) ToExtension(extensionName string) (models.FileExt, error) {
 	case "MP3":
 		return models.FileExtMp3, nil
 	case "JPG":
-		return models.FileExtMp3, nil
+		return models.FileExtJpg, nil
 	}
 	return "", errors.New(fmt.Sprintf("cannot convert `%s` to models.FileExt", extensionName))
 }
@@ -39,8 +39,8 @@ func (s *Service) Download(path string) ([]byte, error) {
 	return s.s3.Get(path)
 }
 
-func (s *Service) Upload(reader io.Reader) (string, error) {
-	path := "random.mp3"
+func (s *Service) Upload(reader io.Reader, extension models.FileExt) (string, error) {
+	path := "random." + extension.String()
 	return path, s.s3.Put(path, reader)
 }
 

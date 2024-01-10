@@ -17,6 +17,10 @@ const (
 
 type FileExt string
 
+func (fe FileExt) String() string {
+	return string(fe)
+}
+
 const (
 	FileExtMp3 FileExt = "MP3"
 	FileExtJpg FileExt = "JPG"

@@ -5,10 +5,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
+	"go.uber.org/zap"
 	"net/http"
 )
 
-func FilesStore(ctr *container.Container) echo.HandlerFunc {
+func FilesStore(ctr *container.Container, l *zap.Logger) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
@@ -21,6 +22,7 @@ func FilesStore(ctr *container.Container) echo.HandlerFunc {
 
 		formFile, err := ctx.FormFile("file")
 		if err != nil {
+			l.Debug("cannot get form file", zap.Error(err))
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "File is not uploaded.",
 			})
@@ -33,7 +35,7 @@ func FilesStore(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		path, err := ctr.FileService.Upload(fileHandler)
+		path, err := ctr.FileService.Upload(fileHandler, extension)
 		if err != nil {
 			return err
 		}
