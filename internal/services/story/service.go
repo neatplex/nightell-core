@@ -38,6 +38,12 @@ func (s *Service) Create(story *models.Story) (string, error) {
 	return story.Identity, nil
 }
 
+func (s *Service) UpdateCaption(story *models.Story, caption string) *models.Story {
+	story.Caption = caption
+	s.database.Handler().Save(story)
+	return story
+}
+
 func (s *Service) Delete(story *models.Story) {
 	s.database.Handler().Delete(story)
 }
