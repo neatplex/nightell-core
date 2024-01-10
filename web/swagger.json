@@ -332,6 +332,11 @@
                 "example": "username_1691_4b3a_847f_76b2ed0f00ec",
                 "description": "Unique username (English letters, numbers and underscores)"
               },
+              "bio": {
+                "type": "string",
+                "example": "I am so funny!",
+                "description": "User biography (description)"
+              },
               "is_teller": {
                 "type": "boolean",
                 "example": false,

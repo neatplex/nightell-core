@@ -11,6 +11,7 @@ type User struct {
 	Username  string    `gorm:"unique" json:"username"`
 	Password  string    `json:"-"`
 	Email     string    `gorm:"unique" json:"email"`
+	Bio       *string   `json:"bio"`
 	IsTeller  bool      `gorm:"index" json:"is_teller"`
 	IsBanned  bool      `gorm:"index" json:"is_banned"`
 	CreatedAt time.Time `json:"created_at"`
