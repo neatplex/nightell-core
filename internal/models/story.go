@@ -8,7 +8,7 @@ type Story struct {
 	ID            uint64    `gorm:"primaryKey" json:"-"`
 	Identity      string    `gorm:"unique,size=60" json:"identity"`
 	UserID        uint64    `json:"-"`
-	User          User      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
+	User          *User     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 	Caption       string    `gorm:"size:300" json:"caption"`
 	AudioID       uint64    `json:"-"`
 	Audio         File      `gorm:"foreignKey:AudioID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"audio"`

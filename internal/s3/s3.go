@@ -19,7 +19,7 @@ type S3 struct {
 	client *s3.Client
 }
 
-func (s *S3) Connect() {
+func (s *S3) Init() {
 	credentialsCache := aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(
 		s.config.S3.AccessKey,
 		s.config.S3.SecretKey,

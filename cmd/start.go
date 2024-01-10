@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/neatplex/nightel-core/internal/app"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
 
 var startCmd = &cobra.Command{
@@ -18,10 +17,6 @@ func startFunc(_ *cobra.Command, _ []string) {
 		panic(err)
 	}
 
-	if err = a.Boot(); err != nil {
-		a.Logger.Engine.Fatal("cannot start the app", zap.Error(err))
-	}
-
-	a.HttpServer.Serve()
+	a.Boot()
 	a.Wait()
 }
