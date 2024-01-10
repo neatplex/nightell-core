@@ -24,6 +24,9 @@ func (s *Server) registerRoutes() {
 		{
 			// profile
 			private.GET("/profile", v1.ProfileShow())
+			private.PATCH("/profile/name", v1.ProfileUpdateName(s.container))
+			private.PATCH("/profile/bio", v1.ProfileUpdateBio(s.container))
+			private.PATCH("/profile/username", v1.ProfileUpdateUsername(s.container))
 			// stories
 			private.POST("/stories", v1.StoriesIndex(s.container))
 			private.GET("/stories", v1.StoriesIndex(s.container))
