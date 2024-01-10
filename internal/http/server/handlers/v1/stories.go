@@ -26,7 +26,6 @@ type StoriesStoreRequest struct {
 	Image struct {
 		Path string `json:"path"`
 	} `json:"image"`
-	IsPublished bool `json:"is_published"`
 }
 
 func StoriesStore(ctr *container.Container) echo.HandlerFunc {
@@ -88,11 +87,10 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		identity, err := ctr.StoryService.Create(&models.Story{
-			UserID:      user.ID,
-			Caption:     r.Caption,
-			AudioID:     audio.ID,
-			ImageID:     imageId,
-			IsPublished: r.IsPublished,
+			UserID:  user.ID,
+			Caption: r.Caption,
+			AudioID: audio.ID,
+			ImageID: imageId,
 		})
 		if err != nil {
 			return err

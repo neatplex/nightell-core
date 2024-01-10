@@ -415,19 +415,13 @@
         "type": "object",
         "required": [
           "caption",
-          "audio",
-          "is_published"
+          "audio"
         ],
         "properties": {
           "caption": {
             "type": "string",
             "example": "This is my first story! #first_story",
             "description": "The story caption/description/content"
-          },
-          "is_published": {
-            "type": "boolean",
-            "example": true,
-            "description": "Whether the story is or should be visible to public"
           },
           "audio": {
             "$ref": "#/components/schemas/File"
