@@ -14,14 +14,19 @@ type SignUpRequest struct {
 	Password string `json:"password" validate:"required,min=8,max=128"`
 }
 
-type SignInRequest struct {
+type SignInEmailRequest struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-func AuthSignIn(ctr *container.Container) echo.HandlerFunc {
+type SignInUsernameRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r SignInRequest
+		var r SignInEmailRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -34,6 +39,50 @@ func AuthSignIn(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		user, err := ctr.UserService.FindByEmail(r.Email)
+		if err != nil {
+			return err
+		}
+		if user != nil {
+			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password)); err == nil {
+				if user.IsBanned {
+					return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+						"message": "Your account is banned.",
+					})
+				}
+
+				token, err := ctr.TokenService.FindOrCreate(user)
+				if err != nil {
+					return err
+				}
+
+				return ctx.JSON(http.StatusCreated, map[string]interface{}{
+					"user":  user,
+					"token": token,
+				})
+			}
+		}
+
+		return ctx.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Email or password is incorrect.",
+		})
+	}
+}
+
+func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var r SignInUsernameRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		user, err := ctr.UserService.FindByUsername(r.Username)
 		if err != nil {
 			return err
 		}

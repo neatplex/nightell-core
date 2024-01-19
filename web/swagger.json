@@ -60,9 +60,9 @@
         }
       }
     },
-    "/auth/sign-in": {
+    "/auth/sign-in/email": {
       "post": {
-        "operationId": "auth-sign-in",
+        "operationId": "auth-sign-in-email",
         "description": "Sign in registered user and get the user details and authentication token.",
         "tags": [
           "Auth"
@@ -81,6 +81,69 @@
                   "email": {
                     "type": "string",
                     "example": "i@miladrahimi.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 8
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user signed in successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sign-in/username": {
+      "post": {
+        "operationId": "auth-sign-in-username",
+        "description": "Sign in registered user and get the user details and authentication token.",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "milad93x"
                   },
                   "password": {
                     "type": "string",

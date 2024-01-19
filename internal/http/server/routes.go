@@ -17,7 +17,8 @@ func (s *Server) registerRoutes() {
 		{
 			// auth
 			public.POST("/auth/sign-up", v1.AuthSignUp(s.container))
-			public.POST("/auth/sign-in", v1.AuthSignIn(s.container))
+			public.POST("/auth/sign-in/email", v1.AuthSignInEmail(s.container))
+			public.POST("/auth/sign-in/username", v1.AuthSignInUsername(s.container))
 		}
 
 		private := v1Api.Group("", mw.Authorize(s.container))
