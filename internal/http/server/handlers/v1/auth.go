@@ -103,7 +103,6 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		err = ctr.UserService.Create(&models.User{
-			Name:     r.Username,
 			Username: r.Username,
 			Email:    r.Email,
 			IsTeller: false,
