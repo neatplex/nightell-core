@@ -65,9 +65,6 @@ func (s *Service) Create(user *models.User) error {
 	if user.Identity == "" {
 		user.Identity = strings.ReplaceAll(uuid.NewString(), "-", "0")
 	}
-	if user.Username == "" {
-		user.Username = strings.ReplaceAll(uuid.NewString(), "-", "_")
-	}
 
 	r := s.database.Handler().Create(user)
 	if r.Error != nil {

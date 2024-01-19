@@ -9,7 +9,7 @@ import (
 )
 
 type SignUpRequest struct {
-	Name     string `json:"name" validate:"required,min=1,max=128"`
+	Username string `json:"username" validate:"required,min=1,max=128"`
 	Email    string `json:"email" validate:"required,email,max=128"`
 	Password string `json:"password" validate:"required,min=8,max=128"`
 }
@@ -77,7 +77,17 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		u, err := ctr.UserService.FindByEmail(r.Email)
+		u, err := ctr.UserService.FindByUsername(r.Username)
+		if err != nil {
+			return err
+		}
+		if u != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "This username is already reserved.",
+			})
+		}
+
+		u, err = ctr.UserService.FindByEmail(r.Email)
 		if err != nil {
 			return err
 		}
@@ -93,7 +103,8 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		err = ctr.UserService.Create(&models.User{
-			Name:     r.Name,
+			Name:     r.Username,
+			Username: r.Username,
 			Email:    r.Email,
 			IsTeller: false,
 			IsBanned: false,

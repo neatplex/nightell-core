@@ -660,15 +660,15 @@
       "NewUser": {
         "type": "object",
         "required": [
-          "name",
+          "username",
           "email",
           "password"
         ],
         "properties": {
-          "name": {
+          "username": {
             "type": "string",
-            "example": "Milad Rahimi",
-            "description": "User full name or nickname"
+            "example": "milad93x",
+            "description": "User unique username (Regex: ^[a-z0-9_]+$)"
           },
           "email": {
             "type": "string",
