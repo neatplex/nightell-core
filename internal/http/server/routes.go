@@ -36,6 +36,8 @@ func (s *Server) registerRoutes() {
 			private.DELETE("/stories/:identity", v1.StoriesDelete(s.container))
 			// files
 			private.POST("/files", v1.FilesStore(s.container, s.log))
+			// feed
+			private.GET("/feed", v1.Feed(s.container))
 		}
 	}
 }

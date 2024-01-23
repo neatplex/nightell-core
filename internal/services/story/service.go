@@ -21,7 +21,20 @@ func (s *Service) Index(userId uint64) ([]models.Story, error) {
 		Preload("Audio").Preload("Image").
 		Find(&stories)
 	if r.Error != nil {
-		return nil, errors.New(fmt.Sprintf("cannot index stories: %v", r.Error))
+		return nil, fmt.Errorf("services: story: Index: %v", r.Error)
+	}
+	return stories, nil
+}
+
+func (s *Service) Feed(lastId uint64) ([]models.Story, error) {
+	var stories []models.Story
+	r := s.database.Handler().
+		Where("SELECT * FROM app.stories WHERE id > ? ORDER BY id LIMIT 2", lastId).
+		Preload("Audio").
+		Preload("Image").
+		Find(&stories)
+	if r.Error != nil {
+		return nil, fmt.Errorf("services: story: Feed: %s", r.Error)
 	}
 	return stories, nil
 }
@@ -33,7 +46,7 @@ func (s *Service) Create(story *models.Story) (string, error) {
 
 	r := s.database.Handler().Create(story)
 	if r.Error != nil {
-		return "", errors.New(fmt.Sprintf("cannot query to create story: %v", r.Error))
+		return "", fmt.Errorf("services: story: Create: %v", r.Error)
 	}
 	return story.Identity, nil
 }
@@ -58,7 +71,7 @@ func (s *Service) FindByIdentity(identity string) (*models.Story, error) {
 		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, errors.New(fmt.Sprintf("cannot find story by identity `%s`, err: %v", identity, r.Error))
+		return nil, fmt.Errorf("services: story: FindByIdentity: `%s`, err: %v", identity, r.Error)
 	}
 	return &story, nil
 }
