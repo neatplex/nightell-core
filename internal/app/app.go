@@ -33,18 +33,18 @@ func New(configPath string) (a *App, err error) {
 	if err != nil {
 		return nil, err
 	}
-	a.Logger, err = logger.New(a.Config)
+	a.Logger, err = logger.New(a.Config, a.ShutdownModules)
 	if err != nil {
 		return nil, err
 	}
-	a.Logger.Engine.Debug("app: config & logger initialized")
+	a.Logger.Debug("app: config & logger initialized")
 
-	a.Database = database.New(a.Config, a.Logger.Engine)
-	a.S3 = s3.New(a.Config, a.Logger.Engine)
+	a.Database = database.New(a.Config, a.Logger)
+	a.S3 = s3.New(a.Config, a.Logger)
 	a.Container = container.New(a.Database, a.S3)
-	a.HttpServer = httpServer.New(a.Config, a.Logger.Engine, a.Container)
+	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
 
-	a.Logger.Engine.Debug("app: application modules initialized")
+	a.Logger.Debug("app: application modules initialized")
 
 	a.setupSignalListener()
 
@@ -68,21 +68,26 @@ func (a *App) setupSignalListener() {
 
 	go func() {
 		s := <-signalChannel
-		a.Logger.Engine.Info("app: system call", zap.String("signal", s.String()))
+		a.Logger.Info("app: system call", zap.String("signal", s.String()))
 		cancel()
 	}()
 }
 
-// Wait avoid dying app and shut it down gracefully on exit signals.
-func (a *App) Wait() {
-	<-a.context.Done()
-
+func (a *App) ShutdownModules() {
 	if a.HttpServer != nil {
 		a.HttpServer.Close()
 	}
 	if a.Database != nil {
 		a.Database.Close()
 	}
+}
+
+// Wait avoid dying app and shut it down gracefully on exit signals.
+func (a *App) Wait() {
+	<-a.context.Done()
+
+	a.ShutdownModules()
+
 	if a.Logger != nil {
 		a.Logger.Close()
 	}

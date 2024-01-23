@@ -10,18 +10,40 @@ import (
 )
 
 type Logger struct {
-	Engine *zap.Logger
+	e     *zap.Logger
+	close func()
+}
+
+func (l *Logger) Debug(message string, fields ...zap.Field) {
+	l.e.Debug(message, fields...)
+}
+
+func (l *Logger) Info(message string, fields ...zap.Field) {
+	l.e.Info(message, fields...)
+}
+
+func (l *Logger) Warn(message string, fields ...zap.Field) {
+	l.e.Warn(message, fields...)
+}
+
+func (l *Logger) Error(message string, fields ...zap.Field) {
+	l.e.Error(message, fields...)
+}
+
+func (l *Logger) Fatal(message string, fields ...zap.Field) {
+	l.close()
+	l.e.Error(message, fields...)
 }
 
 func (l *Logger) Close() {
-	if err := l.Engine.Sync(); err != nil && !errors.Is(err, syscall.ENOTTY) {
-		l.Engine.Warn("cannot close the log", zap.Error(err))
+	if err := l.e.Sync(); err != nil && !errors.Is(err, syscall.ENOTTY) {
+		l.e.Warn("cannot close the log", zap.Error(err))
 	} else {
-		l.Engine.Debug("log closed successfully")
+		l.e.Debug("log closed successfully")
 	}
 }
 
-func New(c *config.Config) (logger *Logger, err error) {
+func New(c *config.Config, close func()) (logger *Logger, err error) {
 	level := zap.NewAtomicLevel()
 	if err = level.UnmarshalText([]byte(c.Logger.Level)); err != nil {
 		return nil, errors.New(fmt.Sprintf("invalid log level %s, err: %v", c.Logger.Level, err))
@@ -51,5 +73,5 @@ func New(c *config.Config) (logger *Logger, err error) {
 		return nil, errors.New(fmt.Sprintf("cannot build logger, err: %v", err))
 	}
 
-	return &Logger{engine}, nil
+	return &Logger{e: engine, close: close}, nil
 }

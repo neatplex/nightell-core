@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/neatplex/nightel-core/internal/config"
+	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/models"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -15,7 +16,7 @@ import (
 type Database struct {
 	handler *gorm.DB
 	config  *config.Config
-	logger  *zap.Logger
+	l       *logger.Logger
 }
 
 func (d *Database) Handler() *gorm.DB {
@@ -29,13 +30,13 @@ func (d *Database) Init() {
 
 	db, err := d.initDatabase(ctx)
 	if err != nil {
-		d.logger.Fatal("database: cannot connect", zap.Error(err))
+		d.l.Fatal("database: cannot connect", zap.Error(err))
 	}
 
 	if d.handler, err = gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{}); err != nil {
-		d.logger.Fatal("database: cannot initialize gorm", zap.Error(err))
+		d.l.Fatal("database: cannot initialize gorm", zap.Error(err))
 	} else {
-		d.logger.Debug("database: gorm connection established successfully")
+		d.l.Debug("database: gorm connection established successfully")
 	}
 	d.migrate()
 }
@@ -53,7 +54,7 @@ func (d *Database) initDatabase(ctx context.Context) (*sql.DB, error) {
 			if err = db.Ping(); err == nil {
 				return db, nil
 			}
-			d.logger.Debug("database: trying to connect", zap.Error(err))
+			d.l.Debug("database: trying to connect", zap.Error(err))
 			time.Sleep(1 * time.Second)
 		}
 	}
@@ -67,25 +68,25 @@ func (d *Database) migrate() {
 		&models.File{},
 	)
 	if err != nil {
-		d.logger.Fatal("database: cannot run migrations", zap.Error(err))
+		d.l.Fatal("database: cannot run migrations", zap.Error(err))
 	} else {
-		d.logger.Debug("database: migrations ran successfully")
+		d.l.Debug("database: migrations ran successfully")
 	}
 }
 
 func (d *Database) Close() {
 	if db, err := d.handler.DB(); err != nil {
-		d.logger.Error("database: cannot get DB from GORM to close", zap.Error(err))
+		d.l.Error("database: cannot get DB from GORM to close", zap.Error(err))
 	} else {
 		if err = db.Close(); err != nil {
-			d.logger.Error("database: cannot close database", zap.Error(err))
+			d.l.Error("database: cannot close database", zap.Error(err))
 		}
 	}
 }
 
-func New(c *config.Config, l *zap.Logger) *Database {
+func New(c *config.Config, l *logger.Logger) *Database {
 	return &Database{
 		config: c,
-		logger: l,
+		l:      l,
 	}
 }

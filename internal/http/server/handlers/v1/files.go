@@ -3,13 +3,14 @@ package v1
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-func FilesStore(ctr *container.Container, l *zap.Logger) echo.HandlerFunc {
+func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 

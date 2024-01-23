@@ -9,13 +9,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	cfg "github.com/neatplex/nightel-core/internal/config"
+	"github.com/neatplex/nightel-core/internal/logger"
 	"go.uber.org/zap"
 	"io"
 )
 
 type S3 struct {
 	config *cfg.Config
-	log    *zap.Logger
+	l      *logger.Logger
 	client *s3.Client
 }
 
@@ -32,9 +33,9 @@ func (s *S3) Init() {
 		config.WithRegion(s.config.S3.Region),
 	)
 	if err != nil {
-		s.log.Fatal("cannot connect to s3", zap.Error(err))
+		s.l.Fatal("cannot connect to s3", zap.Error(err))
 	} else {
-		s.log.Debug("connection established with s3")
+		s.l.Debug("connection established with s3")
 	}
 
 	s.client = s3.NewFromConfig(c)
@@ -69,6 +70,6 @@ func (s *S3) Put(path string, body io.Reader) error {
 	return nil
 }
 
-func New(c *cfg.Config, l *zap.Logger) *S3 {
-	return &S3{config: c, log: l}
+func New(c *cfg.Config, l *logger.Logger) *S3 {
+	return &S3{config: c, l: l}
 }

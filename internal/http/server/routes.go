@@ -35,7 +35,7 @@ func (s *Server) registerRoutes() {
 			private.PATCH("/stories/:identity/caption", v1.StoriesUpdateCaption(s.container))
 			private.DELETE("/stories/:identity", v1.StoriesDelete(s.container))
 			// files
-			private.POST("/files", v1.FilesStore(s.container, s.log))
+			private.POST("/files", v1.FilesStore(s.container, s.l))
 			// feed
 			private.GET("/feed", v1.Feed(s.container))
 		}

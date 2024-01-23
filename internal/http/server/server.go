@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/neatplex/nightel-core/internal/config"
 	"github.com/neatplex/nightel-core/internal/http/server/validator"
+	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
@@ -16,11 +17,11 @@ import (
 type Server struct {
 	E         *echo.Echo
 	config    *config.Config
-	log       *zap.Logger
+	l         *logger.Logger
 	container *container.Container
 }
 
-func New(config *config.Config, log *zap.Logger, container *container.Container) *Server {
+func New(config *config.Config, log *logger.Logger, container *container.Container) *Server {
 	e := echo.New()
 
 	e.HideBanner = true
@@ -30,7 +31,7 @@ func New(config *config.Config, log *zap.Logger, container *container.Container)
 	e.Server.IdleTimeout, _ = time.ParseDuration(config.HTTPServer.IdleTimeout)
 	e.Validator = validator.New()
 
-	return &Server{E: e, config: config, log: log, container: container}
+	return &Server{E: e, config: config, l: log, container: container}
 }
 
 func (s *Server) Serve() {
@@ -45,7 +46,7 @@ func (s *Server) Serve() {
 	go func() {
 		listen := s.config.HTTPServer.Listen
 		if err := s.E.Start(listen); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			s.log.Fatal("cannot start the server", zap.String("listen", listen), zap.Error(err))
+			s.l.Fatal("cannot start the server", zap.String("listen", listen), zap.Error(err))
 		}
 	}()
 }
@@ -55,7 +56,7 @@ func (s *Server) Close() {
 	defer cancel()
 
 	if err := s.E.Shutdown(c); err != nil {
-		s.log.Warn("cannot close the http server", zap.Error(err))
+		s.l.Warn("cannot close the http server", zap.Error(err))
 	}
-	s.log.Debug("http server closed successfully")
+	s.l.Debug("http server closed successfully")
 }
