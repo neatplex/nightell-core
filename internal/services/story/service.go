@@ -29,7 +29,7 @@ func (s *Service) Index(userId uint64) ([]models.Story, error) {
 func (s *Service) Feed(lastId uint64) ([]models.Story, error) {
 	var stories []models.Story
 	r := s.database.Handler().
-		Where("id > ? ORDER BY id LIMIT 2", lastId).
+		Where("id < ? ORDER BY id DESC LIMIT 3", lastId).
 		Preload("Audio").
 		Preload("Image").
 		Find(&stories)

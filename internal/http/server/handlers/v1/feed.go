@@ -8,8 +8,8 @@ import (
 
 func Feed(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var lastId uint64
-		identity := ctx.QueryParams().Get("identity")
+		lastId := ^uint64(0)
+		identity := ctx.QueryParams().Get("lastIdentity")
 		if identity != "" {
 			story, err := ctr.StoryService.FindByIdentity(identity)
 			if err != nil {
