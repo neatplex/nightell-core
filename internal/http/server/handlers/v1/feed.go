@@ -20,7 +20,7 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 			}
 		}
 
-		stories, err := ctr.StoryService.Index(lastId)
+		stories, err := ctr.StoryService.Feed(lastId)
 		if err != nil {
 			return err
 		}
