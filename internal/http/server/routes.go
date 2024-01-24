@@ -8,7 +8,6 @@ import (
 )
 
 func (s *Server) registerRoutes() {
-	s.E.GET("/debug", handlers.Debug)
 	s.E.GET("/healthz", handlers.Healthz)
 
 	v1Api := s.E.Group("/api/v1", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(5)))

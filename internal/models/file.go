@@ -1,11 +1,11 @@
 package models
 
 type File struct {
-	ID        uint64  `gorm:"primaryKey" json:"-"`
-	UserID    uint64  `json:"-"`
-	User      User    `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
-	Extension FileExt `gorm:"index" json:"extension"`
-	Path      string  `gorm:"size=128" json:"path"`
+	ID        uint64    `gorm:"primaryKey" json:"id"`
+	UserID    uint64    `json:"user_id"`
+	User      *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
+	Extension Extension `gorm:"index" json:"extension"`
+	Path      string    `gorm:"size=128" json:"path"`
 }
 
 type FileType string
@@ -15,13 +15,13 @@ const (
 	FileTypeImage FileType = "Image"
 )
 
-type FileExt string
+type Extension string
 
-func (fe FileExt) String() string {
+func (fe Extension) String() string {
 	return string(fe)
 }
 
 const (
-	FileExtMp3 FileExt = "MP3"
-	FileExtJpg FileExt = "JPG"
+	FileExtMp3 Extension = "MP3"
+	FileExtJpg Extension = "JPG"
 )

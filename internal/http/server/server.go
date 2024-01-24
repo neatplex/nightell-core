@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/neatplex/nightel-core/internal/config"
+	middleware2 "github.com/neatplex/nightel-core/internal/http/server/middleware"
 	"github.com/neatplex/nightel-core/internal/http/server/validator"
 	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -36,7 +37,7 @@ func New(config *config.Config, log *logger.Logger, container *container.Contain
 
 func (s *Server) Serve() {
 	s.E.Use(middleware.CORS())
-	s.E.Use(middleware.Logger())
+	s.E.Use(middleware2.Logger(s.l))
 	s.E.Use(middleware.Static("web"))
 	s.E.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
 	s.E.Use(middleware.BodyLimit("20M"))

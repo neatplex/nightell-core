@@ -35,6 +35,10 @@ func (l *Logger) Fatal(message string, fields ...zap.Field) {
 	l.e.Error(message, fields...)
 }
 
+func (l *Logger) With(fields ...zap.Field) *zap.Logger {
+	return l.e.With(fields...)
+}
+
 func (l *Logger) Close() {
 	if err := l.e.Sync(); err != nil && !errors.Is(err, syscall.ENOTTY) {
 		l.e.Warn("cannot close the log", zap.Error(err))

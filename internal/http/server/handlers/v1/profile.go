@@ -6,13 +6,13 @@ import (
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	userService "github.com/neatplex/nightel-core/internal/services/user"
+	"github.com/neatplex/nightel-core/internal/utils"
 	"net/http"
 )
 
 func ProfileShow() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
-
 		return ctx.JSON(http.StatusOK, user)
 	}
 }
@@ -39,7 +39,9 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 
 		u := ctr.UserService.UpdateName(user, r.Name)
 
-		return ctx.JSON(http.StatusOK, u)
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *u,
+		})
 	}
 }
 
@@ -65,7 +67,9 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 
 		u := ctr.UserService.UpdateBio(user, r.Bio)
 
-		return ctx.JSON(http.StatusOK, u)
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *u,
+		})
 	}
 }
 
@@ -89,6 +93,12 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
+		if !utils.ValidateUsername(r.Username) {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "The username is not valid.",
+			})
+		}
+
 		u, err := ctr.UserService.UpdateUsername(user, r.Username)
 		if err != nil {
 			if errors.Is(err, userService.ErrUsernameAlreadyExist) {
@@ -100,6 +110,8 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 			}
 		}
 
-		return ctx.JSON(http.StatusOK, u)
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *u,
+		})
 	}
 }

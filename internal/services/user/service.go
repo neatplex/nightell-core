@@ -3,11 +3,9 @@ package user
 import (
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type Service struct {
@@ -45,7 +43,7 @@ func (s *Service) UpdateName(user *models.User, name string) *models.User {
 }
 
 func (s *Service) UpdateBio(user *models.User, bio string) *models.User {
-	user.Bio = &bio
+	user.Bio = bio
 	s.database.Handler().Save(user)
 	return user
 }
@@ -62,10 +60,6 @@ func (s *Service) UpdateUsername(user *models.User, username string) (*models.Us
 }
 
 func (s *Service) Create(user *models.User) error {
-	if user.Identity == "" {
-		user.Identity = strings.ReplaceAll(uuid.NewString(), "-", "0")
-	}
-
 	r := s.database.Handler().Create(user)
 	if r.Error != nil {
 		return errors.New(fmt.Sprintf("cannot query to create user: %v", r.Error))

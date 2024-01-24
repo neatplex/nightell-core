@@ -21,7 +21,7 @@ func Authorize(ctr *container.Container) func(echo.HandlerFunc) echo.HandlerFunc
 				return echo.ErrUnauthorized
 			}
 
-			ctx.Set("user", &token.User)
+			ctx.Set("user", token.User)
 
 			return next(ctx)
 		}

@@ -5,6 +5,7 @@ import (
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"net/http"
+	"strconv"
 )
 
 func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
@@ -86,7 +87,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			imageId = &image.ID
 		}
 
-		identity, err := ctr.StoryService.Create(&models.Story{
+		id, err := ctr.StoryService.Create(&models.Story{
 			UserID:  user.ID,
 			Caption: r.Caption,
 			AudioID: audio.ID,
@@ -96,7 +97,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		story, err := ctr.StoryService.FindByIdentity(identity)
+		story, err := ctr.StoryService.FindById(id)
 		if err != nil {
 			return err
 		}
@@ -125,7 +126,14 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		story, err := ctr.StoryService.FindByIdentity(ctx.Param("identity"))
+		id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+		if err != nil {
+			return ctx.JSON(http.StatusNotFound, map[string]string{
+				"message": "Story not found.",
+			})
+		}
+
+		story, err := ctr.StoryService.FindById(id)
 		if err != nil {
 			return err
 		}
@@ -161,7 +169,14 @@ func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		story, err := ctr.StoryService.FindByIdentity(ctx.Param("identity"))
+		id, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+		if err != nil {
+			return ctx.JSON(http.StatusNotFound, map[string]string{
+				"message": "Story not found.",
+			})
+		}
+
+		story, err := ctr.StoryService.FindById(id)
 		if err != nil {
 			return err
 		}

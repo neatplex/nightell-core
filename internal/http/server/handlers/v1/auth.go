@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightel-core/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -126,6 +127,12 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
+		if !utils.ValidateUsername(r.Username) {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "The username is not valid.",
+			})
+		}
+
 		u, err := ctr.UserService.FindByUsername(r.Username)
 		if err != nil {
 			return err
@@ -154,7 +161,6 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 		err = ctr.UserService.Create(&models.User{
 			Username: r.Username,
 			Email:    r.Email,
-			IsTeller: false,
 			IsBanned: false,
 			Password: string(hashedPassword),
 		})
