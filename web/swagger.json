@@ -199,7 +199,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -249,7 +254,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -299,7 +309,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -349,7 +364,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -606,10 +626,10 @@
               "created_at"
             ],
             "properties": {
-              "identity": {
-                "type": "string",
-                "example": "identity_1691_4b3a_847f_76b2ed0f00ec",
-                "description": "Unique identity"
+              "id": {
+                "type": "integer",
+                "example": 13,
+                "description": "Unique id of user (uint64)"
               },
               "username": {
                 "type": "string",
@@ -621,10 +641,10 @@
                 "example": "I am so funny!",
                 "description": "User biography (description)"
               },
-              "is_teller": {
+              "is_banned": {
                 "type": "boolean",
                 "example": false,
-                "description": "Whether the user has the ability to share stories"
+                "description": "Whether the user has been banned or not."
               },
               "created_at": {
                 "type": "string",
@@ -639,9 +659,15 @@
         "type": "object",
         "description": "Uploaded audio or image file",
         "required": [
+          "id",
           "path"
         ],
         "properties": {
+          "id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of file (uint64)"
+          },
           "path": {
             "type": "string",
             "example": "2023/12/22/audio_1691_4b3a_847f_76b2ed0f00ec.mp3",
@@ -666,17 +692,22 @@
           {
             "type": "object",
             "required": [
-              "identity",
+              "id",
               "user",
               "likes_count",
               "comments_count",
               "created_at"
             ],
             "properties": {
-              "identity": {
-                "type": "string",
-                "example": "identity_1691_4b3a_847f_76b2ed0f00ec",
-                "description": "Unique identity"
+              "id": {
+                "type": "integer",
+                "example": 13,
+                "description": "Unique id of story (uint64)"
+              },
+              "user_id": {
+                "type": "integer",
+                "example": 13,
+                "description": "Unique id of user (uint64)"
               },
               "user": {
                 "$ref": "#/components/schemas/User"
