@@ -503,7 +503,19 @@
         },
         "responses": {
           "201": {
-            "description": "The new story created."
+            "description": "The new story created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "story": {
+                      "$ref": "#/components/schemas/Story"
+                    }
+                  }
+                }
+              }
+            }
           },
           "default": {
             "description": "Error!",
@@ -544,7 +556,19 @@
         },
         "responses": {
           "201": {
-            "description": "The story updated."
+            "description": "The story updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "story": {
+                      "$ref": "#/components/schemas/Story"
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
             "description": "You do not have permission to perform this action."
@@ -562,7 +586,7 @@
         }
       }
     },
-    "/stories/:identity": {
+    "/stories/:id": {
       "delete": {
         "operationId": "stories-delete",
         "description": "Delete the story",
@@ -571,7 +595,7 @@
         ],
         "responses": {
           "201": {
-            "description": "The story de;eted."
+            "description": "The story deleted."
           },
           "403": {
             "description": "You do not have permission to perform this action."
