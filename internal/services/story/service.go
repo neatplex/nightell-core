@@ -98,6 +98,18 @@ func (s *Service) FindById(id uint64) (*models.Story, error) {
 	return &story, nil
 }
 
+func (s *Service) FindBy(field string, value interface{}) (*models.Story, error) {
+	var story models.Story
+	r := s.database.Handler().Where(field+" = ?", value).First(&story)
+	if r.Error != nil {
+		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("services: story: FindBy%s: %v, err: %v", field, value, r.Error)
+	}
+	return &story, nil
+}
+
 func New(database *database.Database) *Service {
 	return &Service{database: database}
 }

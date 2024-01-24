@@ -15,18 +15,16 @@ func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		return ctx.JSON(http.StatusCreated, stories)
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"stories": stories,
+		})
 	}
 }
 
 type StoriesStoreRequest struct {
 	Caption string `json:"caption" validate:"required"`
-	Audio   struct {
-		Path string `json:"path" validate:"required"`
-	} `json:"audio" validate:"required"`
-	Image struct {
-		Path string `json:"path"`
-	} `json:"image"`
+	AudioID uint64 `json:"audio_id" validate:"required"`
+	ImageID uint64 `json:"image_id" validate:"required"`
 }
 
 func StoriesStore(ctr *container.Container) echo.HandlerFunc {
@@ -45,7 +43,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		audio, err := ctr.FileService.FindByPath(r.Audio.Path)
+		audio, err := ctr.FileService.FindByID(r.AudioID)
 		if err != nil {
 			return err
 		}
@@ -54,19 +52,24 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 				"message": "Audio file not found.",
 			})
 		}
+		if s, _ := ctr.StoryService.FindBy("audio_id", audio.ID); s != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "The selected file is already in use.",
+			})
+		}
 		audioType, err := ctr.FileService.ToType(audio.Extension)
 		if err != nil {
 			return err
 		}
 		if audioType != models.FileTypeAudio {
-			return ctx.JSON(http.StatusNotFound, map[string]string{
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "The selected file is not an audio.",
 			})
 		}
 
 		var imageId *uint64
-		if r.Image.Path != "" {
-			image, err := ctr.FileService.FindByPath(r.Image.Path)
+		if r.ImageID != 0 {
+			image, err := ctr.FileService.FindByID(r.ImageID)
 			if err != nil {
 				return err
 			}
@@ -75,12 +78,17 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "Image file not found.",
 				})
 			}
+			if s, _ := ctr.StoryService.FindBy("image_id", image.ID); s != nil {
+				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+					"message": "The selected file is already in use.",
+				})
+			}
 			imageType, err := ctr.FileService.ToType(image.Extension)
 			if err != nil {
 				return err
 			}
 			if imageType != models.FileTypeImage {
-				return ctx.JSON(http.StatusNotFound, map[string]string{
+				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 					"message": "The selected file is not an image.",
 				})
 			}
@@ -102,7 +110,9 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		return ctx.JSON(http.StatusCreated, story)
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"story": story,
+		})
 	}
 }
 

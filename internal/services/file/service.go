@@ -54,6 +54,18 @@ func (s *Service) Create(file *models.File) error {
 	return nil
 }
 
+func (s *Service) FindByID(id uint64) (*models.File, error) {
+	var file models.File
+	r := s.database.Handler().First(&file, id)
+	if r.Error != nil {
+		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, eris.Errorf("cannot query to find file by %d, err: %v", id, r.Error)
+	}
+	return &file, nil
+}
+
 func (s *Service) FindByPath(path string) (*models.File, error) {
 	var file models.File
 	r := s.database.Handler().Where("path = ?", path).First(&file)

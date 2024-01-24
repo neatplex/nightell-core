@@ -13,7 +13,9 @@ import (
 func ProfileShow() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
-		return ctx.JSON(http.StatusOK, user)
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *user,
+		})
 	}
 }
 

@@ -55,6 +55,8 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 			return err
 		}
 
-		return ctx.JSON(http.StatusOK, file)
+		return ctx.JSON(http.StatusOK, map[string]models.File{
+			"file": *file,
+		})
 	}
 }

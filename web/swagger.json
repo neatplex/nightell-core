@@ -411,13 +411,7 @@
                     "description": "File to upload"
                   },
                   "extension": {
-                    "type": "string",
-                    "enum": [
-                      "MP3",
-                      "JPG"
-                    ],
-                    "example": "MP3",
-                    "description": "Type of the file"
+                    "$ref": "#/components/schemas/Extension"
                   }
                 }
               }
@@ -430,7 +424,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/File"
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "$ref": "#/components/schemas/File"
+                    }
+                  }
                 }
               }
             }
@@ -461,9 +460,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Story"
+                  "type": "object",
+                  "properties": {
+                    "stories": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Story"
+                      }
+                    }
                   }
                 }
               }
@@ -514,7 +518,7 @@
         }
       }
     },
-    "/stories/:identity/caption": {
+    "/stories/:id/caption": {
       "patch": {
         "operationId": "stories-update-caption",
         "description": "Update the story caption",
@@ -620,11 +624,6 @@
           },
           {
             "type": "object",
-            "required": [
-              "identity",
-              "username",
-              "created_at"
-            ],
             "properties": {
               "id": {
                 "type": "integer",
@@ -658,12 +657,13 @@
       "File": {
         "type": "object",
         "description": "Uploaded audio or image file",
-        "required": [
-          "id",
-          "path"
-        ],
         "properties": {
           "id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of file (uint64)"
+          },
+          "user_id": {
             "type": "integer",
             "example": 13,
             "description": "Unique id of file (uint64)"
@@ -674,15 +674,18 @@
             "description": "File path in server storage"
           },
           "extension": {
-            "type": "string",
-            "enum": [
-              "MP3",
-              "JPG"
-            ],
-            "example": "MP3",
-            "description": "File extension"
+            "$ref": "#/components/schemas/Extension"
           }
         }
+      },
+      "Extension": {
+        "type": "string",
+        "enum": [
+          "MP3",
+          "JPG"
+        ],
+        "example": "MP3",
+        "description": "File extension"
       },
       "Story": {
         "allOf": [
@@ -691,18 +694,17 @@
           },
           {
             "type": "object",
-            "required": [
-              "id",
-              "user",
-              "likes_count",
-              "comments_count",
-              "created_at"
-            ],
             "properties": {
               "id": {
                 "type": "integer",
                 "example": 13,
                 "description": "Unique id of story (uint64)"
+              },
+              "image": {
+                "$ref": "#/components/schemas/File"
+              },
+              "audio": {
+                "$ref": "#/components/schemas/File"
               },
               "user_id": {
                 "type": "integer",
@@ -733,31 +735,27 @@
       },
       "NewStory": {
         "type": "object",
-        "required": [
-          "caption",
-          "audio"
-        ],
         "properties": {
           "caption": {
             "type": "string",
             "example": "This is my first story! #first_story",
             "description": "The story caption/description/content"
           },
-          "audio": {
-            "$ref": "#/components/schemas/File"
+          "audio_id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of the audio file (uint64)"
           },
-          "image": {
-            "$ref": "#/components/schemas/File"
+          "image_id": {
+            "type": "integer",
+            "nullable": true,
+            "example": 13,
+            "description": "Unique id of the image file (uint64)"
           }
         }
       },
       "NewUser": {
         "type": "object",
-        "required": [
-          "username",
-          "email",
-          "password"
-        ],
         "properties": {
           "username": {
             "type": "string",
