@@ -456,7 +456,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The user signed in successfully.",
+            "description": "List of user stories",
             "content": {
               "application/json": {
                 "schema": {
@@ -612,6 +612,45 @@
           }
         }
       }
+    },
+    "/feed": {
+      "get": {
+        "operationId": "feed",
+        "description": "Index the feed stories",
+        "tags": [
+          "Stories"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of stories in user's feed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stories": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Story"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "security": [
@@ -653,6 +692,11 @@
                 "type": "integer",
                 "example": 13,
                 "description": "Unique id of user (uint64)"
+              },
+              "name": {
+                "type": "string",
+                "example": "Milad",
+                "description": "The user's name (full name or nickname)"
               },
               "username": {
                 "type": "string",
