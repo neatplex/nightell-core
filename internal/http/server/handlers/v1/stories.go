@@ -22,9 +22,9 @@ func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
 }
 
 type StoriesStoreRequest struct {
-	Caption string `json:"caption" validate:"required"`
-	AudioID uint64 `json:"audio_id" validate:"required"`
-	ImageID uint64 `json:"image_id" validate:"required"`
+	Caption string  `json:"caption" validate:"required"`
+	AudioID uint64  `json:"audio_id" validate:"required"`
+	ImageID *uint64 `json:"image_id"`
 }
 
 func StoriesStore(ctr *container.Container) echo.HandlerFunc {
@@ -68,8 +68,8 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		var imageId *uint64
-		if r.ImageID != 0 {
-			image, err := ctr.FileService.FindByID(r.ImageID)
+		if r.ImageID != nil {
+			image, err := ctr.FileService.FindByID(*r.ImageID)
 			if err != nil {
 				return err
 			}
