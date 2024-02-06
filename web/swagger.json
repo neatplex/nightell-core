@@ -528,9 +528,51 @@
             }
           }
         }
+      },
+      "delete": {
+        "operationId": "stories-delete",
+        "description": "Delete the story",
+        "tags": [
+          "Stories"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "story_id": {
+                    "type": "integer",
+                    "example": 13,
+                    "description": "Unique id of story (uint64)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The story deleted."
+          },
+          "403": {
+            "description": "You do not have permission to perform this action."
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/stories/:id/caption": {
+    "/stories/caption": {
       "patch": {
         "operationId": "stories-update-caption",
         "description": "Update the story caption",
@@ -544,6 +586,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "story_id": {
+                    "type": "integer",
+                    "example": 13,
+                    "description": "Unique id of story (uint64)"
+                  },
                   "caption": {
                     "type": "string",
                     "example": "This is my first story! #first_story",
@@ -586,13 +633,69 @@
         }
       }
     },
-    "/stories/:id": {
-      "delete": {
-        "operationId": "stories-delete",
-        "description": "Delete the story",
+    "/likes": {
+      "post": {
+        "operationId": "likes-store",
+        "description": "Store a new like action",
         "tags": [
-          "Stories"
+          "Likes"
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "story_id": {
+                    "type": "integer",
+                    "example": 13,
+                    "description": "Unique id of story (uint64)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new like action created."
+          },
+          "default": {
+            "description": "Error!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "likes-delete",
+        "description": "Delete the like action",
+        "tags": [
+          "Likes"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "like_id": {
+                    "type": "integer",
+                    "example": 13,
+                    "description": "Unique id of like action (uint64)"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "The story deleted."

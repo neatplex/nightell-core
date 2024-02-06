@@ -117,6 +117,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 }
 
 type StoriesUpdateCaptionRequest struct {
+	StoryID uint64 `json:"story_id" validate:"required"`
 	Caption string `json:"caption" validate:"required"`
 }
 
@@ -136,8 +137,7 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		id := utils.StringToID(ctx.Param("id"))
-		story, err := ctr.StoryService.FindById(id)
+		story, err := ctr.StoryService.FindById(r.StoryID)
 		if err != nil {
 			return err
 		}
@@ -159,11 +159,15 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
+type StoriesDeleteRequest struct {
+	StoryID uint64 `json:"story_id" validate:"required"`
+}
+
 func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r StoriesUpdateCaptionRequest
+		var r StoriesDeleteRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
