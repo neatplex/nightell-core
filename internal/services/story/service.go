@@ -21,6 +21,11 @@ func (s *Service) Index(userId uint64) ([]*models.Story, error) {
 	if r.Error != nil {
 		return nil, fmt.Errorf("services: story: Index: %v", r.Error)
 	}
+	for _, story := range stories {
+		if err := s.attachLikes(userId, story); err != nil {
+			return nil, err
+		}
+	}
 	return stories, nil
 }
 
@@ -94,6 +99,9 @@ func (s *Service) FindById(id uint64) (*models.Story, error) {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("services: story: FindById: `%d`, err: %v", id, r.Error)
+	}
+	if err := s.attachLikes(story.UserID, &story); err != nil {
+		return nil, err
 	}
 	return &story, nil
 }
