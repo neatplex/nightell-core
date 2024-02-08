@@ -29,10 +29,10 @@ func (s *Service) Index(userId uint64) ([]*models.Story, error) {
 	return stories, nil
 }
 
-func (s *Service) Feed(userId uint64, lastId uint64) ([]*models.Story, error) {
+func (s *Service) Feed(userId uint64, lastId uint64, count int) ([]*models.Story, error) {
 	var stories []*models.Story
 	r := s.database.Handler().
-		Where("id < ? ORDER BY id DESC LIMIT 3", lastId).
+		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Audio").
 		Preload("Image").
 		Find(&stories)

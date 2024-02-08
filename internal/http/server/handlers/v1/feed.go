@@ -6,6 +6,7 @@ import (
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"github.com/neatplex/nightel-core/internal/utils"
 	"net/http"
+	"strconv"
 )
 
 func Feed(ctr *container.Container) echo.HandlerFunc {
@@ -24,7 +25,16 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 			}
 		}
 
-		stories, err := ctr.StoryService.Feed(user.ID, lastId)
+		count := 10
+		requestCount := ctx.QueryParams().Get("count")
+		if requestCount != "" {
+			parsedRequestCount, _ := strconv.Atoi(requestCount)
+			if parsedRequestCount > 0 && parsedRequestCount < 100 {
+				count = parsedRequestCount
+			}
+		}
+
+		stories, err := ctr.StoryService.Feed(user.ID, lastId, count)
 		if err != nil {
 			return err
 		}
