@@ -17,34 +17,34 @@ import (
 // App integrates the modules to serve.
 type App struct {
 	context    context.Context
-	Config     *config.Config
-	Logger     *logger.Logger
+	config     *config.Config
+	logger     *logger.Logger
 	S3         *s3.S3
-	HttpServer *httpServer.Server
-	Database   *database.Database
-	Container  *container.Container
+	httpServer *httpServer.Server
+	database   *database.Database
+	container  *container.Container
 }
 
 // New creates an app from the given configuration file.
 func New(configPath string) (a *App, err error) {
 	a = &App{}
 
-	a.Config, err = config.New(configPath)
+	a.config, err = config.New(configPath)
 	if err != nil {
 		return nil, err
 	}
-	a.Logger, err = logger.New(a.Config, a.ShutdownModules)
+	a.logger, err = logger.New(a.config, a.ShutdownModules)
 	if err != nil {
 		return nil, err
 	}
-	a.Logger.Debug("app: config & logger initialized")
+	a.logger.Debug("app: config & logger initialized")
 
-	a.Database = database.New(a.Config, a.Logger)
-	a.S3 = s3.New(a.Config, a.Logger)
-	a.Container = container.New(a.Database, a.S3)
-	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
+	a.database = database.New(a.config, a.logger)
+	a.S3 = s3.New(a.config, a.logger)
+	a.container = container.New(a.database, a.S3)
+	a.httpServer = httpServer.New(a.config, a.logger, a.container)
 
-	a.Logger.Debug("app: application modules initialized")
+	a.logger.Debug("app: application modules initialized")
 
 	a.setupSignalListener()
 
@@ -53,9 +53,9 @@ func New(configPath string) (a *App, err error) {
 
 // Boot makes sure the critical modules and external sources work fine.
 func (a *App) Boot() {
-	a.Database.Init()
+	a.database.Init()
 	a.S3.Init()
-	a.HttpServer.Serve()
+	a.httpServer.Serve()
 }
 
 // setupSignalListener sets up a listener to exit signals from os and closes the app gracefully.
@@ -68,17 +68,17 @@ func (a *App) setupSignalListener() {
 
 	go func() {
 		s := <-signalChannel
-		a.Logger.Info("app: system call", zap.String("signal", s.String()))
+		a.logger.Info("app: system call", zap.String("signal", s.String()))
 		cancel()
 	}()
 }
 
 func (a *App) ShutdownModules() {
-	if a.HttpServer != nil {
-		a.HttpServer.Close()
+	if a.httpServer != nil {
+		a.httpServer.Close()
 	}
-	if a.Database != nil {
-		a.Database.Close()
+	if a.database != nil {
+		a.database.Close()
 	}
 }
 
@@ -88,7 +88,7 @@ func (a *App) Wait() {
 
 	a.ShutdownModules()
 
-	if a.Logger != nil {
-		a.Logger.Close()
+	if a.logger != nil {
+		a.logger.Close()
 	}
 }
