@@ -31,7 +31,32 @@ func (s *Service) Index(userId uint64) ([]*models.Post, error) {
 
 func (s *Service) Feed(userId uint64, lastId uint64, count int) ([]*models.Post, error) {
 	var posts []*models.Post
+	if count > 100 {
+		count = 100
+	}
 	r := s.database.Handler().
+		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
+		Preload("Audio").
+		Preload("Image").
+		Find(&posts)
+	if r.Error != nil {
+		return nil, fmt.Errorf("services: post: Feed: %s", r.Error)
+	}
+	for _, post := range posts {
+		if err := s.attachLikes(userId, post); err != nil {
+			return nil, err
+		}
+	}
+	return posts, nil
+}
+
+func (s *Service) Search(q string, userId uint64, lastId uint64, count int) ([]*models.Post, error) {
+	var posts []*models.Post
+	if count > 100 {
+		count = 100
+	}
+	r := s.database.Handler().
+		Where("(title LIKE ? OR description LIKE ?)", "%"+q+"%", "%"+q+"%").
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Audio").
 		Preload("Image").
@@ -78,8 +103,9 @@ func (s *Service) Create(post *models.Post) (uint64, error) {
 	return post.ID, nil
 }
 
-func (s *Service) UpdateCaption(post *models.Post, caption string) *models.Post {
-	post.Caption = caption
+func (s *Service) UpdateFields(post *models.Post, title, description string) *models.Post {
+	post.Title = title
+	post.Description = description
 	s.database.Handler().Save(post)
 	return post
 }

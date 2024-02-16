@@ -24,6 +24,9 @@ func (s *Service) FindByIds(followerID, followeeID uint64) (*models.Followship, 
 
 func (s *Service) IndexFollowers(userId uint64, lastId uint64, count int) ([]*models.Followship, error) {
 	var followships []*models.Followship
+	if count > 100 {
+		count = 100
+	}
 	r := s.database.Handler().
 		Preload("Follower").
 		Where("followee_id = ?", userId).
@@ -37,6 +40,9 @@ func (s *Service) IndexFollowers(userId uint64, lastId uint64, count int) ([]*mo
 
 func (s *Service) IndexFollowings(userId uint64, lastId uint64, count int) ([]*models.Followship, error) {
 	var followships []*models.Followship
+	if count > 100 {
+		count = 100
+	}
 	r := s.database.Handler().
 		Preload("Followee").
 		Where("follower_id = ?", userId).

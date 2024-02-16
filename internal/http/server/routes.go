@@ -36,7 +36,7 @@ func (s *Server) registerRoutes() {
 			// posts
 			private.GET("users/:userId/posts", v1.PostsIndex(s.container))
 			private.POST("posts", v1.PostsStore(s.container))
-			private.PATCH("posts/:postId/caption", v1.PostsUpdateCaption(s.container))
+			private.PUT("posts/:postId", v1.PostsUpdate(s.container))
 			private.DELETE("posts/:postId", v1.PostsDelete(s.container))
 			// likes
 			private.GET("posts/:postId/likes", v1.LikesIndex(s.container))
@@ -44,6 +44,8 @@ func (s *Server) registerRoutes() {
 			private.DELETE("likes/:likeId", v1.LikesDelete(s.container))
 			// files
 			private.POST("files", v1.FilesStore(s.container, s.l))
+			// search
+			private.GET("search", v1.Search(s.container))
 			// feed
 			private.GET("feed", v1.Feed(s.container))
 		}

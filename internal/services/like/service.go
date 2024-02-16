@@ -14,6 +14,9 @@ type Service struct {
 
 func (s *Service) IndexByPostIDWithUser(postId uint64, lastId uint64, count int) ([]*models.Like, error) {
 	var likes []*models.Like
+	if count > 100 {
+		count = 100
+	}
 	r := s.database.Handler().
 		Preload("User").
 		Where("post_id = ?", postId).

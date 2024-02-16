@@ -541,39 +541,11 @@
             }
           }
         }
-      },
-      "delete": {
-        "description": "Delete the post",
-        "tags": [
-          "Posts"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "post_id": {
-                    "type": "integer",
-                    "example": 13,
-                    "description": "Unique id of post (uint64)"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The post deleted."
-          }
-        }
       }
     },
-    "/posts/{postId}/caption": {
-      "patch": {
-        "description": "Update the post caption",
+    "/posts/{postId}": {
+      "put": {
+        "description": "Update the post fields",
         "tags": [
           "Posts"
         ],
@@ -584,10 +556,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "caption": {
+                  "title": {
+                    "type": "string",
+                    "example": "Blind Owl",
+                    "description": "The post title"
+                  },
+                  "description": {
                     "type": "string",
                     "example": "This is my first post! #first_post",
-                    "description": "The post caption/description/content"
+                    "description": "The post description"
                   }
                 }
               }
@@ -609,6 +586,17 @@
                 }
               }
             }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete the post",
+        "tags": [
+          "Posts"
+        ],
+        "responses": {
+          "204": {
+            "description": "The post deleted."
           }
         }
       }
@@ -695,6 +683,57 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "description": "Search",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of results to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last result retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Post"
+                      }
+                    }
+                  }
                 }
               }
             }

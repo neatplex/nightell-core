@@ -8,11 +8,12 @@ import (
 	"net/http"
 )
 
-func Feed(ctr *container.Container) echo.HandlerFunc {
+func Search(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		posts, err := ctr.PostService.Feed(
+		posts, err := ctr.PostService.Search(
+			ctx.QueryParams().Get("q"),
 			user.ID,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),

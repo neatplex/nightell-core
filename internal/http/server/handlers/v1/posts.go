@@ -29,9 +29,10 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 }
 
 type PostsStoreRequest struct {
-	Caption string  `json:"caption" validate:"required"`
-	AudioID uint64  `json:"audio_id" validate:"required"`
-	ImageID *uint64 `json:"image_id"`
+	Title       string  `json:"title" validate:"required,min=1,max=50"`
+	Description string  `json:"description" validate:"max=300"`
+	AudioID     uint64  `json:"audio_id" validate:"required"`
+	ImageID     *uint64 `json:"image_id"`
 }
 
 func PostsStore(ctr *container.Container) echo.HandlerFunc {
@@ -103,10 +104,11 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		id, err := ctr.PostService.Create(&models.Post{
-			UserID:  user.ID,
-			Caption: r.Caption,
-			AudioID: audio.ID,
-			ImageID: imageId,
+			UserID:      user.ID,
+			Title:       r.Title,
+			Description: r.Description,
+			AudioID:     audio.ID,
+			ImageID:     imageId,
 		})
 		if err != nil {
 			return err
@@ -124,10 +126,11 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 }
 
 type PostsUpdateCaptionRequest struct {
-	Caption string `json:"caption" validate:"required"`
+	Title       string `json:"title" validate:"required,min=1,max=50"`
+	Description string `json:"description" validate:"max=300"`
 }
 
-func PostsUpdateCaption(ctr *container.Container) echo.HandlerFunc {
+func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
@@ -157,7 +160,7 @@ func PostsUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		s := ctr.PostService.UpdateCaption(post, r.Caption)
+		s := ctr.PostService.UpdateFields(post, r.Title, r.Description)
 
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
 			"post": s,
