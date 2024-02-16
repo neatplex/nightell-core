@@ -629,7 +629,7 @@
         "operationId": "feed",
         "description": "Index the feed stories",
         "tags": [
-          "Stories"
+          "Feed"
         ],
         "parameters": [
           {
