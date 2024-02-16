@@ -698,6 +698,16 @@
         ],
         "parameters": [
           {
+            "name": "q",
+            "in": "query",
+            "description": "Query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "pink floyd"
+            }
+          },
+          {
             "name": "count",
             "in": "query",
             "description": "Number of results to retrieve",
