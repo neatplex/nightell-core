@@ -23,12 +23,16 @@ func (s *Server) registerRoutes() {
 		private := v1Api.Group("/", mw.Authorize(s.container))
 		{
 			// profile
-			private.GET("profile", v1.ProfileShow())
+			private.GET("profile", v1.ProfileShow(s.container))
 			private.PATCH("profile/name", v1.ProfileUpdateName(s.container))
 			private.PATCH("profile/bio", v1.ProfileUpdateBio(s.container))
 			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))
+			private.GET("users/:userId/followers", v1.UsersFollowers(s.container))
+			private.GET("users/:userId/followings", v1.UsersFollowings(s.container))
+			private.POST("users/:userId/followings/:followeeId", v1.UsersFollowingsStore(s.container))
+			private.DELETE("users/:userId/followings/:followeeId", v1.UsersFollowingsDelete(s.container))
 			// posts
 			private.GET("users/:userId/posts", v1.PostsIndex(s.container))
 			private.POST("posts", v1.PostsStore(s.container))

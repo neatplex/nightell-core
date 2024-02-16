@@ -39,10 +39,8 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		return ctx.JSON(http.StatusOK, struct {
-			Posts []*models.Post `json:"posts"`
-		}{
-			Posts: posts,
+		return ctx.JSON(http.StatusOK, map[string][]*models.Post{
+			"posts": posts,
 		})
 	}
 }

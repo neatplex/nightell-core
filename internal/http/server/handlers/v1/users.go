@@ -6,6 +6,7 @@ import (
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"github.com/neatplex/nightel-core/internal/utils"
 	"net/http"
+	"strconv"
 )
 
 func UsersShow(ctr *container.Container) echo.HandlerFunc {
@@ -18,8 +19,135 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]*models.User{
-			"user": user,
+		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
+		if err != nil {
+			return err
+		}
+
+		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
+		if err != nil {
+			return err
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"user":             user,
+			"followers_count":  followersCount,
+			"followings_count": followingsCount,
 		})
+	}
+}
+
+func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		followships, err := ctr.FollowshipService.IndexFollowers(
+			user.ID,
+			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+		)
+		if err != nil {
+			return err
+		}
+
+		users := make([]*models.User, 0, len(followships))
+		for _, f := range followships {
+			users = append(users, f.Follower)
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"users": users,
+		})
+	}
+}
+
+func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		followships, err := ctr.FollowshipService.IndexFollowings(
+			user.ID,
+			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+		)
+		if err != nil {
+			return err
+		}
+
+		users := make([]*models.User, 0, len(followships))
+		for _, f := range followships {
+			users = append(users, f.Followee)
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"users": users,
+		})
+	}
+}
+
+func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		if strconv.FormatUint(user.ID, 10) == ctx.Param("followeeId") {
+			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+				"message": "You cannot follow yourself!",
+			})
+		}
+
+		followee, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("followeeId"), 0))
+		if err != nil {
+			return err
+		}
+		if followee == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		if _, err = ctr.FollowshipService.Create(followee.ID, user.ID); err != nil {
+			return err
+		}
+
+		return ctx.NoContent(http.StatusCreated)
+	}
+}
+
+func UsersFollowingsDelete(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		if strconv.FormatUint(user.ID, 10) == ctx.Param("followeeId") {
+			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+				"message": "You cannot follow yourself!",
+			})
+		}
+
+		followship, err := ctr.FollowshipService.FindByIds(
+			user.ID, utils.StringToID(ctx.Param("followeeId"), 0),
+		)
+		if err != nil {
+			return err
+		}
+		if followship == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
+		err = ctr.FollowshipService.Delete(followship.ID)
+		if err != nil {
+			return err
+		}
+
+		return ctx.NoContent(http.StatusNoContent)
 	}
 }

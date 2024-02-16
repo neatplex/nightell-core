@@ -10,11 +10,24 @@ import (
 	"net/http"
 )
 
-func ProfileShow() echo.HandlerFunc {
+func ProfileShow(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *user,
+
+		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
+		if err != nil {
+			return err
+		}
+
+		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
+		if err != nil {
+			return err
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"user":             user,
+			"followers_count":  followersCount,
+			"followings_count": followingsCount,
 		})
 	}
 }

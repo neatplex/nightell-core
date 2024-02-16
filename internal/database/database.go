@@ -67,6 +67,7 @@ func (d *Database) migrate() {
 		&models.Post{},
 		&models.File{},
 		&models.Like{},
+		&models.Followship{},
 	)
 	if err != nil {
 		d.l.Fatal("database: cannot run migrations", zap.Error(err))

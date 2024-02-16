@@ -13,8 +13,7 @@
   "paths": {
     "/auth/sign-up": {
       "post": {
-        "operationId": "auth-sign-up",
-        "description": "Sign up new user and get the user details and authentication token.",
+        "description": "Sign up new user and get the user details and authentication token",
         "tags": [
           "Auth"
         ],
@@ -52,8 +51,7 @@
     },
     "/auth/sign-in/email": {
       "post": {
-        "operationId": "auth-sign-in-email",
-        "description": "Sign in registered user and get the user details and authentication token.",
+        "description": "Sign in by email and get the user details and authentication token",
         "tags": [
           "Auth"
         ],
@@ -105,8 +103,7 @@
     },
     "/auth/sign-in/username": {
       "post": {
-        "operationId": "auth-sign-in-username",
-        "description": "Sign in registered user and get the user details and authentication token.",
+        "description": "Sign in by username and get the user details and authentication token",
         "tags": [
           "Auth"
         ],
@@ -157,15 +154,14 @@
       }
     },
     "/profile": {
+      "description": "Get the authenticated user profile",
       "get": {
-        "operationId": "profile-show",
-        "description": "Show the current user profile",
         "tags": [
           "Profile"
         ],
         "responses": {
           "200": {
-            "description": "The user signed in successfully.",
+            "description": "The authenticated user profile",
             "content": {
               "application/json": {
                 "schema": {
@@ -173,6 +169,14 @@
                   "properties": {
                     "user": {
                       "$ref": "#/components/schemas/User"
+                    },
+                    "followers_count": {
+                      "type": "integer",
+                      "example": 666
+                    },
+                    "followings_count": {
+                      "type": "integer",
+                      "example": 666
                     }
                   }
                 }
@@ -184,8 +188,7 @@
     },
     "/profile/name": {
       "patch": {
-        "operationId": "profile-update-name",
-        "description": "Update name of the current user ",
+        "description": "Update name of the authenticated user",
         "tags": [
           "Profile"
         ],
@@ -229,8 +232,7 @@
     },
     "/profile/bio": {
       "patch": {
-        "operationId": "profile-update-bio",
-        "description": "Update biography of the current user ",
+        "description": "Update bio(graphy) of the authenticated user",
         "tags": [
           "Profile"
         ],
@@ -274,8 +276,7 @@
     },
     "/profile/username": {
       "patch": {
-        "operationId": "profile-update-username",
-        "description": "Update username of the current user ",
+        "description": "Update username of the authenticated user ",
         "tags": [
           "Profile"
         ],
@@ -319,7 +320,6 @@
     },
     "/files": {
       "post": {
-        "operationId": "files-store",
         "description": "Store (upload) a new file",
         "tags": [
           "Files"
@@ -369,8 +369,7 @@
     },
     "/users/{userId}": {
       "get": {
-        "operationId": "users-show",
-        "description": "Show the user)",
+        "description": "Show the user details",
         "tags": [
           "Users"
         ],
@@ -384,6 +383,14 @@
                   "properties": {
                     "user": {
                       "$ref": "#/components/schemas/User"
+                    },
+                    "followers_count": {
+                      "type": "integer",
+                      "example": 666
+                    },
+                    "followings_count": {
+                      "type": "integer",
+                      "example": 666
                     }
                   }
                 }
@@ -393,10 +400,89 @@
         }
       }
     },
+    "/users/{userId}/followers": {
+      "get": {
+        "description": "Get followers of the user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followers of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/followings": {
+      "get": {
+        "description": "Get followings of the user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followings of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/followings/{followeeId}": {
+      "post": {
+        "description": "Store a new following for the user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "201": {
+            "description": "The new post created."
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete the followee from the list of followings",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "201": {
+            "description": "The following deleted."
+          }
+        }
+      }
+    },
     "/users/{userId}/posts": {
       "get": {
-        "operationId": "posts-index",
-        "description": "Index the posts (get the list of posts)",
+        "description": "Index the user posts",
         "tags": [
           "Posts"
         ],
@@ -424,8 +510,7 @@
     },
     "/posts": {
       "post": {
-        "operationId": "posts-store",
-        "description": "Store a new post",
+        "description": "Store a new post for the authenticated user",
         "tags": [
           "Posts"
         ],
@@ -458,7 +543,6 @@
         }
       },
       "delete": {
-        "operationId": "posts-delete",
         "description": "Delete the post",
         "tags": [
           "Posts"
@@ -483,16 +567,12 @@
         "responses": {
           "201": {
             "description": "The post deleted."
-          },
-          "403": {
-            "description": "You do not have permission to perform this action."
           }
         }
       }
     },
     "/posts/{postId}/caption": {
       "patch": {
-        "operationId": "posts-update-caption",
         "description": "Update the post caption",
         "tags": [
           "Posts"
@@ -535,7 +615,6 @@
     },
     "/posts/{postId}/likes": {
       "get": {
-        "operationId": "likes-index",
         "description": "Index the post likes",
         "tags": [
           "Likes"
@@ -599,8 +678,7 @@
     },
     "/likes/{likeId}": {
       "delete": {
-        "operationId": "likes-delete",
-        "description": "Delete the like action",
+        "description": "Delete the like",
         "tags": [
           "Likes"
         ],
@@ -626,7 +704,6 @@
     },
     "/feed": {
       "get": {
-        "operationId": "feed",
         "description": "Index the feed posts",
         "tags": [
           "Feed"
