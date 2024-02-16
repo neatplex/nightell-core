@@ -64,7 +64,7 @@ func (d *Database) migrate() {
 	err := d.handler.AutoMigrate(
 		&models.User{},
 		&models.Token{},
-		&models.Story{},
+		&models.Post{},
 		&models.File{},
 		&models.Like{},
 	)

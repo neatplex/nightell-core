@@ -393,25 +393,25 @@
         }
       }
     },
-    "/users/{userId}/stories": {
+    "/users/{userId}/posts": {
       "get": {
-        "operationId": "stories-index",
-        "description": "Index the stories (get the list of stories)",
+        "operationId": "posts-index",
+        "description": "Index the posts (get the list of posts)",
         "tags": [
-          "Stories"
+          "Posts"
         ],
         "responses": {
           "200": {
-            "description": "List of user stories",
+            "description": "List of user posts",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "stories": {
+                    "posts": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Story"
+                        "$ref": "#/components/schemas/Post"
                       }
                     }
                   }
@@ -422,33 +422,33 @@
         }
       }
     },
-    "/stories": {
+    "/posts": {
       "post": {
-        "operationId": "stories-store",
-        "description": "Store a new story",
+        "operationId": "posts-store",
+        "description": "Store a new post",
         "tags": [
-          "Stories"
+          "Posts"
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewStory"
+                "$ref": "#/components/schemas/NewPost"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "The new story created.",
+            "description": "The new post created.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "story": {
-                      "$ref": "#/components/schemas/Story"
+                    "post": {
+                      "$ref": "#/components/schemas/Post"
                     }
                   }
                 }
@@ -458,10 +458,10 @@
         }
       },
       "delete": {
-        "operationId": "stories-delete",
-        "description": "Delete the story",
+        "operationId": "posts-delete",
+        "description": "Delete the post",
         "tags": [
-          "Stories"
+          "Posts"
         ],
         "requestBody": {
           "required": true,
@@ -470,10 +470,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "story_id": {
+                  "post_id": {
                     "type": "integer",
                     "example": 13,
-                    "description": "Unique id of story (uint64)"
+                    "description": "Unique id of post (uint64)"
                   }
                 }
               }
@@ -482,7 +482,7 @@
         },
         "responses": {
           "201": {
-            "description": "The story deleted."
+            "description": "The post deleted."
           },
           "403": {
             "description": "You do not have permission to perform this action."
@@ -490,12 +490,12 @@
         }
       }
     },
-    "/stories/{storyId}/caption": {
+    "/posts/{postId}/caption": {
       "patch": {
-        "operationId": "stories-update-caption",
-        "description": "Update the story caption",
+        "operationId": "posts-update-caption",
+        "description": "Update the post caption",
         "tags": [
-          "Stories"
+          "Posts"
         ],
         "requestBody": {
           "required": true,
@@ -506,8 +506,8 @@
                 "properties": {
                   "caption": {
                     "type": "string",
-                    "example": "This is my first story! #first_story",
-                    "description": "The story caption/description/content"
+                    "example": "This is my first post! #first_post",
+                    "description": "The post caption/description/content"
                   }
                 }
               }
@@ -516,14 +516,14 @@
         },
         "responses": {
           "201": {
-            "description": "The story updated.",
+            "description": "The post updated.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "story": {
-                      "$ref": "#/components/schemas/Story"
+                    "post": {
+                      "$ref": "#/components/schemas/Post"
                     }
                   }
                 }
@@ -533,10 +533,10 @@
         }
       }
     },
-    "/stories/{storyId}/likes": {
+    "/posts/{postId}/likes": {
       "get": {
         "operationId": "likes-index",
-        "description": "Index the story likes",
+        "description": "Index the post likes",
         "tags": [
           "Likes"
         ],
@@ -565,13 +565,13 @@
         ],
         "responses": {
           "200": {
-            "description": "list of the likes of a story",
+            "description": "list of the likes of a post",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "stories": {
+                    "posts": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Like"
@@ -606,7 +606,7 @@
         ],
         "responses": {
           "201": {
-            "description": "The story deleted."
+            "description": "The post deleted."
           },
           "403": {
             "description": "You do not have permission to perform this action."
@@ -627,7 +627,7 @@
     "/feed": {
       "get": {
         "operationId": "feed",
-        "description": "Index the feed stories",
+        "description": "Index the feed posts",
         "tags": [
           "Feed"
         ],
@@ -635,7 +635,7 @@
           {
             "name": "count",
             "in": "query",
-            "description": "Number of stories to retrieve",
+            "description": "Number of posts to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -646,7 +646,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last story retrieved",
+            "description": "ID of the last post retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -656,16 +656,16 @@
         ],
         "responses": {
           "200": {
-            "description": "list of stories in user's feed",
+            "description": "list of posts in user's feed",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "stories": {
+                    "posts": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Story"
+                        "$ref": "#/components/schemas/Post"
                       }
                     }
                   }
@@ -785,7 +785,7 @@
           "id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of story (uint64)"
+            "description": "Unique id of post (uint64)"
           },
           "user_id": {
             "type": "integer",
@@ -802,10 +802,10 @@
           }
         }
       },
-      "Story": {
+      "Post": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/NewStory"
+            "$ref": "#/components/schemas/NewPost"
           },
           {
             "type": "object",
@@ -813,7 +813,7 @@
               "id": {
                 "type": "integer",
                 "example": 13,
-                "description": "Unique id of story (uint64)"
+                "description": "Unique id of post (uint64)"
               },
               "image": {
                 "$ref": "#/components/schemas/File"
@@ -854,13 +854,13 @@
           }
         ]
       },
-      "NewStory": {
+      "NewPost": {
         "type": "object",
         "properties": {
           "caption": {
             "type": "string",
-            "example": "This is my first story! #first_story",
-            "description": "The story caption/description/content"
+            "example": "This is my first post! #first_post",
+            "description": "The post caption/description/content"
           },
           "audio_id": {
             "type": "integer",

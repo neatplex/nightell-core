@@ -29,14 +29,14 @@ func (s *Server) registerRoutes() {
 			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))
-			// stories
-			private.GET("users/:userId/stories", v1.StoriesIndex(s.container))
-			private.POST("stories", v1.StoriesStore(s.container))
-			private.PATCH("stories/:storyId/caption", v1.StoriesUpdateCaption(s.container))
-			private.DELETE("stories/:storyId", v1.StoriesDelete(s.container))
+			// posts
+			private.GET("users/:userId/posts", v1.PostsIndex(s.container))
+			private.POST("posts", v1.PostsStore(s.container))
+			private.PATCH("posts/:postId/caption", v1.PostsUpdateCaption(s.container))
+			private.DELETE("posts/:postId", v1.PostsDelete(s.container))
 			// likes
-			private.GET("stories/:storyId/likes", v1.LikesIndex(s.container))
-			private.POST("stories/:storyId/likes", v1.LikesStore(s.container))
+			private.GET("posts/:postId/likes", v1.LikesIndex(s.container))
+			private.POST("posts/:postId/likes", v1.LikesStore(s.container))
 			private.DELETE("likes/:likeId", v1.LikesDelete(s.container))
 			// files
 			private.POST("files", v1.FilesStore(s.container, s.l))

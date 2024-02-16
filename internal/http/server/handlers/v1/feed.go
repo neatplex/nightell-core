@@ -16,12 +16,12 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 		lastId := ^uint64(0)
 		requestLastId := ctx.QueryParams().Get("lastId")
 		if requestLastId != "" {
-			story, err := ctr.StoryService.FindById(utils.StringToID(requestLastId, 0))
+			post, err := ctr.PostService.FindById(utils.StringToID(requestLastId, 0))
 			if err != nil {
 				return err
 			}
-			if story != nil {
-				lastId = story.ID
+			if post != nil {
+				lastId = post.ID
 			}
 		}
 
@@ -34,15 +34,15 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 			}
 		}
 
-		stories, err := ctr.StoryService.Feed(user.ID, lastId, count)
+		posts, err := ctr.PostService.Feed(user.ID, lastId, count)
 		if err != nil {
 			return err
 		}
 
 		return ctx.JSON(http.StatusOK, struct {
-			Stories []*models.Story `json:"stories"`
+			Posts []*models.Post `json:"posts"`
 		}{
-			Stories: stories,
+			Posts: posts,
 		})
 	}
 }

@@ -10,8 +10,8 @@ import (
 
 func LikesIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		stories, err := ctr.LikeService.IndexByStoryIDWithUser(
-			utils.StringToID(ctx.Param("storyId"), 0),
+		posts, err := ctr.LikeService.IndexByPostIDWithUser(
+			utils.StringToID(ctx.Param("postId"), 0),
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
 		)
@@ -19,7 +19,7 @@ func LikesIndex(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"likes": stories,
+			"likes": posts,
 		})
 	}
 }
@@ -28,12 +28,12 @@ func LikesStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
+		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
 			return err
 		}
 
-		like, err := ctr.LikeService.Create(user, story)
+		like, err := ctr.LikeService.Create(user, post)
 		if err != nil {
 			return err
 		}

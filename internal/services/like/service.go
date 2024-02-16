@@ -12,22 +12,22 @@ type Service struct {
 	database *database.Database
 }
 
-func (s *Service) IndexByStoryIDWithUser(storyId uint64, lastId uint64, count int) ([]*models.Like, error) {
+func (s *Service) IndexByPostIDWithUser(postId uint64, lastId uint64, count int) ([]*models.Like, error) {
 	var likes []*models.Like
 	r := s.database.Handler().
 		Preload("User").
-		Where("story_id = ?", storyId).
+		Where("post_id = ?", postId).
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Find(&likes)
 	if r.Error != nil {
-		return nil, fmt.Errorf("services: like: IndexByStoryIDWithUser: %s", r.Error)
+		return nil, fmt.Errorf("services: like: IndexByPostIDWithUser: %s", r.Error)
 	}
 	return likes, nil
 }
 
-func (s *Service) Create(user *models.User, story *models.Story) (*models.Like, error) {
+func (s *Service) Create(user *models.User, post *models.Post) (*models.Like, error) {
 	var like models.Like
-	r := s.database.Handler().FirstOrCreate(&like, &models.Like{UserID: user.ID, StoryID: story.ID})
+	r := s.database.Handler().FirstOrCreate(&like, &models.Like{UserID: user.ID, PostID: post.ID})
 	if r.Error != nil {
 		return nil, fmt.Errorf("services: like: Create: %v, err: %v", like, r.Error)
 	}

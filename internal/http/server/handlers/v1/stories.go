@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
+func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
@@ -18,27 +18,27 @@ func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		stories, err := ctr.StoryService.Index(user.ID)
+		posts, err := ctr.PostService.Index(user.ID)
 		if err != nil {
 			return err
 		}
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"stories": stories,
+			"posts": posts,
 		})
 	}
 }
 
-type StoriesStoreRequest struct {
+type PostsStoreRequest struct {
 	Caption string  `json:"caption" validate:"required"`
 	AudioID uint64  `json:"audio_id" validate:"required"`
 	ImageID *uint64 `json:"image_id"`
 }
 
-func StoriesStore(ctr *container.Container) echo.HandlerFunc {
+func PostsStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r StoriesStoreRequest
+		var r PostsStoreRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -59,7 +59,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 				"message": "Audio file not found.",
 			})
 		}
-		if s, _ := ctr.StoryService.FindBy("audio_id", audio.ID); s != nil {
+		if s, _ := ctr.PostService.FindBy("audio_id", audio.ID); s != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "The selected file is already in use.",
 			})
@@ -85,7 +85,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "Image file not found.",
 				})
 			}
-			if s, _ := ctr.StoryService.FindBy("image_id", image.ID); s != nil {
+			if s, _ := ctr.PostService.FindBy("image_id", image.ID); s != nil {
 				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 					"message": "The selected file is already in use.",
 				})
@@ -102,7 +102,7 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			imageId = &image.ID
 		}
 
-		id, err := ctr.StoryService.Create(&models.Story{
+		id, err := ctr.PostService.Create(&models.Post{
 			UserID:  user.ID,
 			Caption: r.Caption,
 			AudioID: audio.ID,
@@ -112,40 +112,40 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		story, err := ctr.StoryService.FindById(id)
+		post, err := ctr.PostService.FindById(id)
 		if err != nil {
 			return err
 		}
 
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"story": story,
+			"post": post,
 		})
 	}
 }
 
-type StoriesUpdateCaptionRequest struct {
+type PostsUpdateCaptionRequest struct {
 	Caption string `json:"caption" validate:"required"`
 }
 
-func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
+func PostsUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
+		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
 			return err
 		}
-		if story == nil {
+		if post == nil {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if story.UserID != user.ID {
+		if post.UserID != user.ID {
 			return ctx.JSON(http.StatusForbidden, map[string]string{
 				"message": "You do not have permission to perform this action.",
 			})
 		}
 
-		var r StoriesUpdateCaptionRequest
+		var r PostsUpdateCaptionRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -157,33 +157,33 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		s := ctr.StoryService.UpdateCaption(story, r.Caption)
+		s := ctr.PostService.UpdateCaption(post, r.Caption)
 
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"story": s,
+			"post": s,
 		})
 	}
 }
 
-func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
+func PostsDelete(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
+		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
 			return err
 		}
-		if story == nil {
+		if post == nil {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if story.UserID != user.ID {
+		if post.UserID != user.ID {
 			return ctx.JSON(http.StatusForbidden, map[string]string{
 				"message": "You do not have permission to perform this action.",
 			})
 		}
 
-		ctr.StoryService.Delete(story)
+		ctr.PostService.Delete(post)
 
 		return ctx.NoContent(http.StatusNoContent)
 	}
