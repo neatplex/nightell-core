@@ -18,7 +18,7 @@ RUN update-ca-certificates
 WORKDIR /app
 
 COPY --from=build /app/nightel-core nightel-core
-COPY --from=build /app/configs/config.default.yaml configs/config.yaml
+COPY --from=build /app/configs/config.default.yaml configs/config.default.yaml
 COPY --from=build /app/storage/log/.gitignore storage/log/.gitignore
 COPY --from=build /app/web/index.html web/index.html
 

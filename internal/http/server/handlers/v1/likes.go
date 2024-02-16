@@ -4,30 +4,31 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightel-core/internal/utils"
 	"net/http"
 )
 
-type LikesStoreRequest struct {
-	StoryID uint64 `json:"story_id" validate:"required"`
+func LikesIndex(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		stories, err := ctr.LikeService.IndexByStoryIDWithUser(
+			utils.StringToID(ctx.Param("storyId"), 0),
+			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+		)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"likes": stories,
+		})
+	}
 }
 
 func LikesStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r LikesStoreRequest
-		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
-		}
-		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
-		}
-
-		story, err := ctr.StoryService.FindById(r.StoryID)
+		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
 		if err != nil {
 			return err
 		}
@@ -42,28 +43,11 @@ func LikesStore(ctr *container.Container) echo.HandlerFunc {
 		})
 	}
 }
-
-type LikesDeleteRequest struct {
-	LikeID uint64 `json:"like_id" validate:"required"`
-}
-
 func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r LikesDeleteRequest
-		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
-		}
-		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
-		}
-
-		like, err := ctr.LikeService.FindById(r.LikeID)
+		like, err := ctr.LikeService.FindById(utils.StringToID(ctx.Param("likeId"), 0))
 		if err != nil {
 			return err
 		}

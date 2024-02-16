@@ -26,10 +26,10 @@ type App struct {
 }
 
 // New creates an app from the given configuration file.
-func New(configPath string) (a *App, err error) {
+func New() (a *App, err error) {
 	a = &App{}
 
-	a.config, err = config.New(configPath)
+	a.config, err = config.New()
 	if err != nil {
 		return nil, err
 	}

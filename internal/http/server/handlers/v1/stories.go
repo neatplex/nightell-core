@@ -10,7 +10,14 @@ import (
 
 func StoriesIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user := ctx.Get("user").(*models.User)
+		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		if err != nil {
+			return err
+		}
+		if user == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+
 		stories, err := ctr.StoryService.Index(user.ID)
 		if err != nil {
 			return err
@@ -117,7 +124,6 @@ func StoriesStore(ctr *container.Container) echo.HandlerFunc {
 }
 
 type StoriesUpdateCaptionRequest struct {
-	StoryID uint64 `json:"story_id" validate:"required"`
 	Caption string `json:"caption" validate:"required"`
 }
 
@@ -125,19 +131,7 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r StoriesUpdateCaptionRequest
-		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
-		}
-		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
-		}
-
-		story, err := ctr.StoryService.FindById(r.StoryID)
+		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
 		if err != nil {
 			return err
 		}
@@ -151,23 +145,7 @@ func StoriesUpdateCaption(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		s := ctr.StoryService.UpdateCaption(story, r.Caption)
-
-		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"story": s,
-		})
-	}
-}
-
-type StoriesDeleteRequest struct {
-	StoryID uint64 `json:"story_id" validate:"required"`
-}
-
-func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
-	return func(ctx echo.Context) error {
-		user := ctx.Get("user").(*models.User)
-
-		var r StoriesDeleteRequest
+		var r StoriesUpdateCaptionRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -179,9 +157,19 @@ func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		id := utils.StringToID(ctx.Param("id"))
+		s := ctr.StoryService.UpdateCaption(story, r.Caption)
 
-		story, err := ctr.StoryService.FindById(id)
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"story": s,
+		})
+	}
+}
+
+func StoriesDelete(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		story, err := ctr.StoryService.FindById(utils.StringToID(ctx.Param("storyId"), 0))
 		if err != nil {
 			return err
 		}

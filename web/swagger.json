@@ -46,16 +46,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
@@ -106,16 +96,6 @@
                       "type": "string"
                     }
                   }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -172,16 +152,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
@@ -205,16 +175,6 @@
                       "$ref": "#/components/schemas/User"
                     }
                   }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -263,16 +223,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
@@ -318,16 +268,6 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
@@ -370,16 +310,6 @@
                       "$ref": "#/components/schemas/User"
                     }
                   }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -433,13 +363,29 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "operationId": "users-show",
+        "description": "Show the user)",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "The user details",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
                 }
               }
             }
@@ -447,7 +393,7 @@
         }
       }
     },
-    "/stories": {
+    "/users/{userId}/stories": {
       "get": {
         "operationId": "stories-index",
         "description": "Index the stories (get the list of stories)",
@@ -472,19 +418,11 @@
                 }
               }
             }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
-      },
+      }
+    },
+    "/stories": {
       "post": {
         "operationId": "stories-store",
         "description": "Store a new story",
@@ -513,16 +451,6 @@
                       "$ref": "#/components/schemas/Story"
                     }
                   }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -558,21 +486,11 @@
           },
           "403": {
             "description": "You do not have permission to perform this action."
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
     },
-    "/stories/caption": {
+    "/stories/{storyId}/caption": {
       "patch": {
         "operationId": "stories-update-caption",
         "description": "Update the story caption",
@@ -586,11 +504,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "story_id": {
-                    "type": "integer",
-                    "example": 13,
-                    "description": "Unique id of story (uint64)"
-                  },
                   "caption": {
                     "type": "string",
                     "example": "This is my first story! #first_story",
@@ -616,86 +529,81 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "You do not have permission to perform this action."
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
     },
-    "/likes": {
-      "post": {
-        "operationId": "likes-store",
-        "description": "Store a new like action",
+    "/stories/{storyId}/likes": {
+      "get": {
+        "operationId": "likes-index",
+        "description": "Index the story likes",
         "tags": [
           "Likes"
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "story_id": {
-                    "type": "integer",
-                    "example": 13,
-                    "description": "Unique id of story (uint64)"
-                  }
-                }
-              }
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of likes to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last like retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
             }
           }
-        },
+        ],
         "responses": {
-          "201": {
-            "description": "The new like action created."
-          },
-          "default": {
-            "description": "Error!",
+          "200": {
+            "description": "list of the likes of a story",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "stories": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Like"
+                      }
+                    }
+                  }
                 }
               }
             }
           }
         }
       },
+      "post": {
+        "operationId": "likes-store",
+        "description": "Store a new like action",
+        "tags": [
+          "Likes"
+        ],
+        "responses": {
+          "201": {
+            "description": "The new like action created."
+          }
+        }
+      }
+    },
+    "/likes/{likeId}": {
       "delete": {
         "operationId": "likes-delete",
         "description": "Delete the like action",
         "tags": [
           "Likes"
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "like_id": {
-                    "type": "integer",
-                    "example": 13,
-                    "description": "Unique id of like action (uint64)"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": "The story deleted."
@@ -723,6 +631,29 @@
         "tags": [
           "Stories"
         ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of stories to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last story retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "list of stories in user's feed",
@@ -738,16 +669,6 @@
                       }
                     }
                   }
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -858,6 +779,29 @@
         "example": "MP3",
         "description": "File extension"
       },
+      "Like": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of story (uint64)"
+          },
+          "user_id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of user (uint64)"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2023-11-28T13:36:30.956Z",
+            "description": "Registration time"
+          }
+        }
+      },
       "Story": {
         "allOf": [
           {
@@ -884,6 +828,12 @@
               },
               "user": {
                 "$ref": "#/components/schemas/User"
+              },
+              "likes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Like"
+                }
               },
               "likes_count": {
                 "type": "integer",

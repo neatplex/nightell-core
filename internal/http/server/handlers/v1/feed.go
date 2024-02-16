@@ -16,7 +16,7 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 		lastId := ^uint64(0)
 		requestLastId := ctx.QueryParams().Get("lastId")
 		if requestLastId != "" {
-			story, err := ctr.StoryService.FindById(utils.StringToID(requestLastId))
+			story, err := ctr.StoryService.FindById(utils.StringToID(requestLastId, 0))
 			if err != nil {
 				return err
 			}

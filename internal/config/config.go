@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/neatplex/nightel-core/internal/utils"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -78,7 +79,7 @@ type S3 struct {
 }
 
 // New creates a new configuration instance.
-func New(path string) (*Config, error) {
+func New() (*Config, error) {
 	c := new(Config)
 
 	v := viper.New()
@@ -87,13 +88,23 @@ func New(path string) (*Config, error) {
 	v.SetEnvPrefix(strings.ToLower(AppName))
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	v.AutomaticEnv()
-	v.SetConfigFile(path)
 
+	v.SetConfigFile("./configs/config.default.yaml")
 	if err := v.ReadInConfig(); err != nil {
 		return nil, err
 	}
 	if err := v.Unmarshal(c); err != nil {
 		return nil, err
+	}
+
+	if utils.FileExist("./configs/config.yaml") {
+		v.SetConfigFile("./configs/config.yaml")
+		if err := v.MergeInConfig(); err != nil {
+			return nil, err
+		}
+		if err := v.Unmarshal(c); err != nil {
+			return nil, err
+		}
 	}
 
 	fmt.Println("configuration", *c)

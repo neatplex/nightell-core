@@ -12,34 +12,36 @@ func (s *Server) registerRoutes() {
 
 	v1Api := s.E.Group("/api/v1", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(5)))
 	{
-		public := v1Api.Group("", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))
+		public := v1Api.Group("/", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))
 		{
 			// auth
-			public.POST("/auth/sign-up", v1.AuthSignUp(s.container))
-			public.POST("/auth/sign-in/email", v1.AuthSignInEmail(s.container))
-			public.POST("/auth/sign-in/username", v1.AuthSignInUsername(s.container))
+			public.POST("auth/sign-up", v1.AuthSignUp(s.container))
+			public.POST("auth/sign-in/email", v1.AuthSignInEmail(s.container))
+			public.POST("auth/sign-in/username", v1.AuthSignInUsername(s.container))
 		}
 
-		private := v1Api.Group("", mw.Authorize(s.container))
+		private := v1Api.Group("/", mw.Authorize(s.container))
 		{
 			// profile
-			private.GET("/profile", v1.ProfileShow())
-			private.PATCH("/profile/name", v1.ProfileUpdateName(s.container))
-			private.PATCH("/profile/bio", v1.ProfileUpdateBio(s.container))
-			private.PATCH("/profile/username", v1.ProfileUpdateUsername(s.container))
+			private.GET("profile", v1.ProfileShow())
+			private.PATCH("profile/name", v1.ProfileUpdateName(s.container))
+			private.PATCH("profile/bio", v1.ProfileUpdateBio(s.container))
+			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
+			// users
+			private.GET("users/:userId", v1.UsersShow(s.container))
 			// stories
-			private.POST("/stories", v1.StoriesIndex(s.container))
-			private.GET("/stories", v1.StoriesIndex(s.container))
-			private.POST("/stories", v1.StoriesStore(s.container))
-			private.PATCH("/stories/caption", v1.StoriesUpdateCaption(s.container))
-			private.DELETE("/stories", v1.StoriesDelete(s.container))
+			private.GET("users/:userId/stories", v1.StoriesIndex(s.container))
+			private.POST("stories", v1.StoriesStore(s.container))
+			private.PATCH("stories/:storyId/caption", v1.StoriesUpdateCaption(s.container))
+			private.DELETE("stories/:storyId", v1.StoriesDelete(s.container))
 			// likes
-			private.POST("/likes", v1.LikesStore(s.container))
-			private.DELETE("/likes", v1.LikesDelete(s.container))
+			private.GET("stories/:storyId/likes", v1.LikesIndex(s.container))
+			private.POST("stories/:storyId/likes", v1.LikesStore(s.container))
+			private.DELETE("likes/:likeId", v1.LikesDelete(s.container))
 			// files
-			private.POST("/files", v1.FilesStore(s.container, s.l))
+			private.POST("files", v1.FilesStore(s.container, s.l))
 			// feed
-			private.GET("/feed", v1.Feed(s.container))
+			private.GET("feed", v1.Feed(s.container))
 		}
 	}
 }

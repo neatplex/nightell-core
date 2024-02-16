@@ -4,7 +4,7 @@ services:
   app:
     image: ghcr.io/neatplex/nightel-core:latest
     ports:
-      - "${APP_EXPOSED_PORT:-0}:8080"
+      - ${APP_EXPOSED_PORT:-0}:8080
     volumes:
       - ./configs:/app/configs
       - ./storage:/app/storage
@@ -15,7 +15,7 @@ services:
   mysql:
     image: ghcr.io/getimages/mysql:8.0.35-debian
     ports:
-      - "127.0.0.1:${MYSQL_EXPOSED_PORT:-0}:3306"
+      - 127.0.0.1:${MYSQL_EXPOSED_PORT:-0}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}

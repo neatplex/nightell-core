@@ -12,7 +12,7 @@ var startCmd = &cobra.Command{
 }
 
 func startFunc(_ *cobra.Command, _ []string) {
-	a, err := app.New(configPath)
+	a, err := app.New()
 	if err != nil {
 		panic(err)
 	}
