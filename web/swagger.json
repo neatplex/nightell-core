@@ -983,10 +983,15 @@
       "NewPost": {
         "type": "object",
         "properties": {
-          "caption": {
+          "title": {
+            "type": "string",
+            "example": "Blind Owl",
+            "description": "The post title"
+          },
+          "description": {
             "type": "string",
             "example": "This is my first post! #first_post",
-            "description": "The post caption/description/content"
+            "description": "The post description (content)"
           },
           "audio_id": {
             "type": "integer",
