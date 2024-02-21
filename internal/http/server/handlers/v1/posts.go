@@ -104,11 +104,13 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		id, err := ctr.PostService.Create(&models.Post{
-			UserID:      user.ID,
-			Title:       r.Title,
-			Description: r.Description,
-			AudioID:     audio.ID,
-			ImageID:     imageId,
+			UserID:        user.ID,
+			Title:         r.Title,
+			Description:   r.Description,
+			AudioID:       audio.ID,
+			ImageID:       imageId,
+			LikesCount:    0,
+			CommentsCount: 0,
 		})
 		if err != nil {
 			return err
