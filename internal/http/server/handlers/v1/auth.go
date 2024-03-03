@@ -3,32 +3,38 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/api/idtoken"
 	"net/http"
 )
 
-type SignUpRequest struct {
+type signUpRequest struct {
 	Username string `json:"username" validate:"required,min=1,max=128"`
 	Email    string `json:"email" validate:"required,email,max=128"`
 	Password string `json:"password" validate:"required,min=8,max=128"`
 }
 
-type SignInEmailRequest struct {
+type signInEmailRequest struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-type SignInUsernameRequest struct {
+type signInUsernameRequest struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
+type signInGoogleRequest struct {
+	Token string `json:"google_token" validate:"required"`
+}
+
+func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r SignInEmailRequest
+		var r signUpRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -40,7 +46,79 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		user, err := ctr.UserService.FindByEmail(r.Email)
+		if !utils.ValidateUsername(r.Username) {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "The username is not valid.",
+			})
+		}
+
+		u, err := ctr.UserService.FindBy("username", r.Username)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if u != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "This username is already reserved.",
+			})
+		}
+
+		u, err = ctr.UserService.FindBy("email", r.Email)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if u != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": "This email is already registered.",
+			})
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		err = ctr.UserService.Create(&models.User{
+			Username: r.Username,
+			Email:    r.Email,
+			IsBanned: false,
+			Password: string(hashedPassword),
+		})
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		user, err := ctr.UserService.FindBy("email", r.Email)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		token, err := ctr.TokenService.Create(user)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"user":  user,
+			"token": token,
+		})
+	}
+}
+
+func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var r signInEmailRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		user, err := ctr.UserService.FindBy("email", r.Email)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -72,7 +150,7 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 
 func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r SignInUsernameRequest
+		var r signInUsernameRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -84,7 +162,7 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		user, err := ctr.UserService.FindByUsername(r.Username)
+		user, err := ctr.UserService.FindBy("username", r.Username)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -114,9 +192,9 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
+func AuthSignInGoogle(ctr *container.Container, cfg *config.Config) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r SignUpRequest
+		var r signInGoogleRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -128,60 +206,61 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		if !utils.ValidateUsername(r.Username) {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": "The username is not valid.",
+		payload, err := idtoken.Validate(ctx.Request().Context(), r.Token, cfg.Google.OAuthClientId)
+		if err != nil {
+			return ctx.JSON(http.StatusUnauthorized, map[string]string{
+				"message": "Cannot fetch account from Google.",
+				"details": err.Error(),
 			})
 		}
 
-		u, err := ctr.UserService.FindByUsername(r.Username)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		if u != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": "This username is already reserved.",
+		if !payload.Claims["email_verified"].(bool) {
+			return ctx.JSON(http.StatusUnauthorized, map[string]string{
+				"message": "Your email is not verified by Google.",
 			})
 		}
 
-		u, err = ctr.UserService.FindByEmail(r.Email)
+		email := payload.Claims["email"].(string)
+		user, err := ctr.UserService.FindBy("email", email)
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		if u != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": "This email is already registered.",
+
+		if user != nil {
+			token, err := ctr.TokenService.Create(user)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			return ctx.JSON(http.StatusCreated, map[string]interface{}{
+				"user":  user,
+				"token": token,
+			})
+		} else {
+			err = ctr.UserService.Create(&models.User{
+				Username: email,
+				Email:    email,
+				IsBanned: false,
+				Password: "",
+			})
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			user, err = ctr.UserService.FindBy("email", email)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			token, err := ctr.TokenService.Create(user)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			return ctx.JSON(http.StatusCreated, map[string]interface{}{
+				"user":  user,
+				"token": token,
 			})
 		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		err = ctr.UserService.Create(&models.User{
-			Username: r.Username,
-			Email:    r.Email,
-			IsBanned: false,
-			Password: string(hashedPassword),
-		})
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		user, err := ctr.UserService.FindByEmail(r.Email)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		token, err := ctr.TokenService.Create(user)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"user":  user,
-			"token": token,
-		})
 	}
 }

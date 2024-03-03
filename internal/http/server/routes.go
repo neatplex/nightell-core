@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/neatplex/nightel-core/internal/http/server/handlers"
-	"github.com/neatplex/nightel-core/internal/http/server/handlers/v1"
-	mw "github.com/neatplex/nightel-core/internal/http/server/middleware"
+	"github.com/neatplex/nightell-core/internal/http/server/handlers"
+	"github.com/neatplex/nightell-core/internal/http/server/handlers/v1"
+	mw "github.com/neatplex/nightell-core/internal/http/server/middleware"
 )
 
 func (s *Server) registerRoutes() {
@@ -18,6 +18,7 @@ func (s *Server) registerRoutes() {
 			public.POST("auth/sign-up", v1.AuthSignUp(s.container))
 			public.POST("auth/sign-in/email", v1.AuthSignInEmail(s.container))
 			public.POST("auth/sign-in/username", v1.AuthSignInUsername(s.container))
+			public.POST("auth/sign-in/google", v1.AuthSignInGoogle(s.container, s.config))
 		}
 
 		private := v1Api.Group("/", mw.Authorize(s.container))
@@ -27,6 +28,7 @@ func (s *Server) registerRoutes() {
 			private.PATCH("profile/name", v1.ProfileUpdateName(s.container))
 			private.PATCH("profile/bio", v1.ProfileUpdateBio(s.container))
 			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
+			private.PATCH("profile/image", v1.ProfileUpdateImage(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))
 			private.GET("users/:userId/followers", v1.UsersFollowers(s.container))

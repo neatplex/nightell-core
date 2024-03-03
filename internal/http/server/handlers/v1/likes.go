@@ -3,9 +3,9 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"net/http"
 )
 
@@ -33,6 +33,11 @@ func LikesStore(ctr *container.Container) echo.HandlerFunc {
 		if err != nil {
 			return errors.WithStack(err)
 		}
+		if post == nil {
+			return ctx.JSON(http.StatusNotFound, map[string]string{
+				"message": "Post not found.",
+			})
+		}
 
 		like, err := ctr.LikeService.Create(user, post)
 		if err != nil {
@@ -51,6 +56,11 @@ func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 		like, err := ctr.LikeService.FindById(utils.StringToID(ctx.Param("likeId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
+		}
+		if like == nil {
+			return ctx.JSON(http.StatusNotFound, map[string]string{
+				"message": "Like not found.",
+			})
 		}
 
 		if like.UserID != user.ID {

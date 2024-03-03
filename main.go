@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/neatplex/nightel-core/cmd"
+	"github.com/neatplex/nightell-core/cmd"
 )
 
 func main() {

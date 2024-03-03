@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Nightel APIs",
-    "description": "Nightel OpenAPI (Swagger) Documentation",
+    "title": "Nightell APIs",
+    "description": "Nightell OpenAPI (Swagger) Documentation",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://nightel.neatplex.com/api/v1"
+      "url": "https://nightell.neatplex.com/api/v1"
     }
   ],
   "paths": {
@@ -125,6 +125,54 @@
                   "password": {
                     "type": "string",
                     "maxLength": 8
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user signed in successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/sign-in/google": {
+      "post": {
+        "description": "Sign in or sign up by Google and get the user details and authentication token",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "google_token"
+                ],
+                "properties": {
+                  "google_token": {
+                    "type": "string",
+                    "example": "abc.123.xyz",
+                    "description": "The JWT received from Google"
                   }
                 }
               }
@@ -302,6 +350,52 @@
         "responses": {
           "200": {
             "description": "The name updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/image": {
+      "patch": {
+        "description": "Update image (photo) of the authenticated user ",
+        "tags": [
+          "Profile"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image_id"
+                ],
+                "properties": {
+                  "image_id": {
+                    "type": "integer",
+                    "nullable": true,
+                    "example": 13,
+                    "description": "Unique id of the image file (uint64)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The image updated successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -862,6 +956,15 @@
                 "type": "boolean",
                 "example": false,
                 "description": "Whether the user has been banned or not."
+              },
+              "image": {
+                "$ref": "#/components/schemas/File"
+              },
+              "image_id": {
+                "type": "integer",
+                "nullable": true,
+                "example": 13,
+                "description": "Unique id of the image file (uint64)"
               },
               "created_at": {
                 "type": "string",

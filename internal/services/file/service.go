@@ -3,11 +3,12 @@ package file
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/s3"
 	"gorm.io/gorm"
 	"io"
+	"strings"
 	"time"
 )
 
@@ -41,9 +42,12 @@ func (s *Service) Download(path string) ([]byte, error) {
 	return file, errors.Wrapf(err, "path: `%v`", path)
 }
 
-func (s *Service) Upload(reader io.Reader, extension models.Extension) (string, error) {
-	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + extension.String()
-	return path, errors.WithStack(s.s3.Put(path, reader))
+func (s *Service) Upload(reader io.Reader, path string) error {
+	return errors.WithStack(s.s3.Put(path, reader))
+}
+
+func (s *Service) Path(extension models.Extension) string {
+	return time.Now().Format("2006/01/02/") + uuid.NewString() + "." + strings.ToLower(extension.String())
 }
 
 func (s *Service) Create(file *models.File) error {

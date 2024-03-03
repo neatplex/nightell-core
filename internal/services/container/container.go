@@ -1,14 +1,14 @@
 package container
 
 import (
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/s3"
-	"github.com/neatplex/nightel-core/internal/services/file"
-	"github.com/neatplex/nightel-core/internal/services/followship"
-	"github.com/neatplex/nightel-core/internal/services/like"
-	"github.com/neatplex/nightel-core/internal/services/post"
-	"github.com/neatplex/nightel-core/internal/services/token"
-	"github.com/neatplex/nightel-core/internal/services/user"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/services/file"
+	"github.com/neatplex/nightell-core/internal/services/followship"
+	"github.com/neatplex/nightell-core/internal/services/like"
+	"github.com/neatplex/nightell-core/internal/services/post"
+	"github.com/neatplex/nightell-core/internal/services/token"
+	"github.com/neatplex/nightell-core/internal/services/user"
 )
 
 type Container struct {
@@ -20,13 +20,13 @@ type Container struct {
 	FollowshipService *followship.Service
 }
 
-func New(database *database.Database, s3 *s3.S3) *Container {
+func New(d *database.Database, s3 *s3.S3) *Container {
 	return &Container{
-		UserService:       user.New(database),
-		TokenService:      token.New(database),
-		PostService:       post.New(database),
-		FileService:       file.New(database, s3),
-		LikeService:       like.New(database),
-		FollowshipService: followship.New(database),
+		UserService:       user.New(d),
+		TokenService:      token.New(d),
+		PostService:       post.New(d),
+		FileService:       file.New(d, s3),
+		LikeService:       like.New(d),
+		FollowshipService: followship.New(d),
 	}
 }

@@ -2,8 +2,8 @@ package post
 
 import (
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,10 @@ func (s *Service) Index(userId uint64) ([]*models.Post, error) {
 	var posts []*models.Post
 	r := s.database.Handler().
 		Where("user_id = ?", userId).
-		Preload("Audio").Preload("Image").
+		Preload("Audio").
+		Preload("Image").
+		Preload("User").
+		Preload("User.Image").
 		Find(&posts)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "userId: %v", userId)
@@ -37,6 +40,8 @@ func (s *Service) Feed(userId uint64, lastId uint64, count int) ([]*models.Post,
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Audio").
 		Preload("Image").
+		Preload("User").
+		Preload("User.Image").
 		Find(&posts)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "userId: %v, lastId: %v, count: %v", userId, lastId, count)
@@ -63,6 +68,8 @@ func (s *Service) Search(q string, userId uint64, lastId uint64, count int) ([]*
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Audio").
 		Preload("Image").
+		Preload("User").
+		Preload("User.Image").
 		Find(&posts)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "userId: %v, q: %v, lastId: %v, count: %v", userId, q, lastId, count)
@@ -125,7 +132,10 @@ func (s *Service) FindById(id uint64) (*models.Post, error) {
 	var post models.Post
 	r := s.database.Handler().
 		Where("id = ?", id).
-		Preload("Audio").Preload("Image").
+		Preload("Audio").
+		Preload("Image").
+		Preload("User").
+		Preload("User.Image").
 		First(&post)
 	if r.Error != nil {
 		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
@@ -141,7 +151,13 @@ func (s *Service) FindById(id uint64) (*models.Post, error) {
 
 func (s *Service) FindBy(field string, value interface{}) (*models.Post, error) {
 	var post models.Post
-	r := s.database.Handler().Where(field+" = ?", value).First(&post)
+	r := s.database.Handler().
+		Where(field+" = ?", value).
+		Preload("Audio").
+		Preload("Image").
+		Preload("User").
+		Preload("User.Image").
+		First(&post)
 	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

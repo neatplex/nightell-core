@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/logger"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
 )
@@ -37,10 +37,7 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 			})
 		}
 
-		path, err := ctr.FileService.Upload(fileHandler, extension)
-		if err != nil {
-			return errors.WithStack(err)
-		}
+		path := ctr.FileService.Path(extension)
 
 		err = ctr.FileService.Create(&models.File{
 			UserID:    user.ID,
@@ -53,6 +50,10 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 
 		file, err := ctr.FileService.FindByPath(path)
 		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if err = ctr.FileService.Upload(fileHandler, path); err != nil {
 			return errors.WithStack(err)
 		}
 

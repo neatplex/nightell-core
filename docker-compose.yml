@@ -1,8 +1,8 @@
-version: "3.9"
+version: "3.8"
 
 services:
   app:
-    image: ghcr.io/neatplex/nightel-core:latest
+    image: ghcr.io/neatplex/nightell-core:latest
     ports:
       - ${APP_EXPOSED_PORT:-0}:8080
     volumes:
@@ -25,7 +25,7 @@ services:
   swagger:
     image: swaggerapi/swagger-ui
     environment:
-      - SWAGGER_JSON_URL=https://nightel.neatplex.com/swagger.json
+      - SWAGGER_JSON_URL=https://nightell.neatplex.com/swagger.json
     restart: always
     ports:
       - "${SWAGGER_EXPOSED_PORT:-0}:8080"

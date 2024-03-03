@@ -12,6 +12,8 @@ type User struct {
 	Email     string    `gorm:"unique" json:"email"`
 	Bio       string    `json:"bio"`
 	IsBanned  bool      `gorm:"index" json:"-"`
+	ImageID   *uint64   `json:"image_id"`
+	Image     *File     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"image"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
 }

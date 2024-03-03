@@ -15,8 +15,7 @@
   "http_client": {
     "timeout": 10000
   },
-  "database": {
-    "driver": "mysql",
+  "mysql": {
     "host": "mysql",
     "port": 3306,
     "name": "app",
@@ -25,9 +24,19 @@
     "timeout": 10
   },
   "s3": {
+    "role_used": false,
     "accessKey": "",
     "secretKey": "",
     "region": "eu-central-1",
-    "bucket": "nightel-f1.neatplex.com"
+    "bucket": "nightell-f1.neatplex.com"
+  },
+  "google": {
+    "oauth_client_id": "848368311039-h05kiqlnad6ol0d6hpfdv5d1d3tnc4l7.apps.googleusercontent.com"
+  },
+  "mailer": {
+    "smtp_server": "",
+    "smtp_port": 587,
+    "username": "nightell@neatplex.com",
+    "password": ""
   }
 }

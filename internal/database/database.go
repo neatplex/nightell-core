@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/config"
-	"github.com/neatplex/nightel-core/internal/logger"
-	"github.com/neatplex/nightel-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/models"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ func (d *Database) Handler() *gorm.DB {
 }
 
 func (d *Database) Init() error {
-	timeout := time.Duration(d.config.Database.Timeout) * time.Second
+	timeout := time.Duration(d.config.MySQL.Timeout) * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -66,11 +66,11 @@ func (d *Database) initDatabase(ctx context.Context) (db *sql.DB, err error) {
 func (d *Database) dsn() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?parseTime=true&multiStatements=true&interpolateParams=true&collation=%s",
-		d.config.Database.User,
-		d.config.Database.Password,
-		d.config.Database.Host,
-		d.config.Database.Port,
-		d.config.Database.Name,
+		d.config.MySQL.User,
+		d.config.MySQL.Password,
+		d.config.MySQL.Host,
+		d.config.MySQL.Port,
+		d.config.MySQL.Name,
 		"utf8mb4_general_ci",
 	)
 }

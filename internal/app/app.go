@@ -3,12 +3,14 @@ package app
 import (
 	"context"
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/config"
-	"github.com/neatplex/nightel-core/internal/database"
-	httpServer "github.com/neatplex/nightel-core/internal/http/server"
-	"github.com/neatplex/nightel-core/internal/logger"
-	"github.com/neatplex/nightel-core/internal/s3"
-	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/gc"
+	httpServer "github.com/neatplex/nightell-core/internal/http/server"
+	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/mailer"
+	"github.com/neatplex/nightell-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
@@ -22,8 +24,10 @@ type App struct {
 	Logger     *logger.Logger
 	S3         *s3.S3
 	HttpServer *httpServer.Server
-	Database   *database.Database
+	MySQL      *database.Database
 	Container  *container.Container
+	Mailer     *mailer.Mailer
+	Gc         *gc.Gc
 }
 
 // New creates an app from the given configuration file.
@@ -32,33 +36,34 @@ func New() (a *App, err error) {
 
 	a.Config = config.New()
 	if err = a.Config.Init(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	a.Logger = logger.New(a.Config.Logger.Level, a.Config.Logger.Format, a.Config.Development)
 	if err = a.Logger.Init(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-	a.Logger.Debug("app: Config & Logger initialized")
+	a.Logger.Debug("app: Config & LoggerProxy initialized")
 
-	a.Database = database.New(a.Config, a.Logger)
+	a.MySQL = database.New(a.Config, a.Logger)
 	a.S3 = s3.New(a.Config, a.Logger)
-	a.Container = container.New(a.Database, a.S3)
+	a.Container = container.New(a.MySQL, a.S3)
+	a.Gc = gc.New(a.MySQL, a.S3, a.Logger)
 	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
+	a.Mailer = mailer.New(a.Config, a.Logger)
 	a.Logger.Debug("app: application modules initialized")
-
 	a.setupSignalListener()
 
 	return a, nil
 }
 
-// Init makes sure the critical modules and external sources work fine.
 func (a *App) Init() error {
-	if err := a.Database.Init(); err != nil {
+	if err := a.MySQL.Init(); err != nil {
 		return errors.WithStack(err)
 	}
 	if err := a.S3.Init(); err != nil {
 		return errors.WithStack(err)
 	}
+	a.Gc.Init()
 	return nil
 }
 
@@ -81,8 +86,8 @@ func (a *App) Close() {
 	if a.HttpServer != nil {
 		a.HttpServer.Close()
 	}
-	if a.Database != nil {
-		a.Database.Close()
+	if a.MySQL != nil {
+		a.MySQL.Close()
 	}
 	if a.Logger != nil {
 		a.Logger.Close()

@@ -3,11 +3,12 @@ package config
 import (
 	"encoding/json"
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/http/server/validator"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"os"
 )
 
-const AppName = "Nightel"
+const AppName = "Nightell"
 const AppVersion = "v0.1.0"
 
 const defaultConfigPath = "configs/main.defaults.json"
@@ -31,21 +32,30 @@ type Config struct {
 	HttpClient struct {
 		Timeout int `json:"timeout"`
 	} `json:"http_client"`
-	Database struct {
-		Driver   string `yaml:"driver" validate:"required"`
+	MySQL struct {
 		Host     string `yaml:"host" validate:"required"`
 		Port     int    `yaml:"port" validate:"required"`
 		Name     string `yaml:"name" validate:"required"`
 		User     string `yaml:"user" validate:"required"`
 		Password string `yaml:"password" validate:"required"`
 		Timeout  int    `yaml:"timeout" validate:"required"`
-	} `json:"database"`
+	} `json:"mysql"`
 	S3 struct {
+		RoleUsed  bool   `yaml:"role_used"`
 		AccessKey string `yaml:"accessKey" validate:"required"`
 		SecretKey string `yaml:"secretKey" validate:"required"`
 		Region    string `yaml:"region" validate:"required"`
 		Bucket    string `yaml:"bucket" validate:"required"`
 	} `json:"s3"`
+	Mailer struct {
+		SmtpServer string `json:"smtp_server"`
+		SmtpPort   int    `json:"smtp_port"`
+		Username   string `json:"username"`
+		Password   string `json:"password"`
+	} `json:"mailer"`
+	Google struct {
+		OAuthClientId string `yaml:"oauth_client_id"`
+	} `json:"google"`
 }
 
 func (c *Config) Init() error {
@@ -69,7 +79,7 @@ func (c *Config) Init() error {
 		}
 	}
 
-	return nil
+	return validator.New().Validate(c)
 }
 
 func New() *Config {

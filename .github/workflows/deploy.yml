@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: neatplex/nightel-core
+  IMAGE_NAME: neatplex/nightell-core
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -31,14 +31,14 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       - name: Deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.PRODUCTION_SERVER_HOST }}
           port: ${{ vars.PRODUCTION_SERVER_PORT }}
           username: ${{ vars.PRODUCTION_SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /srv/nightel-core
+            cd /srv/nightell-core
             docker compose pull
             git reset --hard HEAD^
             git pull

@@ -3,15 +3,15 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"net/http"
 )
 
 func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		user, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -29,7 +29,7 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-type PostsStoreRequest struct {
+type postsStoreRequest struct {
 	Title       string  `json:"title" validate:"required,min=1,max=50"`
 	Description string  `json:"description" validate:"max=300"`
 	AudioID     uint64  `json:"audio_id" validate:"required"`
@@ -40,7 +40,7 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r PostsStoreRequest
+		var r postsStoreRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -92,6 +92,11 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "The selected file is already in use.",
 				})
 			}
+			if s, _ := ctr.UserService.FindBy("image_id", image.ID); s != nil {
+				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+					"message": "The selected file is already in use.",
+				})
+			}
 			imageType, err := ctr.FileService.TypeFromExtension(image.Extension)
 			if err != nil {
 				return errors.WithStack(err)
@@ -128,7 +133,7 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-type PostsUpdateCaptionRequest struct {
+type postsUpdateCaptionRequest struct {
 	Title       string `json:"title" validate:"required,min=1,max=50"`
 	Description string `json:"description" validate:"max=300"`
 }
@@ -151,13 +156,13 @@ func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		var r PostsUpdateCaptionRequest
-		if err := ctx.Bind(&r); err != nil {
+		var r postsUpdateCaptionRequest
+		if err = ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
 			})
 		}
-		if err := ctx.Validate(r); err != nil {
+		if err = ctx.Validate(r); err != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": err.Error(),
 			})

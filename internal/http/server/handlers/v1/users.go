@@ -3,16 +3,16 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"net/http"
 	"strconv"
 )
 
 func UsersShow(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		user, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -40,7 +40,7 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 
 func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		user, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -70,7 +70,7 @@ func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
 
 func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
+		user, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -108,7 +108,7 @@ func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		followee, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("followeeId"), 0))
+		followee, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("followeeId"), 0))
 		if err != nil {
 			return errors.WithStack(err)
 		}
