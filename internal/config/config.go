@@ -2,8 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightel-core/internal/utils"
-	"github.com/pkg/errors"
 	"os"
 )
 
