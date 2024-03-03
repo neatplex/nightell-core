@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -41,7 +42,7 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 
 		user, err := ctr.UserService.FindByEmail(r.Email)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user != nil {
 			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password)); err == nil {
@@ -53,7 +54,7 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 
 				token, err := ctr.TokenService.FindOrCreate(user)
 				if err != nil {
-					return err
+					return errors.WithStack(err)
 				}
 
 				return ctx.JSON(http.StatusCreated, map[string]interface{}{
@@ -85,7 +86,7 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 
 		user, err := ctr.UserService.FindByUsername(r.Username)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user != nil {
 			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password)); err == nil {
@@ -97,7 +98,7 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 
 				token, err := ctr.TokenService.FindOrCreate(user)
 				if err != nil {
-					return err
+					return errors.WithStack(err)
 				}
 
 				return ctx.JSON(http.StatusCreated, map[string]interface{}{
@@ -135,7 +136,7 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 
 		u, err := ctr.UserService.FindByUsername(r.Username)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if u != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
@@ -145,7 +146,7 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 
 		u, err = ctr.UserService.FindByEmail(r.Email)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if u != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
@@ -155,7 +156,7 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		err = ctr.UserService.Create(&models.User{
@@ -165,17 +166,17 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			Password: string(hashedPassword),
 		})
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		user, err := ctr.UserService.FindByEmail(r.Email)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		token, err := ctr.TokenService.Create(user)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{

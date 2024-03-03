@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -12,7 +13,7 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -20,7 +21,7 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 
 		posts, err := ctr.PostService.Index(user.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
 			"posts": posts,
@@ -53,7 +54,7 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 
 		audio, err := ctr.FileService.FindByID(r.AudioID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if audio == nil {
 			return ctx.JSON(http.StatusNotFound, map[string]string{
@@ -65,9 +66,9 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 				"message": "The selected file is already in use.",
 			})
 		}
-		audioType, err := ctr.FileService.ToType(audio.Extension)
+		audioType, err := ctr.FileService.TypeFromExtension(audio.Extension)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if audioType != models.FileTypeAudio {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
@@ -79,7 +80,7 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 		if r.ImageID != nil {
 			image, err := ctr.FileService.FindByID(*r.ImageID)
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			if image == nil {
 				return ctx.JSON(http.StatusNotFound, map[string]string{
@@ -91,9 +92,9 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "The selected file is already in use.",
 				})
 			}
-			imageType, err := ctr.FileService.ToType(image.Extension)
+			imageType, err := ctr.FileService.TypeFromExtension(image.Extension)
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			if imageType != models.FileTypeImage {
 				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
@@ -113,12 +114,12 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 			CommentsCount: 0,
 		})
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		post, err := ctr.PostService.FindById(id)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
@@ -138,7 +139,7 @@ func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 
 		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if post == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -176,7 +177,7 @@ func PostsDelete(ctr *container.Container) echo.HandlerFunc {
 
 		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if post == nil {
 			return ctx.NoContent(http.StatusNotFound)

@@ -3,7 +3,8 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightel-core/internal/config"
 	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/models"
@@ -23,33 +24,35 @@ func (d *Database) Handler() *gorm.DB {
 	return d.handler
 }
 
-func (d *Database) Init() {
+func (d *Database) Init() error {
 	timeout := time.Duration(d.config.Database.Timeout) * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	db, err := d.initDatabase(ctx)
 	if err != nil {
-		d.l.Fatal("database: cannot connect", zap.Error(err))
+		return errors.WithStack(err)
 	}
 
 	if d.handler, err = gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{}); err != nil {
-		d.l.Fatal("database: cannot initialize gorm", zap.Error(err))
+		return errors.WithStack(err)
 	} else {
-		d.l.Debug("database: gorm connection established successfully")
+		d.l.Debug("gorm connection established successfully")
 	}
-	d.migrate()
+	return errors.WithStack(d.migrate())
 }
 
-func (d *Database) initDatabase(ctx context.Context) (*sql.DB, error) {
+func (d *Database) initDatabase(ctx context.Context) (db *sql.DB, err error) {
 	for {
 		select {
 		case <-ctx.Done():
-			return nil, errors.New("database: initial connection timed out")
+			return nil, errors.New("initial connection timed out")
 		default:
-			db, err := sql.Open("mysql", d.config.Database.DSN())
-			if err != nil {
-				return nil, err
+			if db == nil {
+				db, err = sql.Open("mysql", d.dsn())
+				if err != nil {
+					return nil, errors.Wrapf(err, "cannot open connection to %s", d.dsn())
+				}
 			}
 			if err = db.Ping(); err == nil {
 				return db, nil
@@ -60,7 +63,19 @@ func (d *Database) initDatabase(ctx context.Context) (*sql.DB, error) {
 	}
 }
 
-func (d *Database) migrate() {
+func (d *Database) dsn() string {
+	return fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true&multiStatements=true&interpolateParams=true&collation=%s",
+		d.config.Database.User,
+		d.config.Database.Password,
+		d.config.Database.Host,
+		d.config.Database.Port,
+		d.config.Database.Name,
+		"utf8mb4_general_ci",
+	)
+}
+
+func (d *Database) migrate() error {
 	err := d.handler.AutoMigrate(
 		&models.User{},
 		&models.Token{},
@@ -70,10 +85,10 @@ func (d *Database) migrate() {
 		&models.Followship{},
 	)
 	if err != nil {
-		d.l.Fatal("database: cannot run migrations", zap.Error(err))
-	} else {
-		d.l.Debug("database: migrations ran successfully")
+		return errors.WithStack(err)
 	}
+	d.l.Debug("database: migrations ran successfully")
+	return nil
 }
 
 func (d *Database) Close() {
@@ -87,8 +102,5 @@ func (d *Database) Close() {
 }
 
 func New(c *config.Config, l *logger.Logger) *Database {
-	return &Database{
-		config: c,
-		l:      l,
-	}
+	return &Database{config: c, l: l}
 }

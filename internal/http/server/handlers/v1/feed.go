@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -18,7 +19,7 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
 		)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusOK, map[string][]*models.Post{

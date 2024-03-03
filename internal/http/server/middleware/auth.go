@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/services/container"
 )
@@ -15,7 +16,7 @@ func Authorize(ctr *container.Container) func(echo.HandlerFunc) echo.HandlerFunc
 
 			token, err := ctr.TokenService.FindByValue(authHeader[len("Bearer "):])
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			if token == nil {
 				return echo.ErrUnauthorized

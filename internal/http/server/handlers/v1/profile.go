@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"errors"
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -16,12 +16,12 @@ func ProfileShow(ctr *container.Container) echo.HandlerFunc {
 
 		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
@@ -121,7 +121,7 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 					"message": "Username already exist.",
 				})
 			} else {
-				return err
+				return errors.WithStack(err)
 			}
 		}
 

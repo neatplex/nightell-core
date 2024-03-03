@@ -13,6 +13,10 @@ var versionCmd = &cobra.Command{
 	Run:   versionFunc,
 }
 
+func init() {
+	rootCmd.AddCommand(versionCmd)
+}
+
 func versionFunc(_ *cobra.Command, _ []string) {
-	fmt.Println(config.AppVersion, "[", runtime.Compiler, runtime.Version(), runtime.GOOS, runtime.GOARCH, "]")
+	fmt.Println(config.AppVersion, "(", runtime.Version(), runtime.Compiler, runtime.GOOS, runtime.GOARCH, ")")
 }

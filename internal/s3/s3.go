@@ -2,15 +2,13 @@ package s3
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/cockroachdb/errors"
 	cfg "github.com/neatplex/nightel-core/internal/config"
 	"github.com/neatplex/nightel-core/internal/logger"
-	"go.uber.org/zap"
 	"io"
 )
 
@@ -20,7 +18,7 @@ type S3 struct {
 	client *s3.Client
 }
 
-func (s *S3) Init() {
+func (s *S3) Init() error {
 	credentialsCache := aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(
 		s.config.S3.AccessKey,
 		s.config.S3.SecretKey,
@@ -33,12 +31,13 @@ func (s *S3) Init() {
 		config.WithRegion(s.config.S3.Region),
 	)
 	if err != nil {
-		s.l.Fatal("cannot connect to s3", zap.Error(err))
+		return errors.Wrap(err, "cannot load s3 config")
 	} else {
 		s.l.Debug("connection established with s3")
 	}
 
 	s.client = s3.NewFromConfig(c)
+	return nil
 }
 
 func (s *S3) Get(path string) ([]byte, error) {
@@ -47,7 +46,7 @@ func (s *S3) Get(path string) ([]byte, error) {
 		Key:    &path,
 	})
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot download s3.GetObjectInput, err: %v", err.Error()))
+		return nil, errors.Wrap(err, "cannot download s3.GetObjectInput")
 	}
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
@@ -55,7 +54,7 @@ func (s *S3) Get(path string) ([]byte, error) {
 
 	body, err := io.ReadAll(r.Body)
 
-	return body, err
+	return body, errors.Wrap(err, "cannot read s3.GetObjectInput.Body")
 }
 
 func (s *S3) Put(path string, body io.Reader) error {
@@ -65,7 +64,7 @@ func (s *S3) Put(path string, body io.Reader) error {
 		Body:   body,
 	})
 	if err != nil {
-		return errors.New(fmt.Sprintf("cannot upload s3.PutObjectInput, err: %v", err.Error()))
+		return errors.Wrap(err, "cannot upload s3.PutObjectInput")
 	}
 	return nil
 }

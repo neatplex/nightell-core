@@ -1,12 +1,11 @@
 package file
 
 import (
-	"errors"
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/s3"
-	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 	"io"
 	"time"
@@ -17,65 +16,57 @@ type Service struct {
 	s3       *s3.S3
 }
 
-func (s *Service) ToExtension(name string) (models.Extension, error) {
+func (s *Service) ExtensionFromString(name string) (models.Extension, error) {
 	switch name {
 	case "MP3":
 		return models.FileExtMp3, nil
 	case "JPG":
 		return models.FileExtJpg, nil
 	}
-	return "", eris.Errorf("cannot convert `%s` to models.Extension", name)
+	return "", errors.Errorf("cannot create extension from `%s`", name)
 }
 
-func (s *Service) ToType(extension models.Extension) (models.FileType, error) {
+func (s *Service) TypeFromExtension(extension models.Extension) (models.FileType, error) {
 	switch extension {
 	case models.FileExtMp3:
 		return models.FileTypeAudio, nil
 	case models.FileExtJpg:
 		return models.FileTypeImage, nil
 	}
-	return "", eris.Errorf("cannot convert `%v` to models.FileType", extension)
+	return "", errors.Errorf("cannot create type from extension `%s`", extension.String())
 }
 
 func (s *Service) Download(path string) ([]byte, error) {
-	return s.s3.Get(path)
+	file, err := s.s3.Get(path)
+	return file, errors.Wrapf(err, "path: `%v`", path)
 }
 
 func (s *Service) Upload(reader io.Reader, extension models.Extension) (string, error) {
 	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + extension.String()
-	return path, s.s3.Put(path, reader)
+	return path, errors.WithStack(s.s3.Put(path, reader))
 }
 
 func (s *Service) Create(file *models.File) error {
 	r := s.database.Handler().Create(file)
-	if r.Error != nil {
-		return eris.Errorf("cannot query to create file: %v", r.Error)
-	}
-	return nil
+	return errors.Wrapf(r.Error, "file: `%v`", file)
 }
 
 func (s *Service) FindByID(id uint64) (*models.File, error) {
 	var file models.File
 	r := s.database.Handler().First(&file, id)
-	if r.Error != nil {
-		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, eris.Errorf("cannot query to find file by %d, err: %v", id, r.Error)
+	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
-	return &file, nil
+	return &file, errors.Wrapf(r.Error, "id: `%v`", id)
 }
 
 func (s *Service) FindByPath(path string) (*models.File, error) {
 	var file models.File
 	r := s.database.Handler().Where("path = ?", path).First(&file)
-	if r.Error != nil {
-		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, eris.Errorf("cannot query to find file by %s, err: %v", path, r.Error)
+	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
-	return &file, nil
+	return &file, errors.Wrapf(r.Error, "path: `%v`", path)
 }
 
 func New(database *database.Database, s3 *s3.S3) *Service {

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/neatplex/nightel-core/internal/config"
 	"github.com/spf13/cobra"
-	"runtime"
 )
 
 var rootCmd = &cobra.Command{
@@ -11,16 +11,8 @@ var rootCmd = &cobra.Command{
 	Short: "The Nightel core!",
 }
 
-var banner = `Nightel Core`
-
 func init() {
-	cobra.OnInitialize(func() {
-		fmt.Println(banner)
-		fmt.Println(runtime.Compiler, runtime.Version(), runtime.GOOS, runtime.GOARCH)
-	})
-
-	rootCmd.AddCommand(startCmd)
-	rootCmd.AddCommand(versionCmd)
+	cobra.OnInitialize(func() { fmt.Println(config.AppName) })
 }
 
 func Execute() error {

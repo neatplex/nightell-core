@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -13,7 +14,7 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -21,12 +22,12 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 
 		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
@@ -41,7 +42,7 @@ func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -53,7 +54,7 @@ func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
 		)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		users := make([]*models.User, 0, len(followships))
@@ -71,7 +72,7 @@ func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("userId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if user == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -83,7 +84,7 @@ func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
 		)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		users := make([]*models.User, 0, len(followships))
@@ -109,14 +110,14 @@ func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
 
 		followee, err := ctr.UserService.FindById(utils.StringToID(ctx.Param("followeeId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if followee == nil {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
 		if _, err = ctr.FollowshipService.Create(followee.ID, user.ID); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.NoContent(http.StatusCreated)
@@ -137,7 +138,7 @@ func UsersFollowingsDelete(ctr *container.Container) echo.HandlerFunc {
 			user.ID, utils.StringToID(ctx.Param("followeeId"), 0),
 		)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		if followship == nil {
 			return ctx.NoContent(http.StatusNotFound)
@@ -145,7 +146,7 @@ func UsersFollowingsDelete(ctr *container.Container) echo.HandlerFunc {
 
 		err = ctr.FollowshipService.Delete(followship.ID)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.NoContent(http.StatusNoContent)

@@ -1,69 +1,36 @@
 package logger
 
 import (
-	"errors"
-	"fmt"
-	"github.com/neatplex/nightel-core/internal/config"
+	"github.com/cockroachdb/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"syscall"
 )
 
 type Logger struct {
-	e     *zap.Logger
-	close func()
+	level       string
+	format      string
+	development bool
+	Engine      *zap.Logger
 }
 
-func (l *Logger) Debug(message string, fields ...zap.Field) {
-	l.e.Debug(message, fields...)
-}
-
-func (l *Logger) Info(message string, fields ...zap.Field) {
-	l.e.Info(message, fields...)
-}
-
-func (l *Logger) Warn(message string, fields ...zap.Field) {
-	l.e.Warn(message, fields...)
-}
-
-func (l *Logger) Error(message string, fields ...zap.Field) {
-	l.e.Error(message, fields...)
-}
-
-func (l *Logger) Fatal(message string, fields ...zap.Field) {
-	l.close()
-	l.e.Error(message, fields...)
-}
-
-func (l *Logger) With(fields ...zap.Field) *zap.Logger {
-	return l.e.With(fields...)
-}
-
-func (l *Logger) Close() {
-	if err := l.e.Sync(); err != nil && !errors.Is(err, syscall.ENOTTY) {
-		l.e.Warn("cannot close the log", zap.Error(err))
-	} else {
-		l.e.Debug("log closed successfully")
-	}
-}
-
-func New(c *config.Config, close func()) (logger *Logger, err error) {
+func (l *Logger) Init() (err error) {
 	level := zap.NewAtomicLevel()
-	if err = level.UnmarshalText([]byte(c.Logger.Level)); err != nil {
-		return nil, errors.New(fmt.Sprintf("invalid log level %s, err: %v", c.Logger.Level, err))
+	if err = level.UnmarshalText([]byte(l.level)); err != nil {
+		return errors.Errorf("logger: invalid level %s, err: %v", l.level, err)
 	}
 
-	engine, err := zap.Config{
+	l.Engine, err = zap.Config{
 		Level:             level,
-		Development:       false,
+		Development:       l.development,
 		Encoding:          "json",
-		DisableStacktrace: true,
-		DisableCaller:     true,
-		OutputPaths:       []string{"stdout"},
-		ErrorOutputPaths:  []string{"stderr"},
+		DisableStacktrace: false,
+		DisableCaller:     false,
+		OutputPaths:       []string{"./storage/logs/output.log"},
+		ErrorOutputPaths:  []string{"./storage/logs/output.log"},
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        "ts",
-			EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000"),
+			EncodeTime:     zapcore.TimeEncoderOfLayout(l.format),
 			EncodeDuration: zapcore.StringDurationEncoder,
 			LevelKey:       "level",
 			EncodeLevel:    zapcore.CapitalLevelEncoder,
@@ -73,9 +40,38 @@ func New(c *config.Config, close func()) (logger *Logger, err error) {
 			LineEnding:     zapcore.DefaultLineEnding,
 		},
 	}.Build()
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("cannot build logger, err: %v", err))
-	}
 
-	return &Logger{e: engine, close: close}, nil
+	return errors.WithStack(err)
+}
+
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	l.Engine.Debug(msg, fields...)
+}
+
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	l.Engine.Info(msg, fields...)
+}
+
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.Engine.Warn(msg, fields...)
+}
+
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	l.Engine.Error(msg, fields...)
+}
+
+func (l *Logger) With(fields ...zap.Field) *zap.Logger {
+	return l.Engine.With(fields...)
+}
+
+func (l *Logger) Close() {
+	if err := l.Engine.Sync(); err != nil && !errors.Is(err, syscall.ENOTTY) {
+		l.Engine.Error("logger: failed to close", zap.Error(err))
+	} else {
+		l.Engine.Info("logger: closed successfully")
+	}
+}
+
+func New(level, format string, development bool) (logger *Logger) {
+	return &Logger{Engine: nil, level: level, format: format, development: development}
 }

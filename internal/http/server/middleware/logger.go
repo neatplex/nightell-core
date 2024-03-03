@@ -43,7 +43,7 @@ func Logger(l *logger.Logger) echo.MiddlewareFunc {
 			case n >= 500:
 				l.With(zap.Error(err)).Error("Server error", fields...)
 			case n >= 400:
-				l.With(zap.Error(err)).Warn("Client error", fields...)
+				l.With(zap.Error(err)).Debug("Client error", fields...)
 			case n >= 300:
 				l.Debug("Redirection", fields...)
 			default:

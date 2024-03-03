@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/logger"
 	"github.com/neatplex/nightel-core/internal/models"
@@ -14,7 +15,7 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		extension, err := ctr.FileService.ToExtension(ctx.FormValue("extension"))
+		extension, err := ctr.FileService.ExtensionFromString(ctx.FormValue("extension"))
 		if err != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": fmt.Sprintf("Extension ``%s is not supported.", ctx.FormValue("extension")),
@@ -38,7 +39,7 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 
 		path, err := ctr.FileService.Upload(fileHandler, extension)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		err = ctr.FileService.Create(&models.File{
@@ -47,12 +48,12 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 			Path:      path,
 		})
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		file, err := ctr.FileService.FindByPath(path)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusOK, map[string]models.File{

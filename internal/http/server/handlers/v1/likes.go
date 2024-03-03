@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/neatplex/nightel-core/internal/models"
 	"github.com/neatplex/nightel-core/internal/services/container"
@@ -16,7 +17,7 @@ func LikesIndex(ctr *container.Container) echo.HandlerFunc {
 			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
 		)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
 			"likes": posts,
@@ -30,12 +31,12 @@ func LikesStore(ctr *container.Container) echo.HandlerFunc {
 
 		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		like, err := ctr.LikeService.Create(user, post)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.JSON(http.StatusCreated, map[string]*models.Like{
@@ -49,7 +50,7 @@ func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 
 		like, err := ctr.LikeService.FindById(utils.StringToID(ctx.Param("likeId"), 0))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		if like.UserID != user.ID {
@@ -59,7 +60,7 @@ func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		if err = ctr.LikeService.Delete(like.ID); err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		return ctx.NoContent(http.StatusNoContent)

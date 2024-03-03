@@ -1,8 +1,7 @@
 package like
 
 import (
-	"errors"
-	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"gorm.io/gorm"
@@ -22,39 +21,27 @@ func (s *Service) IndexByPostIDWithUser(postId uint64, lastId uint64, count int)
 		Where("post_id = ?", postId).
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Find(&likes)
-	if r.Error != nil {
-		return nil, fmt.Errorf("services: like: IndexByPostIDWithUser: %s", r.Error)
-	}
-	return likes, nil
+	return likes, errors.Wrapf(r.Error, "postId: %v, lastId: %v, count: %v", postId, lastId, count)
 }
 
 func (s *Service) Create(user *models.User, post *models.Post) (*models.Like, error) {
 	var like models.Like
 	r := s.database.Handler().FirstOrCreate(&like, &models.Like{UserID: user.ID, PostID: post.ID})
-	if r.Error != nil {
-		return nil, fmt.Errorf("services: like: Create: %v, err: %v", like, r.Error)
-	}
-	return &like, r.Error
+	return &like, errors.Wrapf(r.Error, "user: %v, post: %v", user, post)
 }
 
 func (s *Service) FindById(id uint64) (*models.Like, error) {
 	var model models.Like
 	r := s.database.Handler().Where("id = ?", id).First(&model)
-	if r.Error != nil {
-		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("services: like: FindById: `%d`, err: %v", id, r.Error)
+	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
-	return &model, nil
+	return &model, errors.Wrapf(r.Error, "id: %v", id)
 }
 
 func (s *Service) Delete(id uint64) error {
 	r := s.database.Handler().Delete(&models.Like{}, id)
-	if r.Error != nil {
-		return fmt.Errorf("services: like: Delete #%v, err: %v", id, r.Error)
-	}
-	return r.Error
+	return errors.Wrapf(r.Error, "id: %v", id)
 }
 
 func New(database *database.Database) *Service {

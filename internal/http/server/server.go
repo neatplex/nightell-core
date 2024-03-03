@@ -12,6 +12,7 @@ import (
 	"github.com/neatplex/nightel-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -22,22 +23,20 @@ type Server struct {
 	container *container.Container
 }
 
-func New(config *config.Config, log *logger.Logger, container *container.Container) *Server {
+func New(config *config.Config, logger *logger.Logger, container *container.Container) *Server {
 	e := echo.New()
-
 	e.HideBanner = true
-	e.Server.ReadTimeout, _ = time.ParseDuration(config.HTTPServer.ReadTimeout)
-	e.Server.WriteTimeout, _ = time.ParseDuration(config.HTTPServer.WriteTimeout)
-	e.Server.ReadHeaderTimeout, _ = time.ParseDuration(config.HTTPServer.ReadHeaderTimeout)
-	e.Server.IdleTimeout, _ = time.ParseDuration(config.HTTPServer.IdleTimeout)
+	e.Server.ReadTimeout = time.Duration(config.HttpServer.ReadTimeout) * time.Second
+	e.Server.WriteTimeout = time.Duration(config.HttpServer.WriteTimeout) * time.Second
+	e.Server.ReadHeaderTimeout = time.Duration(config.HttpServer.ReadHeaderTimeout) * time.Second
+	e.Server.IdleTimeout = time.Duration(config.HttpServer.IdleTimeout) * time.Second
 	e.Validator = validator.New()
-
-	return &Server{E: e, config: config, l: log, container: container}
+	return &Server{E: e, config: config, l: logger, container: container}
 }
 
 func (s *Server) Serve() {
-	s.E.Use(middleware.CORS())
 	s.E.Use(middleware2.Logger(s.l))
+	s.E.Use(middleware.CORS())
 	s.E.Use(middleware.Static("web"))
 	s.E.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
 	s.E.Use(middleware.BodyLimit("20M"))
@@ -45,9 +44,9 @@ func (s *Server) Serve() {
 	s.registerRoutes()
 
 	go func() {
-		listen := s.config.HTTPServer.Listen
+		listen := s.config.HttpServer.Host + ":" + strconv.Itoa(s.config.HttpServer.Port)
 		if err := s.E.Start(listen); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			s.l.Fatal("cannot start the server", zap.String("listen", listen), zap.Error(err))
+			s.l.Error("cannot start the http server", zap.String("listen", listen), zap.Error(err))
 		}
 	}()
 }
@@ -57,7 +56,7 @@ func (s *Server) Close() {
 	defer cancel()
 
 	if err := s.E.Shutdown(c); err != nil {
-		s.l.Warn("cannot close the http server", zap.Error(err))
+		s.l.Error("cannot close the http server", zap.Error(err))
 	}
 	s.l.Debug("http server closed successfully")
 }

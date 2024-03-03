@@ -1,8 +1,7 @@
 package post
 
 import (
-	"errors"
-	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightel-core/internal/database"
 	"github.com/neatplex/nightel-core/internal/models"
 	"gorm.io/gorm"
@@ -19,11 +18,11 @@ func (s *Service) Index(userId uint64) ([]*models.Post, error) {
 		Preload("Audio").Preload("Image").
 		Find(&posts)
 	if r.Error != nil {
-		return nil, fmt.Errorf("services: post: Index: %v", r.Error)
+		return nil, errors.Wrapf(r.Error, "userId: %v", userId)
 	}
 	for _, post := range posts {
 		if err := s.attachLikes(userId, post); err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "userId: %v, postId: %v", userId, post.ID)
 		}
 	}
 	return posts, nil
@@ -40,11 +39,15 @@ func (s *Service) Feed(userId uint64, lastId uint64, count int) ([]*models.Post,
 		Preload("Image").
 		Find(&posts)
 	if r.Error != nil {
-		return nil, fmt.Errorf("services: post: Feed: %s", r.Error)
+		return nil, errors.Wrapf(r.Error, "userId: %v, lastId: %v, count: %v", userId, lastId, count)
 	}
 	for _, post := range posts {
 		if err := s.attachLikes(userId, post); err != nil {
-			return nil, err
+			return nil, errors.Wrapf(
+				err,
+				"userId: %v, lastId: %v, count: %v, postId: %v",
+				userId, lastId, count, post.ID,
+			)
 		}
 	}
 	return posts, nil
@@ -62,11 +65,15 @@ func (s *Service) Search(q string, userId uint64, lastId uint64, count int) ([]*
 		Preload("Image").
 		Find(&posts)
 	if r.Error != nil {
-		return nil, fmt.Errorf("services: post: Feed: %s", r.Error)
+		return nil, errors.Wrapf(r.Error, "userId: %v, q: %v, lastId: %v, count: %v", userId, q, lastId, count)
 	}
 	for _, post := range posts {
 		if err := s.attachLikes(userId, post); err != nil {
-			return nil, err
+			return nil, errors.Wrapf(
+				err,
+				"userId: %v, q: %v, lastId: %v, count: %v, postId: %v",
+				userId, q, lastId, count, post.ID,
+			)
 		}
 	}
 	return posts, nil
@@ -81,14 +88,14 @@ func (s *Service) attachLikes(userId uint64, post *models.Post) error {
 		Preload("User").
 		Find(&likes)
 	if r.Error != nil {
-		return fmt.Errorf("services: post: attachLikes: %s", r.Error)
+		return errors.Wrapf(r.Error, "userId: %v, postId: %v", userId, post.ID)
 	}
 	post.Likes = likes
 
 	var count int64
 	r = s.database.Handler().Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&count)
 	if r.Error != nil {
-		return fmt.Errorf("services: post: attachLikes: %s", r.Error)
+		return errors.Wrapf(r.Error, "postId: %v", post.ID)
 	}
 	post.LikesCount = uint64(count)
 
@@ -98,7 +105,7 @@ func (s *Service) attachLikes(userId uint64, post *models.Post) error {
 func (s *Service) Create(post *models.Post) (uint64, error) {
 	r := s.database.Handler().Create(post)
 	if r.Error != nil {
-		return 0, fmt.Errorf("services: post: Create: %v", r.Error)
+		return 0, errors.Wrapf(r.Error, "post: %v", post)
 	}
 	return post.ID, nil
 }
@@ -124,10 +131,10 @@ func (s *Service) FindById(id uint64) (*models.Post, error) {
 		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("services: post: FindById: `%d`, err: %v", id, r.Error)
+		return nil, errors.Wrapf(r.Error, "id: %v", id)
 	}
 	if err := s.attachLikes(post.UserID, &post); err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "userId: %v, postId: %v", post.UserID, post.ID)
 	}
 	return &post, nil
 }
@@ -135,13 +142,10 @@ func (s *Service) FindById(id uint64) (*models.Post, error) {
 func (s *Service) FindBy(field string, value interface{}) (*models.Post, error) {
 	var post models.Post
 	r := s.database.Handler().Where(field+" = ?", value).First(&post)
-	if r.Error != nil {
-		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("services: post: FindBy%s: %v, err: %v", field, value, r.Error)
+	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
 	}
-	return &post, nil
+	return &post, errors.Wrapf(r.Error, "field: %v, value: %v", field, value)
 }
 
 func New(database *database.Database) *Service {
