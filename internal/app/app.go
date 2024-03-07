@@ -22,7 +22,7 @@ type App struct {
 	Logger     *logger.Logger
 	S3         *s3.S3
 	HttpServer *httpServer.Server
-	Database   *database.Database
+	MySQL      *database.Database
 	Container  *container.Container
 }
 
@@ -40,9 +40,9 @@ func New() (a *App, err error) {
 	}
 	a.Logger.Debug("app: Config & Logger initialized")
 
-	a.Database = database.New(a.Config, a.Logger)
+	a.MySQL = database.New(a.Config, a.Logger)
 	a.S3 = s3.New(a.Config, a.Logger)
-	a.Container = container.New(a.Database, a.S3)
+	a.Container = container.New(a.MySQL, a.S3)
 	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
 	a.Logger.Debug("app: application modules initialized")
 
@@ -53,7 +53,7 @@ func New() (a *App, err error) {
 
 // Init makes sure the critical modules and external sources work fine.
 func (a *App) Init() error {
-	if err := a.Database.Init(); err != nil {
+	if err := a.MySQL.Init(); err != nil {
 		return errors.WithStack(err)
 	}
 	if err := a.S3.Init(); err != nil {
@@ -81,8 +81,8 @@ func (a *App) Close() {
 	if a.HttpServer != nil {
 		a.HttpServer.Close()
 	}
-	if a.Database != nil {
-		a.Database.Close()
+	if a.MySQL != nil {
+		a.MySQL.Close()
 	}
 	if a.Logger != nil {
 		a.Logger.Close()

@@ -15,8 +15,7 @@
   "http_client": {
     "timeout": 10000
   },
-  "database": {
-    "driver": "mysql",
+  "mysql": {
     "host": "mysql",
     "port": 3306,
     "name": "app",
@@ -26,6 +25,12 @@
   },
   "s3": {
     "accessKey": "",
+    "secretKey": "",
+    "region": "eu-central-1",
+    "bucket": "nightel-f1.neatplex.com"
+  },
+  "mailer": {
+    "sender": "no-reply@neatplex.com",
     "secretKey": "",
     "region": "eu-central-1",
     "bucket": "nightel-f1.neatplex.com"

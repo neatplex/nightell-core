@@ -31,15 +31,14 @@ type Config struct {
 	HttpClient struct {
 		Timeout int `json:"timeout"`
 	} `json:"http_client"`
-	Database struct {
-		Driver   string `yaml:"driver" validate:"required"`
+	MySQL struct {
 		Host     string `yaml:"host" validate:"required"`
 		Port     int    `yaml:"port" validate:"required"`
 		Name     string `yaml:"name" validate:"required"`
 		User     string `yaml:"user" validate:"required"`
 		Password string `yaml:"password" validate:"required"`
 		Timeout  int    `yaml:"timeout" validate:"required"`
-	} `json:"database"`
+	} `json:"mysql"`
 	S3 struct {
 		AccessKey string `yaml:"accessKey" validate:"required"`
 		SecretKey string `yaml:"secretKey" validate:"required"`

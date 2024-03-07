@@ -20,13 +20,13 @@ type Container struct {
 	FollowshipService *followship.Service
 }
 
-func New(database *database.Database, s3 *s3.S3) *Container {
+func New(d *database.Database, s3 *s3.S3) *Container {
 	return &Container{
-		UserService:       user.New(database),
-		TokenService:      token.New(database),
-		PostService:       post.New(database),
-		FileService:       file.New(database, s3),
-		LikeService:       like.New(database),
-		FollowshipService: followship.New(database),
+		UserService:       user.New(d),
+		TokenService:      token.New(d),
+		PostService:       post.New(d),
+		FileService:       file.New(d, s3),
+		LikeService:       like.New(d),
+		FollowshipService: followship.New(d),
 	}
 }
