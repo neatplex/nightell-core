@@ -152,12 +152,12 @@ func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		var r PostsUpdateCaptionRequest
-		if err := ctx.Bind(&r); err != nil {
+		if err = ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
 			})
 		}
-		if err := ctx.Validate(r); err != nil {
+		if err = ctx.Validate(r); err != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": err.Error(),
 			})

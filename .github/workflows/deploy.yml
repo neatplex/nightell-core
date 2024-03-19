@@ -31,7 +31,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       - name: Deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.PRODUCTION_SERVER_HOST }}
           port: ${{ vars.PRODUCTION_SERVER_PORT }}

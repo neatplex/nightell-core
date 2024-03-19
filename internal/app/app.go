@@ -32,11 +32,11 @@ func New() (a *App, err error) {
 
 	a.Config = config.New()
 	if err = a.Config.Init(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	a.Logger = logger.New(a.Config.Logger.Level, a.Config.Logger.Format, a.Config.Development)
 	if err = a.Logger.Init(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	a.Logger.Debug("app: Config & Logger initialized")
 
@@ -51,7 +51,6 @@ func New() (a *App, err error) {
 	return a, nil
 }
 
-// Init makes sure the critical modules and external sources work fine.
 func (a *App) Init() error {
 	if err := a.MySQL.Init(); err != nil {
 		return errors.WithStack(err)
