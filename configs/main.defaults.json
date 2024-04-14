@@ -28,11 +28,5 @@
     "secretKey": "",
     "region": "eu-central-1",
     "bucket": "nightell-f1.neatplex.com"
-  },
-  "mailer": {
-    "sender": "no-reply@neatplex.com",
-    "secretKey": "",
-    "region": "eu-central-1",
-    "bucket": "nightell-f1.neatplex.com"
   }
 }
