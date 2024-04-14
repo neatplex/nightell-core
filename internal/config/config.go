@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const AppName = "Nightel"
+const AppName = "Nightell"
 const AppVersion = "v0.1.0"
 
 const defaultConfigPath = "configs/main.defaults.json"

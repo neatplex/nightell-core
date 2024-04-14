@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Nightel APIs",
-    "description": "Nightel OpenAPI (Swagger) Documentation",
+    "title": "Nightell APIs",
+    "description": "Nightell OpenAPI (Swagger) Documentation",
     "version": "1.0.0"
   },
   "servers": [

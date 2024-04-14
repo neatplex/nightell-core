@@ -8,7 +8,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "nightell-core",
-	Short: "The Nightel core!",
+	Short: "The Nightell core!",
 }
 
 func init() {
