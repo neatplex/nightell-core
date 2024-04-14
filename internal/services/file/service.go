@@ -8,6 +8,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/s3"
 	"gorm.io/gorm"
 	"io"
+	"strings"
 	"time"
 )
 
@@ -42,7 +43,8 @@ func (s *Service) Download(path string) ([]byte, error) {
 }
 
 func (s *Service) Upload(reader io.Reader, extension models.Extension) (string, error) {
-	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + extension.String()
+	ext := strings.ToLower(extension.String())
+	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + ext
 	return path, errors.WithStack(s.s3.Put(path, reader))
 }
 
