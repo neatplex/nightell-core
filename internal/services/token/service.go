@@ -3,8 +3,8 @@ package token
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
 	"gorm.io/gorm"
 )
 

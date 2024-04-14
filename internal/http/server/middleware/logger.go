@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"time"

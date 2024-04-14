@@ -1,14 +1,14 @@
 package container
 
 import (
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/s3"
-	"github.com/neatplex/nightel-core/internal/services/file"
-	"github.com/neatplex/nightel-core/internal/services/followship"
-	"github.com/neatplex/nightel-core/internal/services/like"
-	"github.com/neatplex/nightel-core/internal/services/post"
-	"github.com/neatplex/nightel-core/internal/services/token"
-	"github.com/neatplex/nightel-core/internal/services/user"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/services/file"
+	"github.com/neatplex/nightell-core/internal/services/followship"
+	"github.com/neatplex/nightell-core/internal/services/like"
+	"github.com/neatplex/nightell-core/internal/services/post"
+	"github.com/neatplex/nightell-core/internal/services/token"
+	"github.com/neatplex/nightell-core/internal/services/user"
 )
 
 type Container struct {

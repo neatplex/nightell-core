@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/neatplex/nightel-core/internal/mailer"
+	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/spf13/cobra"
 )
 

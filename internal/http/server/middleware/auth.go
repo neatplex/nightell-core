@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/services/container"
 )
 
 func Authorize(ctr *container.Container) func(echo.HandlerFunc) echo.HandlerFunc {

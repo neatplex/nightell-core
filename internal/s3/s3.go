@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/cockroachdb/errors"
-	cfg "github.com/neatplex/nightel-core/internal/config"
-	"github.com/neatplex/nightel-core/internal/logger"
+	cfg "github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/logger"
 	"io"
 )
 

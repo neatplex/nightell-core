@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/neatplex/nightel-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/config"
 	"github.com/spf13/cobra"
 	"runtime"
 )

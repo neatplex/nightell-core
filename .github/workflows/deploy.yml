@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: neatplex/nightel-core
+  IMAGE_NAME: neatplex/nightell-core
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
           username: ${{ vars.PRODUCTION_SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /srv/nightel-core
+            cd /srv/nightell-core
             docker compose pull
             git reset --hard HEAD^
             git pull

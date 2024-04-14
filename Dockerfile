@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY . .
 RUN go mod tidy
-RUN go build -o nightel-core
+RUN go build -o nightell-core
 
 ## Deploy
 FROM debian:bookworm-slim
@@ -17,11 +17,11 @@ RUN update-ca-certificates
 
 WORKDIR /app
 
-COPY --from=build /app/nightel-core nightel-core
+COPY --from=build /app/nightell-core nightell-core
 COPY --from=build /app/configs/main.defaults.json configs/main.defaults.json
 COPY --from=build /app/web/index.html web/index.html
 COPY --from=build /app/storage/logs/.gitignore storage/logs/.gitignore
 
 EXPOSE 8080
 
-ENTRYPOINT ["./nightel-core", "serve"]
+ENTRYPOINT ["./nightell-core", "serve"]

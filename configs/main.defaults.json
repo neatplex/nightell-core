@@ -27,12 +27,12 @@
     "accessKey": "",
     "secretKey": "",
     "region": "eu-central-1",
-    "bucket": "nightel-f1.neatplex.com"
+    "bucket": "nightell-f1.neatplex.com"
   },
   "mailer": {
     "sender": "no-reply@neatplex.com",
     "secretKey": "",
     "region": "eu-central-1",
-    "bucket": "nightel-f1.neatplex.com"
+    "bucket": "nightell-f1.neatplex.com"
   }
 }

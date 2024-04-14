@@ -3,9 +3,9 @@ package file
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/s3"
 	"gorm.io/gorm"
 	"io"
 	"time"

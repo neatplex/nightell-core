@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
 	"gorm.io/gorm"
 )
 

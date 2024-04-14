@@ -1,4 +1,4 @@
-module github.com/neatplex/nightel-core
+module github.com/neatplex/nightell-core
 
 go 1.21.0
 

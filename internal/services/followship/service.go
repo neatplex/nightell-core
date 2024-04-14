@@ -2,8 +2,8 @@ package followship
 
 import (
 	"github.com/cockroachdb/errors"
-	"github.com/neatplex/nightel-core/internal/database"
-	"github.com/neatplex/nightel-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/models"
 )
 
 type Service struct {

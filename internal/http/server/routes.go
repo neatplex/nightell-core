@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/neatplex/nightel-core/internal/http/server/handlers"
-	"github.com/neatplex/nightel-core/internal/http/server/handlers/v1"
-	mw "github.com/neatplex/nightel-core/internal/http/server/middleware"
+	"github.com/neatplex/nightell-core/internal/http/server/handlers"
+	"github.com/neatplex/nightell-core/internal/http/server/handlers/v1"
+	mw "github.com/neatplex/nightell-core/internal/http/server/middleware"
 )
 
 func (s *Server) registerRoutes() {

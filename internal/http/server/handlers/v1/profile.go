@@ -3,10 +3,10 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
-	userService "github.com/neatplex/nightel-core/internal/services/user"
-	"github.com/neatplex/nightel-core/internal/utils"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
+	userService "github.com/neatplex/nightell-core/internal/services/user"
+	"github.com/neatplex/nightell-core/internal/utils"
 	"net/http"
 )
 

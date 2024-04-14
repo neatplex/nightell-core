@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightel-core/internal/logger"
-	"github.com/neatplex/nightel-core/internal/models"
-	"github.com/neatplex/nightel-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/models"
+	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
 )
