@@ -5,6 +5,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/config"
 	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/gc"
 	httpServer "github.com/neatplex/nightell-core/internal/http/server"
 	"github.com/neatplex/nightell-core/internal/logger"
 	"github.com/neatplex/nightell-core/internal/s3"
@@ -24,6 +25,7 @@ type App struct {
 	HttpServer *httpServer.Server
 	MySQL      *database.Database
 	Container  *container.Container
+	Gc         *gc.Gc
 }
 
 // New creates an app from the given configuration file.
@@ -43,6 +45,7 @@ func New() (a *App, err error) {
 	a.MySQL = database.New(a.Config, a.Logger)
 	a.S3 = s3.New(a.Config, a.Logger)
 	a.Container = container.New(a.MySQL, a.S3)
+	a.Gc = gc.New(a.MySQL, a.S3, a.Logger)
 	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
 	a.Logger.Debug("app: application modules initialized")
 
@@ -58,6 +61,7 @@ func (a *App) Init() error {
 	if err := a.S3.Init(); err != nil {
 		return errors.WithStack(err)
 	}
+	a.Gc.Init()
 	return nil
 }
 

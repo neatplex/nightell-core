@@ -42,10 +42,12 @@ func (s *Service) Download(path string) ([]byte, error) {
 	return file, errors.Wrapf(err, "path: `%v`", path)
 }
 
-func (s *Service) Upload(reader io.Reader, extension models.Extension) (string, error) {
-	ext := strings.ToLower(extension.String())
-	path := time.Now().Format("2006/01/02/") + uuid.NewString() + "." + ext
-	return path, errors.WithStack(s.s3.Put(path, reader))
+func (s *Service) Upload(reader io.Reader, path string) error {
+	return errors.WithStack(s.s3.Put(path, reader))
+}
+
+func (s *Service) Path(extension models.Extension) string {
+	return time.Now().Format("2006/01/02/") + uuid.NewString() + "." + strings.ToLower(extension.String())
 }
 
 func (s *Service) Create(file *models.File) error {

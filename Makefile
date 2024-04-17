@@ -1,4 +1,7 @@
-.PHONY: dev_run
+.PHONY: dev-start dev-run
 
-dev_run:
+dev-start:
+	@docker compose -f docker-compose.db.yml up -d
+
+dev-run:
 	@go run main.go serve

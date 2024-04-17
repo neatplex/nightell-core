@@ -31,9 +31,9 @@ func (s *S3) Init() error {
 		config.WithRegion(s.config.S3.Region),
 	)
 	if err != nil {
-		return errors.Wrap(err, "cannot load s3 config")
+		return errors.Wrap(err, "s3: cannot load s3 config")
 	} else {
-		s.l.Debug("connection established with s3")
+		s.l.Debug("s3: connection established")
 	}
 
 	s.client = s3.NewFromConfig(c)
@@ -45,16 +45,16 @@ func (s *S3) Get(path string) ([]byte, error) {
 		Bucket: &s.config.S3.Bucket,
 		Key:    &path,
 	})
+
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot download s3.GetObjectInput")
+		return nil, errors.Wrap(err, "s3: cannot download file")
 	}
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
 	}(r.Body)
 
 	body, err := io.ReadAll(r.Body)
-
-	return body, errors.Wrap(err, "cannot read s3.GetObjectInput.Body")
+	return body, errors.Wrap(err, "s3: cannot read downloaded file")
 }
 
 func (s *S3) Put(path string, body io.Reader) error {
@@ -63,10 +63,15 @@ func (s *S3) Put(path string, body io.Reader) error {
 		Key:    &path,
 		Body:   body,
 	})
-	if err != nil {
-		return errors.Wrap(err, "cannot upload s3.PutObjectInput")
-	}
-	return nil
+	return errors.Wrap(err, "s3: cannot upload")
+}
+
+func (s *S3) Delete(path string) error {
+	_, err := s.client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: &s.config.S3.Bucket,
+		Key:    &path,
+	})
+	return errors.Wrap(err, "s3: cannot delete")
 }
 
 func New(c *cfg.Config, l *logger.Logger) *S3 {
