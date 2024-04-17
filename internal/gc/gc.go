@@ -19,7 +19,7 @@ type Gc struct {
 
 func (g *Gc) Init() {
 	go func() {
-		ticker := time.NewTicker(24 * time.Second)
+		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
 		for range ticker.C {
 			g.cleanup()
