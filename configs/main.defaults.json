@@ -24,6 +24,7 @@
     "timeout": 10
   },
   "s3": {
+    "role_used": true,
     "accessKey": "",
     "secretKey": "",
     "region": "eu-central-1",

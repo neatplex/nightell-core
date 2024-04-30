@@ -40,6 +40,7 @@ type Config struct {
 		Timeout  int    `yaml:"timeout" validate:"required"`
 	} `json:"mysql"`
 	S3 struct {
+		RoleUsed  bool   `yaml:"role_used"`
 		AccessKey string `yaml:"accessKey" validate:"required"`
 		SecretKey string `yaml:"secretKey" validate:"required"`
 		Region    string `yaml:"region" validate:"required"`

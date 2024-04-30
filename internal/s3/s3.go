@@ -19,17 +19,17 @@ type S3 struct {
 }
 
 func (s *S3) Init() error {
-	credentialsCache := aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(
-		s.config.S3.AccessKey,
-		s.config.S3.SecretKey,
-		"",
-	))
+	var cs []func(options *config.LoadOptions) error
+	if !s.config.S3.RoleUsed {
+		credentialsCache := aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(
+			s.config.S3.AccessKey,
+			s.config.S3.SecretKey,
+			"",
+		))
+		cs = append(cs, config.WithCredentialsProvider(credentialsCache), config.WithRegion(s.config.S3.Region))
+	}
 
-	c, err := config.LoadDefaultConfig(
-		context.TODO(),
-		config.WithCredentialsProvider(credentialsCache),
-		config.WithRegion(s.config.S3.Region),
-	)
+	c, err := config.LoadDefaultConfig(context.TODO(), cs...)
 	if err != nil {
 		return errors.Wrap(err, "s3: cannot load s3 config")
 	} else {
