@@ -3,12 +3,14 @@ package user
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/models"
 	"gorm.io/gorm"
 )
 
 type Service struct {
 	database *database.Database
+	mailer   *mailer.Mailer
 }
 
 func (s *Service) FindBy(field string, value interface{}) (*models.User, error) {
@@ -50,10 +52,14 @@ func (s *Service) UpdateUsername(user *models.User, username string) (*models.Us
 }
 
 func (s *Service) Create(user *models.User) error {
+	defer func() {
+		s.mailer.SendWellcome(user.Email, user.Username)
+	}()
+
 	r := s.database.Handler().Create(user)
 	return errors.Wrapf(r.Error, "user: %v", user)
 }
 
-func New(database *database.Database) *Service {
-	return &Service{database: database}
+func New(database *database.Database, mailer *mailer.Mailer) *Service {
+	return &Service{database: database, mailer: mailer}
 }

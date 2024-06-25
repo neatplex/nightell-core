@@ -26,6 +26,6 @@ func mailFunc(_ *cobra.Command, _ []string) {
 		panic(fmt.Sprintf("%+v\n", err))
 	}
 	fmt.Printf("%+v\n", a.Config)
-	a.Mailer.Send("realmiladrahimi@gmail.com", "Hello from the other side!")
+	a.Mailer.Send("realmiladrahimi@gmail.com", "Hello", "Hello from the other side!")
 	fmt.Println("Done!")
 }

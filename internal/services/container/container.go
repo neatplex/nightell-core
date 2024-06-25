@@ -2,6 +2,7 @@ package container
 
 import (
 	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/s3"
 	"github.com/neatplex/nightell-core/internal/services/file"
 	"github.com/neatplex/nightell-core/internal/services/followship"
@@ -20,9 +21,9 @@ type Container struct {
 	FollowshipService *followship.Service
 }
 
-func New(d *database.Database, s3 *s3.S3) *Container {
+func New(d *database.Database, s3 *s3.S3, m *mailer.Mailer) *Container {
 	return &Container{
-		UserService:       user.New(d),
+		UserService:       user.New(d, m),
 		TokenService:      token.New(d),
 		PostService:       post.New(d),
 		FileService:       file.New(d, s3),

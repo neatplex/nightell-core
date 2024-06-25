@@ -36,7 +36,7 @@
   "mailer": {
     "smtp_server": "",
     "smtp_port": 587,
-    "username": "nightell@neatplex.com",
+    "username": "",
     "password": ""
   }
 }

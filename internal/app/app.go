@@ -44,12 +44,12 @@ func New() (a *App, err error) {
 	}
 	a.Logger.Debug("app: Config & LoggerProxy initialized")
 
+	a.Mailer = mailer.New(a.Config, a.Logger)
 	a.MySQL = database.New(a.Config, a.Logger)
 	a.S3 = s3.New(a.Config, a.Logger)
-	a.Container = container.New(a.MySQL, a.S3)
+	a.Container = container.New(a.MySQL, a.S3, a.Mailer)
 	a.Gc = gc.New(a.MySQL, a.S3, a.Logger)
 	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
-	a.Mailer = mailer.New(a.Config, a.Logger)
 	a.Logger.Debug("app: application modules initialized")
 	a.setupSignalListener()
 
