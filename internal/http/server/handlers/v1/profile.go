@@ -57,7 +57,9 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		_ = ctr.UserService.UpdateName(user, r.Name)
+		if _, err := ctr.UserService.UpdateName(user, r.Name); err != nil {
+			return errors.WithStack(err)
+		}
 
 		u, err := ctr.UserService.FindBy("id", user.ID)
 		if err != nil {
@@ -90,7 +92,9 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		_ = ctr.UserService.UpdateBio(user, r.Bio)
+		if _, err := ctr.UserService.UpdateBio(user, r.Bio); err != nil {
+			return errors.WithStack(err)
+		}
 
 		u, err := ctr.UserService.FindBy("id", user.ID)
 		if err != nil {
@@ -202,7 +206,9 @@ func ProfileUpdateImage(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		_ = ctr.UserService.UpdateImage(user, image.ID)
+		if _, err = ctr.UserService.UpdateImage(user, image.ID); err != nil {
+			return errors.WithStack(err)
+		}
 
 		u, err := ctr.UserService.FindBy("id", user.ID)
 		if err != nil {
@@ -212,5 +218,17 @@ func ProfileUpdateImage(ctr *container.Container) echo.HandlerFunc {
 		return ctx.JSON(http.StatusOK, map[string]*models.User{
 			"user": u,
 		})
+	}
+}
+
+func ProfileDelete(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		if err := ctr.UserService.Delete(user); err != nil {
+			return errors.WithStack(err)
+		}
+
+		return ctx.NoContent(http.StatusNoContent)
 	}
 }

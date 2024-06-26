@@ -29,6 +29,7 @@ func (s *Server) registerRoutes() {
 			private.PATCH("profile/bio", v1.ProfileUpdateBio(s.container))
 			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
 			private.PATCH("profile/image", v1.ProfileUpdateImage(s.container))
+			private.DELETE("profile", v1.ProfileDelete(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))
 			private.GET("users/:userId/followers", v1.UsersFollowers(s.container))

@@ -232,6 +232,16 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Profile"
+        ],
+        "responses": {
+          "204": {
+            "description": "User account deleted"
+          }
+        }
       }
     },
     "/profile/name": {
