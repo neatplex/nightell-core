@@ -8,7 +8,6 @@ services:
     volumes:
       - ./configs:/app/configs
       - ./storage:/app/storage
-      - ./web:/app/web
     depends_on:
       - mysql
 

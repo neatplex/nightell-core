@@ -39,8 +39,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /srv/nightell-core
-            docker compose pull
             git reset --hard HEAD^
             git pull
+            docker compose pull
             docker compose down
             docker compose up -d
