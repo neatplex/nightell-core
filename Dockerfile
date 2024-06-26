@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . .
 RUN go mod tidy
 RUN go build -o nightell-core
+RUN tar -zcf web.tar.gz web
 
 ## Deploy
 FROM debian:bookworm-slim
@@ -19,8 +20,11 @@ WORKDIR /app
 
 COPY --from=build /app/nightell-core nightell-core
 COPY --from=build /app/configs/main.defaults.json configs/main.defaults.json
-COPY --from=build /app/web/index.html web/index.html
 COPY --from=build /app/storage/logs/.gitignore storage/logs/.gitignore
+COPY --from=build /app/web.tar.gz web.tar.gz
+
+RUN tar -xvf web.tar.gz
+RUN rm web.tar.gz
 
 EXPOSE 8080
 
