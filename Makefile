@@ -1,7 +1,7 @@
 .PHONY: dev-start dev-run
 
 dev-start:
-	@docker compose -f docker-compose.db.yml up -d
+	@docker compose -f compose.dev.yml up -d
 
 dev-run:
 	@go run main.go serve

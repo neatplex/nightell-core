@@ -10,7 +10,7 @@ RUN go mod tidy
 RUN go build -o nightell-core
 RUN tar -zcf web.tar.gz web
 
-## Deploy
+## Run
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
