@@ -10,7 +10,7 @@ services:
       - mysql
 
   mysql:
-    image: ghcr.io/getimages/mysql:8.0.35-debian
+    image: mysql:8.0.37
     ports:
       - 127.0.0.1:${MYSQL_EXPOSED_PORT:-0}:3306
     environment:
