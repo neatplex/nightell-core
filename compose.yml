@@ -18,6 +18,11 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - ./.docker/mysql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 2s
+      timeout: 20s
+      retries: 150
 
   swagger:
     image: swaggerapi/swagger-ui
