@@ -57,8 +57,6 @@ func (m *Mailer) SendDeleteAccount(to, username, link string) {
 		"If you have any questions or need assistance, please contact our support team at nightell@neatplex.com.",
 		"Thank you for being a part of our community.",
 		"",
-		"Best regards,",
-		"Nightell team from Neatplex,",
 		"https://nightell.neatplex.com.",
 	}, "\r\n")
 	m.Send(to, "Nightell: Delete Account", message)
