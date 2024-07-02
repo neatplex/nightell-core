@@ -28,7 +28,7 @@
     "role_used": false,
     "accessKey": "",
     "secretKey": "",
-    "region": "eu-central-1",
+    "region": "eu-north-1",
     "bucket": "nightell-f1.neatplex.com"
   },
   "google": {
