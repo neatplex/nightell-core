@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ## Build
 FROM golang:1.21.7-bookworm AS build
 
