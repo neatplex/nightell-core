@@ -8,6 +8,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/services/followship"
 	"github.com/neatplex/nightell-core/internal/services/like"
 	"github.com/neatplex/nightell-core/internal/services/post"
+	"github.com/neatplex/nightell-core/internal/services/remove"
 	"github.com/neatplex/nightell-core/internal/services/token"
 	"github.com/neatplex/nightell-core/internal/services/user"
 )
@@ -15,6 +16,7 @@ import (
 type Container struct {
 	UserService       *user.Service
 	TokenService      *token.Service
+	RemoveService     *remove.Service
 	PostService       *post.Service
 	FileService       *file.Service
 	LikeService       *like.Service
@@ -25,6 +27,7 @@ func New(d *database.Database, s3 *s3.S3, m *mailer.Mailer) *Container {
 	return &Container{
 		UserService:       user.New(d, m),
 		TokenService:      token.New(d),
+		RemoveService:     remove.New(d),
 		PostService:       post.New(d),
 		FileService:       file.New(d, s3),
 		LikeService:       like.New(d),

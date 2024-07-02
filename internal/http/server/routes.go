@@ -10,6 +10,10 @@ import (
 func (s *Server) registerRoutes() {
 	s.E.GET("/healthz", handlers.Healthz)
 
+	// delete-account
+	s.E.POST("/delete-request", handlers.DeleteRequest(s.container, s.config, s.mailer))
+	s.E.GET("/delete-account", handlers.DeleteAccount(s.container))
+
 	v1Api := s.E.Group("/api/v1", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(5)))
 	{
 		public := v1Api.Group("/", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))

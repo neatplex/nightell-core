@@ -49,7 +49,7 @@ func New() (a *App, err error) {
 	a.S3 = s3.New(a.Config, a.Logger)
 	a.Container = container.New(a.MySQL, a.S3, a.Mailer)
 	a.Gc = gc.New(a.MySQL, a.S3, a.Logger)
-	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container)
+	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container, a.Mailer)
 	a.Logger.Debug("app: application modules initialized")
 	a.setupSignalListener()
 

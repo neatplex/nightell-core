@@ -9,6 +9,7 @@ import (
 	middleware2 "github.com/neatplex/nightell-core/internal/http/server/middleware"
 	"github.com/neatplex/nightell-core/internal/http/server/validator"
 	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
@@ -21,9 +22,10 @@ type Server struct {
 	config    *config.Config
 	l         *logger.Logger
 	container *container.Container
+	mailer    *mailer.Mailer
 }
 
-func New(config *config.Config, logger *logger.Logger, container *container.Container) *Server {
+func New(config *config.Config, logger *logger.Logger, container *container.Container, mailer *mailer.Mailer) *Server {
 	e := echo.New()
 	e.HideBanner = true
 	e.Server.ReadTimeout = time.Duration(config.HttpServer.ReadTimeout) * time.Second
@@ -31,7 +33,7 @@ func New(config *config.Config, logger *logger.Logger, container *container.Cont
 	e.Server.ReadHeaderTimeout = time.Duration(config.HttpServer.ReadHeaderTimeout) * time.Second
 	e.Server.IdleTimeout = time.Duration(config.HttpServer.IdleTimeout) * time.Second
 	e.Validator = validator.New()
-	return &Server{E: e, config: config, l: logger, container: container}
+	return &Server{E: e, config: config, l: logger, container: container, mailer: mailer}
 }
 
 func (s *Server) Serve() {

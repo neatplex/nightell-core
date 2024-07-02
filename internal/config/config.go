@@ -16,7 +16,8 @@ const envConfigPath = "configs/main.json"
 
 // Config is the project root level configuration.
 type Config struct {
-	Development bool `json:"development"`
+	Development bool   `json:"development"`
+	URL         string `json:"url"`
 	Logger      struct {
 		Level  string `json:"level"`
 		Format string `json:"format"`

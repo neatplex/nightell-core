@@ -34,14 +34,34 @@ func (m *Mailer) Send(to, topic, message string) {
 	m.l.Info("mailer: sent successfully", zap.String("to", to))
 }
 
-func (m *Mailer) SendWellcome(to, username string) {
+func (m *Mailer) SendWelcome(to, username string) {
 	message := strings.Join([]string{
-		"Hey " + username + "!",
+		"Dear " + username + ",",
 		"Congratulations on successfully registering with Nightell!",
 		"You can now sign in using our app and share your voice with the world...",
 		"https://nightell.neatplex.com",
 	}, "\r\n")
 	m.Send(to, "Welcome to Nightell!", message)
+}
+
+func (m *Mailer) SendDeleteAccount(to, username, link string) {
+	message := strings.Join([]string{
+		"Dear " + username + ",",
+		"We have received a request to delete your account associated with this email address.",
+		"Please note that deleting your account is a permanent action and cannot be undone. " +
+			"All your data, including any saved preferences and history, will be permanently erased.",
+		"If you did not make this request, please ignore this email. Your account will remain unchanged.",
+		"To confirm the deletion of your account, please click the link below:",
+		link,
+		"",
+		"If you have any questions or need assistance, please contact our support team at nightell@neatplex.com.",
+		"Thank you for being a part of our community.",
+		"",
+		"Best regards,",
+		"Nightell team from Neatplex,",
+		"https://nightell.neatplex.com.",
+	}, "\r\n")
+	m.Send(to, "Nightell: Delete Account", message)
 }
 
 func New(c *config.Config, l *logger.Logger) *Mailer {

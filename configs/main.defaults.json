@@ -1,5 +1,6 @@
 {
   "development": false,
+  "url": "https://nightell.neatplex.com",
   "logger": {
     "level": "warn",
     "format": "2006-01-02 15:04:05.000"

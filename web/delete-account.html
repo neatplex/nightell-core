@@ -34,14 +34,15 @@
         </p>
         <p>Please confirm that you want to delete your account by entering your email below and clicking the button.</p>
         <p class="alert alert-danger">
-            <strong>Note:</strong> Once deleted, you will lose access to all your data and this action cannot be reversed.
+            <strong>Note:</strong> Once deleted, you will lose access to all your data and this action cannot be
+            reversed.
         </p>
-        <form action="/delete_account" method="POST">
+        <form action="/delete-account-request" method="POST" id="form">
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="you@domain.com" required>
             </div>
-            <button type="submit" class="btn btn-danger">Delete Account</button>
+            <button type="submit" class="btn btn-danger" id="delete-button">Delete Account</button>
             <a href="privacy.html" class="btn btn-outline-secondary">Privacy Policy</a>
         </form>
     </main>
@@ -53,6 +54,39 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+<script>
+    document.getElementById('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const deleteButton = document.getElementById('delete-button');
+
+        deleteButton.disabled = true;
+
+        fetch('/delete-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email: email})
+        })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById('email').value = '';
+                alert(
+                    'Your request has been submitted successfully. ' +
+                    'If an account is associated with this email, a confirmation email will be sent shortly.'
+                );
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting your account.');
+            })
+            .finally(() => {
+                deleteButton.disabled = false;
+            });
+    });
+</script>
 
 </body>
 </html>

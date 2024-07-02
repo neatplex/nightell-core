@@ -83,6 +83,7 @@ func (d *Database) migrate() error {
 		&models.File{},
 		&models.Like{},
 		&models.Followship{},
+		&models.Remove{},
 	)
 	if err != nil {
 		return errors.WithStack(err)

@@ -58,7 +58,7 @@ func (s *Service) Delete(user *models.User) error {
 
 func (s *Service) Create(user *models.User) error {
 	defer func() {
-		go s.mailer.SendWellcome(user.Email, user.Username)
+		go s.mailer.SendWelcome(user.Email, user.Username)
 	}()
 
 	r := s.database.Handler().Create(user)
