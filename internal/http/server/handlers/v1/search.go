@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func Search(ctr *container.Container) echo.HandlerFunc {
+func SearchPosts(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
@@ -25,6 +25,22 @@ func Search(ctr *container.Container) echo.HandlerFunc {
 
 		return ctx.JSON(http.StatusOK, map[string][]*models.Post{
 			"posts": posts,
+		})
+	}
+}
+
+func SearchUsers(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		users, err := ctr.UserService.Search(
+			ctx.QueryParams().Get("q"),
+			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		return ctx.JSON(http.StatusOK, map[string][]*models.User{
+			"users": users,
 		})
 	}
 }

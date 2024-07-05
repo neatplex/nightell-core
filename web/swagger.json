@@ -878,6 +878,67 @@
         }
       }
     },
+    "/search/posts": {
+      "get": {
+        "description": "Search posts",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "pink floyd"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of results to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last result retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Post"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/feed": {
       "get": {
         "description": "Index the feed posts",
