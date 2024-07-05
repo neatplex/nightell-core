@@ -53,7 +53,6 @@ func (s *Server) registerRoutes() {
 			// files
 			private.POST("files", v1.FilesStore(s.container, s.l))
 			// search
-			private.GET("search", v1.SearchPosts(s.container))
 			private.GET("search/posts", v1.SearchPosts(s.container))
 			private.GET("search/users", v1.SearchUsers(s.container))
 			// feed

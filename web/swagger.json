@@ -817,9 +817,9 @@
         }
       }
     },
-    "/search": {
+    "/search/posts": {
       "get": {
-        "description": "Search",
+        "description": "Search posts",
         "tags": [
           "Search"
         ],
@@ -878,9 +878,9 @@
         }
       }
     },
-    "/search/posts": {
+    "/search/users": {
       "get": {
-        "description": "Search posts",
+        "description": "Search users",
         "tags": [
           "Search"
         ],
@@ -892,7 +892,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "example": "pink floyd"
+              "example": "Bon Jovi"
             }
           },
           {
@@ -925,10 +925,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "posts": {
+                    "users": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Post"
+                        "$ref": "#/components/schemas/User"
                       }
                     }
                   }
