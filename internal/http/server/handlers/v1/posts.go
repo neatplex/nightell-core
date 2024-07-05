@@ -138,6 +138,21 @@ type postsUpdateCaptionRequest struct {
 	Description string `json:"description" validate:"max=300"`
 }
 
+func PostsShow(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if post == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"post": post,
+		})
+	}
+}
+
 func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)

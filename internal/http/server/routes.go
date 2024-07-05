@@ -43,6 +43,7 @@ func (s *Server) registerRoutes() {
 			// posts
 			private.GET("users/:userId/posts", v1.PostsIndex(s.container))
 			private.POST("posts", v1.PostsStore(s.container))
+			private.GET("posts/:postId", v1.PostsShow(s.container))
 			private.PUT("posts/:postId", v1.PostsUpdate(s.container))
 			private.DELETE("posts/:postId", v1.PostsDelete(s.container))
 			// likes

@@ -648,6 +648,29 @@
       }
     },
     "/posts/{postId}": {
+      "get": {
+        "description": "Get the post",
+        "tags": [
+          "Posts"
+        ],
+        "responses": {
+          "201": {
+            "description": "The post.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "post": {
+                      "$ref": "#/components/schemas/Post"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "description": "Update the post fields",
         "tags": [
