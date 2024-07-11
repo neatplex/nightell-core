@@ -17,7 +17,7 @@ type Mailer struct {
 func (m *Mailer) Send(to, topic, message string) {
 	body := []byte(strings.Join([]string{
 		"Subject: " + topic,
-		"From: " + "Nightell" + " <" + m.c.Mailer.Username + ">",
+		"User: " + "Nightell" + " <" + m.c.Mailer.Username + ">",
 		"To: " + to,
 		"\r\n" + message,
 	}, "\r\n"))

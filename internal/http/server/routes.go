@@ -58,6 +58,10 @@ func (s *Server) registerRoutes() {
 			private.GET("search/users", v1.SearchUsers(s.container))
 			// feed
 			private.GET("feed", v1.Feed(s.container))
+			// chats
+			private.GET("chats", v1.ChatsIndex(s.container))
+			private.POST("chats", v1.ChatsStore(s.container))
+
 		}
 	}
 }

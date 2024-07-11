@@ -16,7 +16,7 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 		posts, err := ctr.PostService.Feed(
 			user.ID,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
-			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 20),
 		)
 		if err != nil {
 			return errors.WithStack(err)
