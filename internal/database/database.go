@@ -84,6 +84,8 @@ func (d *Database) migrate() error {
 		&models.Like{},
 		&models.Followship{},
 		&models.Remove{},
+		&models.Chat{},
+		&models.Message{},
 	)
 	if err != nil {
 		return errors.WithStack(err)
