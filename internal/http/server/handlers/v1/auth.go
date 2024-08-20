@@ -15,21 +15,21 @@ import (
 type signUpRequest struct {
 	Username string `json:"username" validate:"required,min=1,max=20"`
 	Email    string `json:"email" validate:"required,email,max=191"`
-	Password string `json:"password" validate:"required,min=8,max=191"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 type signInEmailRequest struct {
 	Email    string `json:"email" validate:"required,min=1,max=191"`
-	Password string `json:"password" validate:"required,min=1,max=191"`
+	Password string `json:"password" validate:"required,min=1"`
 }
 
 type signInUsernameRequest struct {
 	Username string `json:"username" validate:"required,min=1,max=191"`
-	Password string `json:"password" validate:"required,min=1,max=191"`
+	Password string `json:"password" validate:"required,min=1"`
 }
 
 type signInGoogleRequest struct {
-	Token string `json:"google_token" validate:"required,min=1,max=1024"`
+	Token string `json:"google_token" validate:"required"`
 }
 
 func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
