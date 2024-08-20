@@ -41,7 +41,7 @@ func (s *Server) Serve() {
 	s.E.Use(middleware.CORS())
 	s.E.Use(middleware.Static("web"))
 	s.E.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
-	s.E.Use(middleware.BodyLimit("20M"))
+	s.E.Use(middleware.BodyLimit("6M"))
 
 	s.registerRoutes()
 

@@ -7,7 +7,7 @@ type File struct {
 	UserID    uint64    `json:"user_id"`
 	User      *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
 	Extension Extension `gorm:"index" json:"extension"`
-	Path      string    `gorm:"size=128" json:"path"`
+	Path      string    `gorm:"size:255" json:"path"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

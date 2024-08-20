@@ -6,11 +6,11 @@ import (
 
 type User struct {
 	ID        uint64    `gorm:"primaryKey" json:"id"`
-	Name      string    `json:"name"`
+	Name      string    `gorm:"size:255" json:"name"`
 	Username  string    `gorm:"unique" json:"username"`
-	Password  string    `json:"-"`
+	Password  string    `gorm:"size:255" json:"-"`
 	Email     string    `gorm:"unique" json:"email"`
-	Bio       string    `json:"bio"`
+	Bio       string    `gorm:"size:255" json:"bio"`
 	IsBanned  bool      `gorm:"index" json:"-"`
 	ImageID   *uint64   `json:"image_id"`
 	Image     *File     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"image"`

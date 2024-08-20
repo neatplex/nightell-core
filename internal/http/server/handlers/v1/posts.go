@@ -35,7 +35,7 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 
 type postsStoreRequest struct {
 	Title       string  `json:"title" validate:"required,min=1,max=50"`
-	Description string  `json:"description" validate:"max=300"`
+	Description string  `json:"description" validate:"max=255"`
 	AudioID     uint64  `json:"audio_id" validate:"required"`
 	ImageID     *uint64 `json:"image_id"`
 }
