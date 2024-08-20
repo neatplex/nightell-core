@@ -11,10 +11,11 @@ type Service struct {
 	database *database.Database
 }
 
-func (s *Service) Index(userId uint64) ([]*models.Post, error) {
+func (s *Service) Index(userId uint64, lastId uint64, count int) ([]*models.Post, error) {
 	var posts []*models.Post
 	r := s.database.Handler().
 		Where("user_id = ?", userId).
+		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Audio").
 		Preload("Image").
 		Preload("User").

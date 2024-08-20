@@ -19,7 +19,11 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		posts, err := ctr.PostService.Index(user.ID)
+		posts, err := ctr.PostService.Index(
+			user.ID,
+			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
+		)
 		if err != nil {
 			return errors.WithStack(err)
 		}

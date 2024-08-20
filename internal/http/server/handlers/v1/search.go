@@ -17,7 +17,7 @@ func SearchPosts(ctr *container.Container) echo.HandlerFunc {
 			ctx.QueryParams().Get("q"),
 			user.ID,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
-			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
 		if err != nil {
 			return errors.WithStack(err)
@@ -34,7 +34,7 @@ func SearchUsers(ctr *container.Container) echo.HandlerFunc {
 		users, err := ctr.UserService.Search(
 			ctx.QueryParams().Get("q"),
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
-			utils.StringToInt(ctx.QueryParams().Get("count"), 10),
+			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
 		if err != nil {
 			return errors.WithStack(err)

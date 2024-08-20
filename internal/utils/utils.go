@@ -14,10 +14,13 @@ func StringToID(id string, placeholder uint64) uint64 {
 	return r
 }
 
-func StringToInt(number string, placeholder int) int {
+func StringToInt(number string, max, placeholder int) int {
 	r, err := strconv.Atoi(number)
 	if err != nil {
 		return placeholder
+	}
+	if r > max {
+		return max
 	}
 	return r
 }
