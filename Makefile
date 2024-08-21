@@ -1,16 +1,16 @@
 DIR := $(shell pwd)
 GO_CI := golangci/golangci-lint:v1.59.1
 
-.PHONY: dev-start
-dev-start:
-	@docker compose -f compose.dev.yml up -d
+.PHONY: local-up
+local-up:
+	@docker compose -f compose.local.yml up -d
 
-.PHONY: dev-stop
-dev-stop:
-	@docker compose -f compose.dev.yml down
+.PHONY: local-down
+local-down:
+	@docker compose -f compose.local.yml down
 
-.PHONY: dev-run
-dev-run:
+.PHONY: local-run
+local-run:
 	@go run main.go serve
 
 .PHONY: lint

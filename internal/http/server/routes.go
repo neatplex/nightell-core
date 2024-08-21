@@ -23,6 +23,8 @@ func (s *Server) registerRoutes() {
 			public.POST("auth/sign-in/email", v1.AuthSignInEmail(s.container))
 			public.POST("auth/sign-in/username", v1.AuthSignInUsername(s.container))
 			public.POST("auth/sign-in/google", v1.AuthSignInGoogle(s.container, s.config))
+			public.POST("auth/otp/email/generate", v1.AuthOtpEmailGenerate(s.container))
+			public.POST("auth/otp/email/submit", v1.AuthOtpEmailSubmit(s.container))
 		}
 
 		private := v1Api.Group("/", mw.Authorize(s.container))

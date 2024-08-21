@@ -11,6 +11,105 @@
     }
   ],
   "paths": {
+    "/auth/otp/email/generate": {
+      "post": {
+        "description": "Generate OTP in order to sign up/in",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "i@miladrahimi.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The OTP generated and mailed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ttl": {
+                      "type": "integer",
+                      "default": "300",
+                      "description": "TTL (time to live) is number of seconds that otp is valid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/otp/email/submit": {
+      "post": {
+        "description": "Submit OTP received by Email",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "i@miladrahimi.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "012345",
+                    "description": "The OTP received by email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The Signed in/up user and auth token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/sign-up": {
       "post": {
         "description": "Sign up new user and get the user details and authentication token",
@@ -290,7 +389,7 @@
     },
     "/profile/bio": {
       "patch": {
-        "description": "Update bio(graphy) of the authenticated user",
+        "description": "Update biography of the authenticated user",
         "tags": [
           "Profile"
         ],
@@ -334,7 +433,7 @@
     },
     "/profile/username": {
       "patch": {
-        "description": "Update username of the authenticated user ",
+        "description": "Update username of the authenticated user",
         "tags": [
           "Profile"
         ],

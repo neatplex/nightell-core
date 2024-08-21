@@ -7,6 +7,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/services/file"
 	"github.com/neatplex/nightell-core/internal/services/followship"
 	"github.com/neatplex/nightell-core/internal/services/like"
+	"github.com/neatplex/nightell-core/internal/services/otp"
 	"github.com/neatplex/nightell-core/internal/services/post"
 	"github.com/neatplex/nightell-core/internal/services/remove"
 	"github.com/neatplex/nightell-core/internal/services/token"
@@ -21,6 +22,7 @@ type Container struct {
 	FileService       *file.Service
 	LikeService       *like.Service
 	FollowshipService *followship.Service
+	OtpService        *otp.Service
 }
 
 func New(d *database.Database, s3 *s3.S3, m *mailer.Mailer) *Container {
@@ -32,5 +34,6 @@ func New(d *database.Database, s3 *s3.S3, m *mailer.Mailer) *Container {
 		FileService:       file.New(d, s3),
 		LikeService:       like.New(d),
 		FollowshipService: followship.New(d),
+		OtpService:        otp.New(m),
 	}
 }

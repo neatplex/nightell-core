@@ -32,6 +32,15 @@ type signInGoogleRequest struct {
 	Token string `json:"google_token" validate:"required"`
 }
 
+type otpEmailGetRequest struct {
+	Email string `json:"email" validate:"required,email,max=191"`
+}
+
+type otpEmailValidateRequest struct {
+	Email string `json:"email" validate:"required,email,max=191"`
+	Otp   string `json:"otp" validate:"required"`
+}
+
 func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signUpRequest
@@ -101,6 +110,93 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			"user":  user,
 			"token": token,
 		})
+	}
+}
+
+func AuthOtpEmailGenerate(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var r otpEmailGetRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		ttl := ctr.OtpService.Email(r.Email)
+
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"ttl": ttl,
+		})
+	}
+}
+
+func AuthOtpEmailSubmit(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var r otpEmailValidateRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		isValid := ctr.OtpService.Check(r.Email, r.Otp)
+		if !isValid {
+			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "The OTP (one-time password) is not valid.",
+			})
+		}
+
+		user, err := ctr.UserService.FindBy("email", r.Email)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if user != nil {
+			token, err := ctr.TokenService.Create(user)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			return ctx.JSON(http.StatusCreated, map[string]interface{}{
+				"user":  user,
+				"token": token,
+			})
+		} else {
+			err = ctr.UserService.Create(&models.User{
+				Username: r.Email,
+				Email:    r.Email,
+				IsBanned: false,
+				Password: "",
+			})
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			user, err = ctr.UserService.FindBy("email", r.Email)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			token, err := ctr.TokenService.Create(user)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			return ctx.JSON(http.StatusCreated, map[string]interface{}{
+				"user":  user,
+				"token": token,
+			})
+		}
 	}
 }
 
