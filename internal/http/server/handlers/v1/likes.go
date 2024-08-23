@@ -11,7 +11,7 @@ import (
 
 func LikesIndex(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		posts, err := ctr.LikeService.IndexByPostIDWithUser(
+		posts, err := ctr.LikeService.IndexByPostId(
 			utils.StringToID(ctx.Param("postId"), 0),
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),

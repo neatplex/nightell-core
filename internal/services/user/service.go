@@ -24,9 +24,6 @@ func (s *Service) FindBy(field string, value interface{}) (*models.User, error) 
 
 func (s *Service) Search(q string, lastId uint64, count int) ([]*models.User, error) {
 	var users []*models.User
-	if count > 100 {
-		count = 100
-	}
 	r := s.database.Handler().
 		Where("(name LIKE ? OR username LIKE ?)", "%"+q+"%", "%"+q+"%").
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).

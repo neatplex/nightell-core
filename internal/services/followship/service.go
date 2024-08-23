@@ -19,30 +19,24 @@ func (s *Service) FindByIds(followerID, followeeID uint64) (*models.Followship, 
 	return &followship, errors.Wrapf(r.Error, "followerId: %v, followeeId: %v", followerID, followeeID)
 }
 
-func (s *Service) IndexFollowers(userId uint64, lastId uint64, count int) ([]*models.Followship, error) {
+func (s *Service) IndexFollowers(userId uint64, lastUserId uint64, count int) ([]*models.Followship, error) {
 	var followships []*models.Followship
-	if count > 100 {
-		count = 100
-	}
 	r := s.database.Handler().
 		Preload("Follower").
 		Where("followee_id = ?", userId).
-		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
+		Where("follower_id < ? ORDER BY follower_id DESC LIMIT ?", lastUserId, count).
 		Find(&followships)
-	return followships, errors.Wrapf(r.Error, "userId: %v, lastId: %v, count: %v", userId, lastId, count)
+	return followships, errors.Wrapf(r.Error, "userId: %v, lastUserId: %v, count: %v", userId, lastUserId, count)
 }
 
-func (s *Service) IndexFollowings(userId uint64, lastId uint64, count int) ([]*models.Followship, error) {
+func (s *Service) IndexFollowings(userId uint64, lastUserId uint64, count int) ([]*models.Followship, error) {
 	var followships []*models.Followship
-	if count > 100 {
-		count = 100
-	}
 	r := s.database.Handler().
 		Preload("Followee").
 		Where("follower_id = ?", userId).
-		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
+		Where("followee_id < ? ORDER BY followee_id DESC LIMIT ?", lastUserId, count).
 		Find(&followships)
-	return followships, errors.Wrapf(r.Error, "userId: %v, lastId: %v, count: %v", userId, lastId, count)
+	return followships, errors.Wrapf(r.Error, "userId: %v, lastUserId: %v, count: %v", userId, lastUserId, count)
 }
 
 func (s *Service) CountFollowers(userId uint64) (int64, error) {
