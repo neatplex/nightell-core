@@ -38,10 +38,10 @@ func (s *Server) registerRoutes() {
 			private.DELETE("profile", v1.ProfileDelete(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))
-			private.GET("users/:userId/followers", v1.UsersFollowers(s.container))
 			private.GET("users/:userId/followings", v1.UsersFollowings(s.container))
-			private.POST("users/:userId/followings/:followeeId", v1.UsersFollowingsStore(s.container))
-			private.DELETE("users/:userId/followings/:followeeId", v1.UsersFollowingsDelete(s.container))
+			private.GET("users/:userId/followers", v1.UsersFollowers(s.container))
+			private.POST("users/:userId/followers", v1.UsersFollowersStore(s.container))
+			private.DELETE("users/:userId/followers", v1.UsersFollowersDelete(s.container))
 			// posts
 			private.GET("users/:userId/posts", v1.PostsIndex(s.container))
 			private.POST("posts", v1.PostsStore(s.container))

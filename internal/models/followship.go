@@ -4,9 +4,9 @@ import "time"
 
 type Followship struct {
 	ID         uint64    `gorm:"primaryKey" json:"id"`
-	FollowerID uint64    `json:"follower_id"`
+	FollowerID uint64    `gorm:"index:idx_follower_id_followee_id,priority:1" json:"follower_id"`
 	Follower   *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"follower"`
-	FolloweeID uint64    `json:"followee_id"`
+	FolloweeID uint64    `gorm:"index:idx_follower_id_followee_id,priority:2" json:"followee_id"`
 	Followee   *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"followee"`
 	CreatedAt  time.Time `json:"created_at"`
 }

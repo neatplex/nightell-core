@@ -4,6 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/database"
 	"github.com/neatplex/nightell-core/internal/models"
+	"gorm.io/gorm"
 )
 
 type Service struct {
@@ -15,7 +16,10 @@ func (s *Service) FindByIds(followerID, followeeID uint64) (*models.Followship, 
 	r := s.database.Handler().
 		Where("follower_id = ?", followerID).
 		Where("followee_id = ?", followeeID).
-		Find(&followship)
+		First(&followship)
+	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 	return &followship, errors.Wrapf(r.Error, "followerId: %v, followeeId: %v", followerID, followeeID)
 }
 

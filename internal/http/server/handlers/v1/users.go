@@ -7,7 +7,6 @@ import (
 	"github.com/neatplex/nightell-core/internal/services/container"
 	"github.com/neatplex/nightell-core/internal/utils"
 	"net/http"
-	"strconv"
 )
 
 func UsersShow(ctr *container.Container) echo.HandlerFunc {
@@ -30,10 +29,26 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
+		authUser := ctx.Get("user").(*models.User)
+
+		relation, err := ctr.FollowshipService.FindByIds(user.ID, authUser.ID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		followsMe := relation != nil
+
+		relation, err = ctr.FollowshipService.FindByIds(authUser.ID, user.ID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		followedByMe := relation != nil
+
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
 			"user":             user,
 			"followers_count":  followersCount,
 			"followings_count": followingsCount,
+			"follows_me":       followsMe,
+			"followed_by_me":   followedByMe,
 		})
 	}
 }
@@ -98,17 +113,18 @@ func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
+func UsersFollowersStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user := ctx.Get("user").(*models.User)
+		userId := utils.StringToID(ctx.Param("userId"), 0)
+		authUser := ctx.Get("user").(*models.User)
 
-		if strconv.FormatUint(user.ID, 10) == ctx.Param("followeeId") {
+		if authUser.ID == userId {
 			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
 				"message": "You cannot follow yourself!",
 			})
 		}
 
-		followee, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("followeeId"), 0))
+		followee, err := ctr.UserService.FindBy("id", userId)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -116,7 +132,7 @@ func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if _, err = ctr.FollowshipService.Create(followee.ID, user.ID); err != nil {
+		if _, err = ctr.FollowshipService.Create(followee.ID, authUser.ID); err != nil {
 			return errors.WithStack(err)
 		}
 
@@ -124,24 +140,17 @@ func UsersFollowingsStore(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func UsersFollowingsDelete(ctr *container.Container) echo.HandlerFunc {
+func UsersFollowersDelete(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user := ctx.Get("user").(*models.User)
+		userId := utils.StringToID(ctx.Param("userId"), 0)
+		authUser := ctx.Get("user").(*models.User)
 
-		if strconv.FormatUint(user.ID, 10) == ctx.Param("followeeId") {
-			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
-				"message": "You cannot follow yourself!",
-			})
-		}
-
-		followship, err := ctr.FollowshipService.FindByIds(
-			user.ID, utils.StringToID(ctx.Param("followeeId"), 0),
-		)
+		followship, err := ctr.FollowshipService.FindByIds(authUser.ID, userId)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 		if followship == nil {
-			return ctx.NoContent(http.StatusNotFound)
+			return ctx.NoContent(http.StatusNoContent)
 		}
 
 		err = ctr.FollowshipService.Delete(followship.ID)
