@@ -594,6 +594,14 @@
                     "followings_count": {
                       "type": "integer",
                       "example": 666
+                    },
+                    "followed_by_me": {
+                      "type": "boolean",
+                      "description": "True if user is followed by me"
+                    },
+                    "follows_me": {
+                      "type": "boolean",
+                      "description": "True if user follows me"
                     }
                   }
                 }
@@ -629,6 +637,28 @@
             }
           }
         }
+      },
+      "post": {
+        "description": "Store myself as a new follower for the user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "201": {
+            "description": "The new relation created."
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete myself as a follower from the list of followers",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "201": {
+            "description": "The relation deleted."
+          }
+        }
       }
     },
     "/users/{userId}/followings": {
@@ -655,30 +685,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/users/{userId}/followings/{followeeId}": {
-      "post": {
-        "description": "Store a new following for the user",
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "201": {
-            "description": "The new post created."
-          }
-        }
-      },
-      "delete": {
-        "description": "Delete the followee from the list of followings",
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "201": {
-            "description": "The following deleted."
           }
         }
       }
