@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightell-core/internal/config"
-	"github.com/neatplex/nightell-core/internal/mailer"
-	"github.com/neatplex/nightell-core/internal/services/container"
+	"github.com/neatplex/nightell-core/internal/container"
 	"net/http"
 )
 
@@ -14,7 +12,7 @@ type deleteRequest struct {
 	Email string `json:"email" validate:"required,email"`
 }
 
-func DeleteRequest(ctr *container.Container, cfg *config.Config, mailer *mailer.Mailer) echo.HandlerFunc {
+func DeleteRequest(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r deleteRequest
 		if err := ctx.Bind(&r); err != nil {
@@ -38,8 +36,8 @@ func DeleteRequest(ctr *container.Container, cfg *config.Config, mailer *mailer.
 			if err != nil {
 				return errors.WithStack(err)
 			}
-			link := fmt.Sprintf("%s/delete-account?q=%s", cfg.URL, code)
-			mailer.SendDeleteAccount(user.Email, user.Username, link)
+			link := fmt.Sprintf("%s/delete-account?q=%s", ctr.Config.URL, code)
+			ctr.Mailer.SendDeleteAccount(user.Email, user.Username, link)
 		}
 
 		return ctx.JSON(200, map[string]string{

@@ -1,7 +1,10 @@
 package container
 
 import (
+	"github.com/neatplex/nightell-core/internal/config"
 	"github.com/neatplex/nightell-core/internal/database"
+	"github.com/neatplex/nightell-core/internal/gc"
+	"github.com/neatplex/nightell-core/internal/logger"
 	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/s3"
 	"github.com/neatplex/nightell-core/internal/services/file"
@@ -15,6 +18,12 @@ import (
 )
 
 type Container struct {
+	Config            *config.Config
+	Logger            *logger.Logger
+	S3                *s3.S3
+	DB                *database.Database
+	Mailer            *mailer.Mailer
+	GC                *gc.Gc
 	UserService       *user.Service
 	TokenService      *token.Service
 	RemoveService     *remove.Service
@@ -25,15 +34,28 @@ type Container struct {
 	OtpService        *otp.Service
 }
 
-func New(d *database.Database, s3 *s3.S3, m *mailer.Mailer) *Container {
+func New(
+	config *config.Config,
+	logger *logger.Logger,
+	s3 *s3.S3,
+	db *database.Database,
+	mailer *mailer.Mailer,
+	gc *gc.Gc,
+) *Container {
 	return &Container{
-		UserService:       user.New(d, m),
-		TokenService:      token.New(d),
-		RemoveService:     remove.New(d),
-		PostService:       post.New(d),
-		FileService:       file.New(d, s3),
-		LikeService:       like.New(d),
-		FollowshipService: followship.New(d),
-		OtpService:        otp.New(m),
+		Config:            config,
+		Logger:            logger,
+		S3:                s3,
+		DB:                db,
+		Mailer:            mailer,
+		GC:                gc,
+		UserService:       user.New(db, mailer),
+		TokenService:      token.New(db),
+		RemoveService:     remove.New(db),
+		PostService:       post.New(db),
+		FileService:       file.New(db, s3),
+		LikeService:       like.New(db),
+		FollowshipService: followship.New(db),
+		OtpService:        otp.New(mailer),
 	}
 }

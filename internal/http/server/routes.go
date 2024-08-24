@@ -11,7 +11,7 @@ func (s *Server) registerRoutes() {
 	s.E.GET("/healthz", handlers.Healthz)
 
 	// delete-account
-	s.E.POST("/delete-request", handlers.DeleteRequest(s.container, s.config, s.mailer))
+	s.E.POST("/delete-request", handlers.DeleteRequest(s.container))
 	s.E.GET("/delete-account", handlers.DeleteAccount(s.container))
 
 	v1Api := s.E.Group("/api/v1", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(5)))
@@ -22,7 +22,7 @@ func (s *Server) registerRoutes() {
 			public.POST("auth/sign-up", v1.AuthSignUp(s.container))
 			public.POST("auth/sign-in/email", v1.AuthSignInEmail(s.container))
 			public.POST("auth/sign-in/username", v1.AuthSignInUsername(s.container))
-			public.POST("auth/sign-in/google", v1.AuthSignInGoogle(s.container, s.config))
+			public.POST("auth/sign-in/google", v1.AuthSignInGoogle(s.container))
 			public.POST("auth/otp/email/generate", v1.AuthOtpEmailGenerate(s.container))
 			public.POST("auth/otp/email/submit", v1.AuthOtpEmailSubmit(s.container))
 		}
@@ -53,7 +53,7 @@ func (s *Server) registerRoutes() {
 			private.POST("posts/:postId/likes", v1.LikesStore(s.container))
 			private.DELETE("likes/:likeId", v1.LikesDelete(s.container))
 			// files
-			private.POST("files", v1.FilesStore(s.container, s.l))
+			private.POST("files", v1.FilesStore(s.container))
 			// search
 			private.GET("search", v1.SearchPosts(s.container))
 			private.GET("search/posts", v1.SearchPosts(s.container))

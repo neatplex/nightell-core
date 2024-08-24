@@ -5,12 +5,9 @@ import (
 	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/container"
 	middleware2 "github.com/neatplex/nightell-core/internal/http/server/middleware"
 	"github.com/neatplex/nightell-core/internal/http/server/validator"
-	"github.com/neatplex/nightell-core/internal/logger"
-	"github.com/neatplex/nightell-core/internal/mailer"
-	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -19,25 +16,25 @@ import (
 
 type Server struct {
 	E         *echo.Echo
-	config    *config.Config
-	l         *logger.Logger
 	container *container.Container
-	mailer    *mailer.Mailer
 }
 
-func New(config *config.Config, logger *logger.Logger, container *container.Container, mailer *mailer.Mailer) *Server {
+func New(c *container.Container) *Server {
 	e := echo.New()
 	e.HideBanner = true
-	e.Server.ReadTimeout = time.Duration(config.HttpServer.ReadTimeout) * time.Second
-	e.Server.WriteTimeout = time.Duration(config.HttpServer.WriteTimeout) * time.Second
-	e.Server.ReadHeaderTimeout = time.Duration(config.HttpServer.ReadHeaderTimeout) * time.Second
-	e.Server.IdleTimeout = time.Duration(config.HttpServer.IdleTimeout) * time.Second
+	e.Server.ReadTimeout = time.Duration(c.Config.HttpServer.ReadTimeout) * time.Second
+	e.Server.WriteTimeout = time.Duration(c.Config.HttpServer.WriteTimeout) * time.Second
+	e.Server.ReadHeaderTimeout = time.Duration(c.Config.HttpServer.ReadHeaderTimeout) * time.Second
+	e.Server.IdleTimeout = time.Duration(c.Config.HttpServer.IdleTimeout) * time.Second
 	e.Validator = validator.New()
-	return &Server{E: e, config: config, l: logger, container: container, mailer: mailer}
+	return &Server{E: e, container: c}
 }
 
 func (s *Server) Serve() {
-	s.E.Use(middleware2.Logger(s.l))
+	l := s.container.Logger
+	c := s.container.Config
+
+	s.E.Use(middleware2.Logger(l))
 	s.E.Use(middleware.CORS())
 	s.E.Use(middleware.Static("web"))
 	s.E.Use(middleware.GzipWithConfig(middleware.GzipConfig{Level: 5}))
@@ -46,9 +43,9 @@ func (s *Server) Serve() {
 	s.registerRoutes()
 
 	go func() {
-		listen := s.config.HttpServer.Host + ":" + strconv.Itoa(s.config.HttpServer.Port)
+		listen := c.HttpServer.Host + ":" + strconv.Itoa(c.HttpServer.Port)
 		if err := s.E.Start(listen); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			s.l.Error("cannot start the http server", zap.String("listen", listen), zap.Error(err))
+			l.Error("cannot start the http server", zap.String("listen", listen), zap.Error(err))
 		}
 	}()
 }
@@ -58,7 +55,7 @@ func (s *Server) Close() {
 	defer cancel()
 
 	if err := s.E.Shutdown(c); err != nil {
-		s.l.Error("cannot close the http server", zap.Error(err))
+		s.container.Logger.Error("cannot close the http server", zap.Error(err))
 	}
-	s.l.Debug("http server closed successfully")
+	s.container.Logger.Debug("http server closed successfully")
 }

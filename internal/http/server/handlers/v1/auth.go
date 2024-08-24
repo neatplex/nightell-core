@@ -3,9 +3,8 @@ package v1
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/container"
 	"github.com/neatplex/nightell-core/internal/models"
-	"github.com/neatplex/nightell-core/internal/services/container"
 	"github.com/neatplex/nightell-core/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/api/idtoken"
@@ -288,7 +287,7 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthSignInGoogle(ctr *container.Container, cfg *config.Config) echo.HandlerFunc {
+func AuthSignInGoogle(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signInGoogleRequest
 		if err := ctx.Bind(&r); err != nil {
@@ -302,7 +301,7 @@ func AuthSignInGoogle(ctr *container.Container, cfg *config.Config) echo.Handler
 			})
 		}
 
-		payload, err := idtoken.Validate(ctx.Request().Context(), r.Token, cfg.Google.OAuthClientId)
+		payload, err := idtoken.Validate(ctx.Request().Context(), r.Token, ctr.Config.Google.OAuthClientId)
 		if err != nil {
 			return ctx.JSON(http.StatusUnauthorized, map[string]string{
 				"message": "Cannot fetch account from Google.",

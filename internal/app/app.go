@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/config"
+	"github.com/neatplex/nightell-core/internal/container"
 	"github.com/neatplex/nightell-core/internal/database"
 	"github.com/neatplex/nightell-core/internal/gc"
 	httpServer "github.com/neatplex/nightell-core/internal/http/server"
 	"github.com/neatplex/nightell-core/internal/logger"
 	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/s3"
-	"github.com/neatplex/nightell-core/internal/services/container"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
@@ -20,50 +20,51 @@ import (
 // App integrates the modules to serve.
 type App struct {
 	context    context.Context
-	Config     *config.Config
-	Logger     *logger.Logger
-	S3         *s3.S3
 	HttpServer *httpServer.Server
-	MySQL      *database.Database
 	Container  *container.Container
-	Mailer     *mailer.Mailer
-	Gc         *gc.Gc
 }
 
 // New creates an app from the given configuration file.
 func New() (a *App, err error) {
 	a = &App{}
 
-	a.Config = config.New()
-	if err = a.Config.Init(); err != nil {
-		return nil, errors.WithStack(err)
+	c := config.New()
+	if err = c.Init(); err != nil {
+		return a, errors.WithStack(err)
 	}
-	a.Logger = logger.New(a.Config.Logger.Level, a.Config.Logger.Format, a.Config.Development)
-	if err = a.Logger.Init(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-	a.Logger.Debug("app: Config & LoggerProxy initialized")
 
-	a.Mailer = mailer.New(a.Config, a.Logger)
-	a.MySQL = database.New(a.Config, a.Logger)
-	a.S3 = s3.New(a.Config, a.Logger)
-	a.Container = container.New(a.MySQL, a.S3, a.Mailer)
-	a.Gc = gc.New(a.MySQL, a.S3, a.Logger)
-	a.HttpServer = httpServer.New(a.Config, a.Logger, a.Container, a.Mailer)
-	a.Logger.Debug("app: application modules initialized")
+	l := logger.New(c.Logger.Level, c.Logger.Format, c.Development)
+	if err = l.Init(); err != nil {
+		return a, errors.WithStack(err)
+	}
+
+	db := database.New(c, l)
+	if err = db.Init(); err != nil {
+		return a, errors.WithStack(err)
+	}
+
+	awsS3 := s3.New(c, l)
+	if err = awsS3.Init(); err != nil {
+		return a, errors.WithStack(err)
+	}
+
+	s3gc := gc.New(db, awsS3, l)
+	s3gc.Init()
+
+	m := mailer.New(c, l)
+
+	a.Container = container.New(c, l, awsS3, db, m, s3gc)
+	a.HttpServer = httpServer.New(a.Container)
+
 	a.setupSignalListener()
+
+	l.Debug("app: modules initialized")
 
 	return a, nil
 }
 
 func (a *App) Init() error {
-	if err := a.MySQL.Init(); err != nil {
-		return errors.WithStack(err)
-	}
-	if err := a.S3.Init(); err != nil {
-		return errors.WithStack(err)
-	}
-	a.Gc.Init()
+
 	return nil
 }
 
@@ -77,7 +78,7 @@ func (a *App) setupSignalListener() {
 
 	go func() {
 		s := <-signalChannel
-		a.Logger.Info("app: system call", zap.String("signal", s.String()))
+		a.Container.Logger.Info("app: system call", zap.String("signal", s.String()))
 		cancel()
 	}()
 }
@@ -86,11 +87,11 @@ func (a *App) Close() {
 	if a.HttpServer != nil {
 		a.HttpServer.Close()
 	}
-	if a.MySQL != nil {
-		a.MySQL.Close()
+	if a.Container.DB != nil {
+		a.Container.DB.Close()
 	}
-	if a.Logger != nil {
-		a.Logger.Close()
+	if a.Container.Logger != nil {
+		a.Container.Logger.Close()
 	}
 }
 

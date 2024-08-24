@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/neatplex/nightell-core/internal/logger"
+	"github.com/neatplex/nightell-core/internal/container"
 	"github.com/neatplex/nightell-core/internal/models"
-	"github.com/neatplex/nightell-core/internal/services/container"
-	"go.uber.org/zap"
 	"net/http"
 )
 
-func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
+func FilesStore(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
@@ -24,7 +22,6 @@ func FilesStore(ctr *container.Container, l *logger.Logger) echo.HandlerFunc {
 
 		formFile, err := ctx.FormFile("file")
 		if err != nil {
-			l.Debug("cannot get form file", zap.Error(err))
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "File is not uploaded.",
 			})
