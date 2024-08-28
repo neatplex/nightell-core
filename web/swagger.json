@@ -870,7 +870,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "posts": {
+                    "likes": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Like"
@@ -918,6 +918,146 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/posts/{postId}/comments": {
+      "get": {
+        "description": "Index the post comments",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of comments to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last comment retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of the comments of a post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments": {
+      "get": {
+        "description": "Index the user comments",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of comments to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last comment retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "list of the comments of a post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "comments-store",
+        "description": "Store a new comment",
+        "tags": [
+          "Comments"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new comment created."
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "delete": {
+        "description": "Delete the comment",
+        "tags": [
+          "Comments"
+        ],
+        "responses": {
+          "204": {
+            "description": "The comment deleted."
+          },
+          "404": {
+            "description": "The comment not found."
           }
         }
       }
@@ -1213,7 +1353,7 @@
           "id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of post (uint64)"
+            "description": "Unique id (uint64)"
           },
           "user_id": {
             "type": "integer",
@@ -1229,6 +1369,34 @@
             "description": "Registration time"
           }
         }
+      },
+      "Comment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NewPost"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 13,
+                "description": "Unique id (uint64)"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "post": {
+                "$ref": "#/components/schemas/Post"
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2023-11-28T13:36:30.956Z",
+                "description": "Registration time"
+              }
+            }
+          }
+        ]
       },
       "Post": {
         "allOf": [
@@ -1326,6 +1494,26 @@
             "example": "Secret69",
             "minLength": 8,
             "description": "User password (between 8 and 128 characters)"
+          }
+        }
+      },
+      "NewComment": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of user (uint64)"
+          },
+          "post_id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of post (uint64)"
+          },
+          "text": {
+            "type": "string",
+            "example": "Wow! Nice...",
+            "description": "The comment text"
           }
         }
       },
