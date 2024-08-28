@@ -63,13 +63,13 @@ func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		if like.UserID != user.ID {
+		if like.UserId != user.Id {
 			return ctx.JSON(http.StatusForbidden, map[string]string{
 				"message": "You do not have permission to perform this action.",
 			})
 		}
 
-		if err = ctr.LikeService.Delete(like.ID); err != nil {
+		if err = ctr.LikeService.Delete(like.Id); err != nil {
 			return errors.WithStack(err)
 		}
 

@@ -19,25 +19,25 @@ func UsersShow(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
+		followersCount, err := ctr.FollowshipService.CountFollowers(user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
+		followingsCount, err := ctr.FollowshipService.CountFollowings(user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
 		authUser := ctx.Get("user").(*models.User)
 
-		relation, err := ctr.FollowshipService.FindByIds(user.ID, authUser.ID)
+		relation, err := ctr.FollowshipService.FindByIds(user.Id, authUser.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 		followsMe := relation != nil
 
-		relation, err = ctr.FollowshipService.FindByIds(authUser.ID, user.ID)
+		relation, err = ctr.FollowshipService.FindByIds(authUser.Id, user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -64,7 +64,7 @@ func UsersFollowers(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		followships, err := ctr.FollowshipService.IndexFollowers(
-			user.ID,
+			user.Id,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
@@ -94,7 +94,7 @@ func UsersFollowings(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		followships, err := ctr.FollowshipService.IndexFollowings(
-			user.ID,
+			user.Id,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
@@ -118,7 +118,7 @@ func UsersFollowersStore(ctr *container.Container) echo.HandlerFunc {
 		userId := utils.StringToID(ctx.Param("userId"), 0)
 		authUser := ctx.Get("user").(*models.User)
 
-		if authUser.ID == userId {
+		if authUser.Id == userId {
 			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
 				"message": "You cannot follow yourself!",
 			})
@@ -132,7 +132,7 @@ func UsersFollowersStore(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if _, err = ctr.FollowshipService.Create(followee.ID, authUser.ID); err != nil {
+		if _, err = ctr.FollowshipService.Create(followee.Id, authUser.Id); err != nil {
 			return errors.WithStack(err)
 		}
 
@@ -145,7 +145,7 @@ func UsersFollowersDelete(ctr *container.Container) echo.HandlerFunc {
 		userId := utils.StringToID(ctx.Param("userId"), 0)
 		authUser := ctx.Get("user").(*models.User)
 
-		followship, err := ctr.FollowshipService.FindByIds(authUser.ID, userId)
+		followship, err := ctr.FollowshipService.FindByIds(authUser.Id, userId)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -153,7 +153,7 @@ func UsersFollowersDelete(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNoContent)
 		}
 
-		err = ctr.FollowshipService.Delete(followship.ID)
+		err = ctr.FollowshipService.Delete(followship.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}

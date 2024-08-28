@@ -15,7 +15,7 @@ func SearchPosts(ctr *container.Container) echo.HandlerFunc {
 
 		posts, err := ctr.PostService.Search(
 			ctx.QueryParams().Get("q"),
-			user.ID,
+			user.Id,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)

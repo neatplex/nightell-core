@@ -64,8 +64,8 @@ func (s *Service) CountFollowings(userId uint64) (int64, error) {
 func (s *Service) Create(followeeID, followerID uint64) (*models.Followship, error) {
 	var followship models.Followship
 	r := s.database.Handler().Preload("Followee").FirstOrCreate(&followship, &models.Followship{
-		FollowerID: followerID,
-		FolloweeID: followeeID,
+		FollowerId: followerID,
+		FolloweeId: followeeID,
 	})
 	return &followship, errors.Wrapf(r.Error, "followerId: %v, followeeId: %v", followerID, followeeID)
 }

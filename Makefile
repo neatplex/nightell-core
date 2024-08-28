@@ -9,8 +9,8 @@ local-up:
 local-down:
 	@docker compose -f compose.local.yml down
 
-.PHONY: local-run
-local-run:
+.PHONY: local-serve
+local-serve:
 	@go run main.go serve
 
 .PHONY: lint

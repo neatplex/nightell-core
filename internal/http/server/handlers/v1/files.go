@@ -37,7 +37,7 @@ func FilesStore(ctr *container.Container) echo.HandlerFunc {
 		path := ctr.FileService.Path(extension)
 
 		err = ctr.FileService.Create(&models.File{
-			UserID:    user.ID,
+			UserId:    user.Id,
 			Extension: extension,
 			Path:      path,
 		})

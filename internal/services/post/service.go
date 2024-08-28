@@ -25,8 +25,8 @@ func (s *Service) Index(userId uint64, lastId uint64, count int) ([]*models.Post
 		return nil, errors.Wrapf(r.Error, "userId: %v", userId)
 	}
 	for _, post := range posts {
-		if err := s.attachLikes(userId, post); err != nil {
-			return nil, errors.Wrapf(err, "userId: %v, postId: %v", userId, post.ID)
+		if err := s.attachRelations(userId, post); err != nil {
+			return nil, errors.Wrapf(err, "userId: %v, postId: %v", userId, post.Id)
 		}
 	}
 	return posts, nil
@@ -45,11 +45,11 @@ func (s *Service) Feed(userId uint64, lastId uint64, count int) ([]*models.Post,
 		return nil, errors.Wrapf(r.Error, "userId: %v, lastId: %v, count: %v", userId, lastId, count)
 	}
 	for _, post := range posts {
-		if err := s.attachLikes(userId, post); err != nil {
+		if err := s.attachRelations(userId, post); err != nil {
 			return nil, errors.Wrapf(
 				err,
 				"userId: %v, lastId: %v, count: %v, postId: %v",
-				userId, lastId, count, post.ID,
+				userId, lastId, count, post.Id,
 			)
 		}
 	}
@@ -70,36 +70,55 @@ func (s *Service) Search(q string, userId uint64, lastId uint64, count int) ([]*
 		return nil, errors.Wrapf(r.Error, "userId: %v, q: %v, lastId: %v, count: %v", userId, q, lastId, count)
 	}
 	for _, post := range posts {
-		if err := s.attachLikes(userId, post); err != nil {
+		if err := s.attachRelations(userId, post); err != nil {
 			return nil, errors.Wrapf(
 				err,
 				"userId: %v, q: %v, lastId: %v, count: %v, postId: %v",
-				userId, q, lastId, count, post.ID,
+				userId, q, lastId, count, post.Id,
 			)
 		}
 	}
 	return posts, nil
 }
 
+func (s *Service) attachRelations(userId uint64, post *models.Post) error {
+	if err := s.attachLikes(userId, post); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return errors.WithStack(s.attachComments(post))
+}
+
 func (s *Service) attachLikes(userId uint64, post *models.Post) error {
 	var likes []*models.Like
 
 	r := s.database.Handler().
-		Where("post_id = ?", post.ID).
+		Where("post_id = ?", post.Id).
 		Where("user_id = ?", userId).
 		Preload("User").
 		Find(&likes)
 	if r.Error != nil {
-		return errors.Wrapf(r.Error, "userId: %v, postId: %v", userId, post.ID)
+		return errors.Wrapf(r.Error, "userId: %v, postId: %v", userId, post.Id)
 	}
 	post.Likes = likes
 
 	var count int64
-	r = s.database.Handler().Model(&models.Like{}).Where("post_id = ?", post.ID).Count(&count)
+	r = s.database.Handler().Model(&models.Like{}).Where("post_id = ?", post.Id).Count(&count)
 	if r.Error != nil {
-		return errors.Wrapf(r.Error, "postId: %v", post.ID)
+		return errors.Wrapf(r.Error, "postId: %v", post.Id)
 	}
 	post.LikesCount = uint64(count)
+
+	return nil
+}
+
+func (s *Service) attachComments(post *models.Post) error {
+	var count int64
+	r := s.database.Handler().Model(&models.Comment{}).Where("post_id = ?", post.Id).Count(&count)
+	if r.Error != nil {
+		return errors.Wrapf(r.Error, "postId: %v", post.Id)
+	}
+	post.CommentsCount = uint64(count)
 
 	return nil
 }
@@ -109,7 +128,7 @@ func (s *Service) Create(post *models.Post) (uint64, error) {
 	if r.Error != nil {
 		return 0, errors.Wrapf(r.Error, "post: %v", post)
 	}
-	return post.ID, nil
+	return post.Id, nil
 }
 
 func (s *Service) UpdateFields(post *models.Post, title, description string) *models.Post {
@@ -138,8 +157,8 @@ func (s *Service) FindById(id uint64) (*models.Post, error) {
 		}
 		return nil, errors.Wrapf(r.Error, "id: %v", id)
 	}
-	if err := s.attachLikes(post.UserID, &post); err != nil {
-		return nil, errors.Wrapf(err, "userId: %v, postId: %v", post.UserID, post.ID)
+	if err := s.attachRelations(post.UserId, &post); err != nil {
+		return nil, errors.Wrapf(err, "userId: %v, postId: %v", post.UserId, post.Id)
 	}
 	return &post, nil
 }

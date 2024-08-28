@@ -42,7 +42,7 @@ func (s *Service) UpdateName(user *models.User, name string) (*models.User, erro
 }
 
 func (s *Service) UpdateImage(user *models.User, imageID uint64) (*models.User, error) {
-	user.ImageID = &imageID
+	user.ImageId = &imageID
 	r := s.database.Handler().Save(user)
 	return user, errors.Wrapf(r.Error, "user: %v", user)
 }
@@ -55,7 +55,7 @@ func (s *Service) UpdateBio(user *models.User, bio string) (*models.User, error)
 
 func (s *Service) UpdateUsername(user *models.User, username string) (*models.User, error) {
 	oldUser, _ := s.FindBy("username", username)
-	if oldUser != nil && oldUser.ID != user.ID {
+	if oldUser != nil && oldUser.Id != user.Id {
 		return nil, ErrUsernameAlreadyExist
 	}
 

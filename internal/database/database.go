@@ -80,6 +80,7 @@ func (d *Database) migrate() error {
 		&models.User{},
 		&models.Token{},
 		&models.Post{},
+		&models.Comment{},
 		&models.File{},
 		&models.Like{},
 		&models.Followship{},
@@ -94,7 +95,7 @@ func (d *Database) migrate() error {
 
 func (d *Database) Close() {
 	if db, err := d.handler.DB(); err != nil {
-		d.l.Error("database: cannot get DB from GORM to close", zap.Error(err))
+		d.l.Error("database: cannot get Database from GORM to close", zap.Error(err))
 	} else {
 		if err = db.Close(); err != nil {
 			d.l.Error("database: cannot close database", zap.Error(err))

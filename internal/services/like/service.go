@@ -23,7 +23,7 @@ func (s *Service) IndexByPostId(postId uint64, lastId uint64, count int) ([]*mod
 
 func (s *Service) Create(user *models.User, post *models.Post) (*models.Like, error) {
 	var like models.Like
-	r := s.database.Handler().FirstOrCreate(&like, &models.Like{UserID: user.ID, PostID: post.ID})
+	r := s.database.Handler().FirstOrCreate(&like, &models.Like{UserId: user.Id, PostId: post.Id})
 	return &like, errors.Wrapf(r.Error, "user: %v, post: %v", user, post)
 }
 

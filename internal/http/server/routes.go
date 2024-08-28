@@ -48,6 +48,11 @@ func (s *Server) registerRoutes() {
 			private.GET("posts/:postId", v1.PostsShow(s.container))
 			private.PUT("posts/:postId", v1.PostsUpdate(s.container))
 			private.DELETE("posts/:postId", v1.PostsDelete(s.container))
+			// comments
+			private.GET("posts/:postId/comments", v1.CommentsIndexByPost(s.container))
+			private.GET("comments", v1.CommentsIndex(s.container))
+			private.POST("comments", v1.CommentsStore(s.container))
+			private.DELETE("comments/:commentId", v1.CommentsDelete(s.container))
 			// likes
 			private.GET("posts/:postId/likes", v1.LikesIndex(s.container))
 			private.POST("posts/:postId/likes", v1.LikesStore(s.container))

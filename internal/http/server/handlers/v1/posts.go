@@ -20,13 +20,14 @@ func PostsIndex(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		posts, err := ctr.PostService.Index(
-			user.ID,
+			user.Id,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
 		if err != nil {
 			return errors.WithStack(err)
 		}
+
 		return ctx.JSON(http.StatusCreated, map[string]interface{}{
 			"posts": posts,
 		})
@@ -65,7 +66,7 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 				"message": "Audio file not found.",
 			})
 		}
-		if s, _ := ctr.PostService.FindBy("audio_id", audio.ID); s != nil {
+		if s, _ := ctr.PostService.FindBy("audio_id", audio.Id); s != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "The selected file is already in use.",
 			})
@@ -91,12 +92,12 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "Image file not found.",
 				})
 			}
-			if s, _ := ctr.PostService.FindBy("image_id", image.ID); s != nil {
+			if s, _ := ctr.PostService.FindBy("image_id", image.Id); s != nil {
 				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 					"message": "The selected file is already in use.",
 				})
 			}
-			if s, _ := ctr.UserService.FindBy("image_id", image.ID); s != nil {
+			if s, _ := ctr.UserService.FindBy("image_id", image.Id); s != nil {
 				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 					"message": "The selected file is already in use.",
 				})
@@ -110,15 +111,15 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 					"message": "The selected file is not an image.",
 				})
 			}
-			imageId = &image.ID
+			imageId = &image.Id
 		}
 
 		id, err := ctr.PostService.Create(&models.Post{
-			UserID:        user.ID,
+			UserId:        user.Id,
 			Title:         r.Title,
 			Description:   r.Description,
-			AudioID:       audio.ID,
-			ImageID:       imageId,
+			AudioId:       audio.Id,
+			ImageId:       imageId,
 			LikesCount:    0,
 			CommentsCount: 0,
 		})
@@ -137,11 +138,6 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-type postsUpdateCaptionRequest struct {
-	Title       string `json:"title" validate:"required,min=1,max=50"`
-	Description string `json:"description" validate:"max=300"`
-}
-
 func PostsShow(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		post, err := ctr.PostService.FindById(utils.StringToID(ctx.Param("postId"), 0))
@@ -157,6 +153,11 @@ func PostsShow(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
+type postsUpdateCaptionRequest struct {
+	Title       string `json:"title" validate:"required,min=1,max=50"`
+	Description string `json:"description" validate:"max=300"`
+}
+
 func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
@@ -169,7 +170,7 @@ func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if post.UserID != user.ID {
+		if post.UserId != user.Id {
 			return ctx.JSON(http.StatusForbidden, map[string]string{
 				"message": "You do not have permission to perform this action.",
 			})
@@ -207,7 +208,7 @@ func PostsDelete(ctr *container.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 
-		if post.UserID != user.ID {
+		if post.UserId != user.Id {
 			return ctx.JSON(http.StatusForbidden, map[string]string{
 				"message": "You do not have permission to perform this action.",
 			})

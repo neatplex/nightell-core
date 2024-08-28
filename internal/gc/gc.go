@@ -38,14 +38,14 @@ func (g *Gc) cleanup() {
 	for _, file := range files {
 		var post *models.Post
 		r = g.database.Handler().
-			Where("audio_id = ?", file.ID).
-			Or("image_id = ?", file.ID).
+			Where("audio_id = ?", file.Id).
+			Or("image_id = ?", file.Id).
 			First(&post)
 		if r.Error != nil && !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			g.l.Error("gc: cannot fetch post", zap.Error(errors.WithStack(r.Error)))
 			return
 		}
-		if post == nil || post.ID == 0 {
+		if post == nil || post.Id == 0 {
 			if err := g.s3.Delete(file.Path); err != nil {
 				g.l.Error("gc: cannot delete s3 file", zap.Error(errors.WithStack(err)))
 				return
@@ -54,7 +54,7 @@ func (g *Gc) cleanup() {
 			if r.Error != nil {
 				g.l.Error("gc: cannot delete db file", zap.Error(errors.WithStack(r.Error)))
 			} else {
-				g.l.Info("gc: cleaned", zap.Uint64("id", file.ID), zap.String("path", file.Path))
+				g.l.Info("gc: cleaned", zap.Uint64("id", file.Id), zap.String("path", file.Path))
 			}
 		}
 	}

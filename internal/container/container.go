@@ -7,6 +7,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/logger"
 	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/s3"
+	"github.com/neatplex/nightell-core/internal/services/comment"
 	"github.com/neatplex/nightell-core/internal/services/file"
 	"github.com/neatplex/nightell-core/internal/services/followship"
 	"github.com/neatplex/nightell-core/internal/services/like"
@@ -21,13 +22,14 @@ type Container struct {
 	Config            *config.Config
 	Logger            *logger.Logger
 	S3                *s3.S3
-	DB                *database.Database
+	Database          *database.Database
 	Mailer            *mailer.Mailer
 	GC                *gc.Gc
 	UserService       *user.Service
 	TokenService      *token.Service
 	RemoveService     *remove.Service
 	PostService       *post.Service
+	CommentService    *comment.Service
 	FileService       *file.Service
 	LikeService       *like.Service
 	FollowshipService *followship.Service
@@ -46,13 +48,14 @@ func New(
 		Config:            config,
 		Logger:            logger,
 		S3:                s3,
-		DB:                db,
+		Database:          db,
 		Mailer:            mailer,
 		GC:                gc,
 		UserService:       user.New(db, mailer),
 		TokenService:      token.New(db),
 		RemoveService:     remove.New(db),
 		PostService:       post.New(db),
+		CommentService:    comment.New(db),
 		FileService:       file.New(db, s3),
 		LikeService:       like.New(db),
 		FollowshipService: followship.New(db),

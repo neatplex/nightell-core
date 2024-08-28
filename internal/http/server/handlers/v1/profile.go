@@ -14,17 +14,17 @@ func ProfileShow(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		followersCount, err := ctr.FollowshipService.CountFollowers(user.ID)
+		followersCount, err := ctr.FollowshipService.CountFollowers(user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		followingsCount, err := ctr.FollowshipService.CountFollowings(user.ID)
+		followingsCount, err := ctr.FollowshipService.CountFollowings(user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		u, err := ctr.UserService.FindBy("id", user.ID)
+		u, err := ctr.UserService.FindBy("id", user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -61,7 +61,7 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		u, err := ctr.UserService.FindBy("id", user.ID)
+		u, err := ctr.UserService.FindBy("id", user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -96,7 +96,7 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		u, err := ctr.UserService.FindBy("id", user.ID)
+		u, err := ctr.UserService.FindBy("id", user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -144,7 +144,7 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 			}
 		}
 
-		u, err := ctr.UserService.FindBy("id", user.ID)
+		u, err := ctr.UserService.FindBy("id", user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -195,22 +195,22 @@ func ProfileUpdateImage(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		if s, _ := ctr.PostService.FindBy("image_id", image.ID); s != nil {
+		if s, _ := ctr.PostService.FindBy("image_id", image.Id); s != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "The selected file is already in use.",
 			})
 		}
-		if s, _ := ctr.UserService.FindBy("image_id", image.ID); s != nil {
+		if s, _ := ctr.UserService.FindBy("image_id", image.Id); s != nil {
 			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 				"message": "The selected file is already in use.",
 			})
 		}
 
-		if _, err = ctr.UserService.UpdateImage(user, image.ID); err != nil {
+		if _, err = ctr.UserService.UpdateImage(user, image.Id); err != nil {
 			return errors.WithStack(err)
 		}
 
-		u, err := ctr.UserService.FindBy("id", user.ID)
+		u, err := ctr.UserService.FindBy("id", user.Id)
 		if err != nil {
 			return errors.WithStack(err)
 		}

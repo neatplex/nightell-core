@@ -87,8 +87,8 @@ func (a *App) Close() {
 	if a.HttpServer != nil {
 		a.HttpServer.Close()
 	}
-	if a.Container.DB != nil {
-		a.Container.DB.Close()
+	if a.Container.Database != nil {
+		a.Container.Database.Close()
 	}
 	if a.Container.Logger != nil {
 		a.Container.Logger.Close()

@@ -15,20 +15,20 @@ type Service struct {
 func (s *Service) Create(user *models.User) (string, error) {
 	value := uuid.NewString()
 	r := s.database.Handler().Create(&models.Remove{
-		UserID: user.ID,
+		UserId: user.Id,
 		Code:   value,
 	})
-	return value, errors.Wrapf(r.Error, "user: %v", user.ID)
+	return value, errors.Wrapf(r.Error, "user: %v", user.Id)
 }
 
 func (s *Service) FindOrCreate(user *models.User) (string, error) {
 	var model models.Remove
-	r := s.database.Handler().Where("user_id = ?", user.ID).First(&model)
+	r := s.database.Handler().Where("user_id = ?", user.Id).First(&model)
 	if r.Error != nil && errors.Is(r.Error, gorm.ErrRecordNotFound) {
 		code, err := s.Create(user)
 		return code, errors.WithStack(err)
 	}
-	return model.Code, errors.Wrapf(r.Error, "user: %v", user.ID)
+	return model.Code, errors.Wrapf(r.Error, "user: %v", user.Id)
 }
 
 func (s *Service) FindBy(field string, value interface{}) (*models.Remove, error) {

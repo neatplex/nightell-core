@@ -14,7 +14,7 @@ func Feed(ctr *container.Container) echo.HandlerFunc {
 		user := ctx.Get("user").(*models.User)
 
 		posts, err := ctr.PostService.Feed(
-			user.ID,
+			user.Id,
 			utils.StringToID(ctx.QueryParams().Get("lastId"), ^uint64(0)),
 			utils.StringToInt(ctx.QueryParams().Get("count"), 100, 10),
 		)
