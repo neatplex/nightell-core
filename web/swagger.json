@@ -13,7 +13,7 @@
   "paths": {
     "/auth/otp/email/generate": {
       "post": {
-        "description": "Generate OTP in order to sign up/in",
+        "summary": "Generate OTP in order to sign up or sign in.",
         "tags": [
           "Auth"
         ],
@@ -38,7 +38,7 @@
         },
         "responses": {
           "200": {
-            "description": "The OTP generated and mailed successfully.",
+            "description": "The OTP generated and sent successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -47,7 +47,7 @@
                     "ttl": {
                       "type": "integer",
                       "default": "300",
-                      "description": "TTL (time to live) is number of seconds that otp is valid"
+                      "description": "The time to live (number of seconds that otp is valid)"
                     }
                   }
                 }
@@ -59,7 +59,7 @@
     },
     "/auth/otp/email/submit": {
       "post": {
-        "description": "Submit OTP received by Email",
+        "summary": "Submit OTP received by email to complete sign in or sign up process.",
         "tags": [
           "Auth"
         ],
@@ -76,7 +76,8 @@
                 "properties": {
                   "email": {
                     "type": "string",
-                    "example": "i@miladrahimi.com"
+                    "example": "i@miladrahimi.com",
+                    "description": "The email that OTP is requested for"
                   },
                   "otp": {
                     "type": "string",
@@ -90,7 +91,7 @@
         },
         "responses": {
           "200": {
-            "description": "The Signed in/up user and auth token",
+            "description": "The user signed in or signed up successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -100,45 +101,8 @@
                       "$ref": "#/components/schemas/User"
                     },
                     "token": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/sign-up": {
-      "post": {
-        "description": "Sign up new user and get the user details and authentication token",
-        "tags": [
-          "Auth"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The user signed up successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    },
-                    "token": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The bearer token for authentication"
                     }
                   }
                 }
@@ -150,7 +114,7 @@
     },
     "/auth/sign-in/email": {
       "post": {
-        "description": "Sign in by email and get the user details and authentication token",
+        "summary": "Sign in by email and password.",
         "tags": [
           "Auth"
         ],
@@ -171,7 +135,7 @@
                   },
                   "password": {
                     "type": "string",
-                    "maxLength": 8
+                    "example": "safe-password"
                   }
                 }
               }
@@ -190,7 +154,8 @@
                       "$ref": "#/components/schemas/User"
                     },
                     "token": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The bearer token for authentication"
                     }
                   }
                 }
@@ -202,7 +167,7 @@
     },
     "/auth/sign-in/username": {
       "post": {
-        "description": "Sign in by username and get the user details and authentication token",
+        "summary": "Sign in by username and password.",
         "tags": [
           "Auth"
         ],
@@ -219,11 +184,11 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "milad93x"
+                    "example": "jack"
                   },
                   "password": {
                     "type": "string",
-                    "maxLength": 8
+                    "example": "safe-password"
                   }
                 }
               }
@@ -242,7 +207,8 @@
                       "$ref": "#/components/schemas/User"
                     },
                     "token": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The bearer token for authentication"
                     }
                   }
                 }
@@ -254,7 +220,7 @@
     },
     "/auth/sign-in/google": {
       "post": {
-        "description": "Sign in or sign up by Google and get the user details and authentication token",
+        "summary": "Sign in or sign up using Google SSO.",
         "tags": [
           "Auth"
         ],
@@ -271,7 +237,7 @@
                   "google_token": {
                     "type": "string",
                     "example": "abc.123.xyz",
-                    "description": "The JWT received from Google"
+                    "description": "The ID Token (JWT) received from Google"
                   }
                 }
               }
@@ -280,7 +246,7 @@
         },
         "responses": {
           "200": {
-            "description": "The user signed in successfully.",
+            "description": "The user signed in or signed up successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -290,7 +256,8 @@
                       "$ref": "#/components/schemas/User"
                     },
                     "token": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The bearer token for authentication"
                     }
                   }
                 }
@@ -301,14 +268,14 @@
       }
     },
     "/profile": {
-      "description": "Get the authenticated user profile",
       "get": {
+        "summary": "Get my profile.",
         "tags": [
           "Profile"
         ],
         "responses": {
           "200": {
-            "description": "The authenticated user profile",
+            "description": "My profile returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -333,19 +300,20 @@
         }
       },
       "delete": {
+        "summary": "Submit delete account request.",
         "tags": [
           "Profile"
         ],
         "responses": {
           "204": {
-            "description": "User account deleted"
+            "description": "Delete account request submitted."
           }
         }
       }
     },
     "/profile/name": {
       "patch": {
-        "description": "Update name of the authenticated user",
+        "summary": "Update my name.",
         "tags": [
           "Profile"
         ],
@@ -361,7 +329,8 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "example": "Milad"
+                    "example": "Milad",
+                    "description": "The new name"
                   }
                 }
               }
@@ -389,7 +358,7 @@
     },
     "/profile/bio": {
       "patch": {
-        "description": "Update biography of the authenticated user",
+        "summary": "Update my bio.",
         "tags": [
           "Profile"
         ],
@@ -405,7 +374,8 @@
                 "properties": {
                   "bio": {
                     "type": "string",
-                    "example": "I am so funny!"
+                    "example": "I am so funny!",
+                    "description": "The new bio"
                   }
                 }
               }
@@ -414,7 +384,7 @@
         },
         "responses": {
           "200": {
-            "description": "The name updated successfully.",
+            "description": "The bio updated successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -433,7 +403,7 @@
     },
     "/profile/username": {
       "patch": {
-        "description": "Update username of the authenticated user",
+        "summary": "Update my username.",
         "tags": [
           "Profile"
         ],
@@ -449,7 +419,8 @@
                 "properties": {
                   "username": {
                     "type": "string",
-                    "example": "milad_rahimi"
+                    "example": "jack",
+                    "description": "The new username"
                   }
                 }
               }
@@ -458,7 +429,7 @@
         },
         "responses": {
           "200": {
-            "description": "The name updated successfully.",
+            "description": "The username updated successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -477,7 +448,7 @@
     },
     "/profile/image": {
       "patch": {
-        "description": "Update image (photo) of the authenticated user ",
+        "summary": "Update my image (photo).",
         "tags": [
           "Profile"
         ],
@@ -495,7 +466,7 @@
                     "type": "integer",
                     "nullable": true,
                     "example": 13,
-                    "description": "Unique id of the image file (uint64)"
+                    "description": "Unique id of the image (uint64)"
                   }
                 }
               }
@@ -523,7 +494,7 @@
     },
     "/files": {
       "post": {
-        "description": "Store (upload) a new file",
+        "summary": "Upload a new file.",
         "tags": [
           "Files"
         ],
@@ -541,7 +512,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "File to upload"
+                    "description": "The file to upload"
                   },
                   "extension": {
                     "$ref": "#/components/schemas/Extension"
@@ -553,7 +524,7 @@
         },
         "responses": {
           "201": {
-            "description": "The file uploaded.",
+            "description": "The file uploaded successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -572,13 +543,13 @@
     },
     "/users/{userId}": {
       "get": {
-        "description": "Show the user details",
+        "summary": "Get the user details.",
         "tags": [
           "Users"
         ],
         "responses": {
           "200": {
-            "description": "The user details",
+            "description": "The user details returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -597,7 +568,7 @@
                     },
                     "followed_by_me": {
                       "type": "boolean",
-                      "description": "True if user is followed by me"
+                      "description": "True if I follow the user"
                     },
                     "follows_me": {
                       "type": "boolean",
@@ -611,15 +582,89 @@
         }
       }
     },
-    "/users/{userId}/followers": {
+    "/users/{userId}/followings": {
       "get": {
-        "description": "Get followers of the user",
+        "summary": "Index followings of the user.",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of items to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last item retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
         "tags": [
           "Users"
         ],
         "responses": {
           "200": {
-            "description": "List of followers of the user",
+            "description": "List of user followings returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/followers": {
+      "get": {
+        "summary": "Index followers of the user.",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of items to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "ID of the last item retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user followers returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -639,65 +684,37 @@
         }
       },
       "post": {
-        "description": "Store myself as a new follower for the user",
+        "summary": "Follow the user.",
         "tags": [
           "Users"
         ],
         "responses": {
           "201": {
-            "description": "The new relation created."
+            "description": "The user followed successfully."
           }
         }
       },
       "delete": {
-        "description": "Delete myself as a follower from the list of followers",
+        "summary": "Unfollow the user.",
         "tags": [
           "Users"
         ],
         "responses": {
-          "201": {
-            "description": "The relation deleted."
-          }
-        }
-      }
-    },
-    "/users/{userId}/followings": {
-      "get": {
-        "description": "Get followings of the user",
-        "tags": [
-          "Users"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of followings of the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "posts": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/User"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+          "204": {
+            "description": "The user unfollowed successfully."
           }
         }
       }
     },
     "/users/{userId}/posts": {
       "get": {
-        "description": "Index the user posts",
+        "summary": "Index the user posts.",
         "tags": [
           "Posts"
         ],
         "responses": {
           "200": {
-            "description": "List of user posts",
+            "description": "List of the user posts returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -719,7 +736,7 @@
     },
     "/posts": {
       "post": {
-        "description": "Store a new post for the authenticated user",
+        "summary": "Create a new post.",
         "tags": [
           "Posts"
         ],
@@ -735,7 +752,7 @@
         },
         "responses": {
           "201": {
-            "description": "The new post created.",
+            "description": "The new post created successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -754,13 +771,13 @@
     },
     "/posts/{postId}": {
       "get": {
-        "description": "Get the post",
+        "summary": "Get the post.",
         "tags": [
           "Posts"
         ],
         "responses": {
           "201": {
-            "description": "The post.",
+            "description": "The post returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -777,7 +794,7 @@
         }
       },
       "put": {
-        "description": "Update the post fields",
+        "summary": "Update the post.",
         "tags": [
           "Posts"
         ],
@@ -791,12 +808,12 @@
                   "title": {
                     "type": "string",
                     "example": "Blind Owl",
-                    "description": "The post title"
+                    "description": "The new title"
                   },
                   "description": {
                     "type": "string",
-                    "example": "This is my first post! #first_post",
-                    "description": "The post description"
+                    "example": "This is my first update! #first_update",
+                    "description": "The new description"
                   }
                 }
               }
@@ -805,7 +822,7 @@
         },
         "responses": {
           "201": {
-            "description": "The post updated.",
+            "description": "The post updated successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -822,20 +839,20 @@
         }
       },
       "delete": {
-        "description": "Delete the post",
+        "summary": "Delete the post.",
         "tags": [
           "Posts"
         ],
         "responses": {
           "204": {
-            "description": "The post deleted."
+            "description": "The post deleted successfully."
           }
         }
       }
     },
     "/posts/{postId}/likes": {
       "get": {
-        "description": "Index the post likes",
+        "summary": "Index the post likes.",
         "tags": [
           "Likes"
         ],
@@ -843,7 +860,7 @@
           {
             "name": "count",
             "in": "query",
-            "description": "Number of likes to retrieve",
+            "description": "Number of items to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -854,7 +871,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last like retrieved",
+            "description": "ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -864,7 +881,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of the likes of a post",
+            "description": "The post likes returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -884,47 +901,33 @@
         }
       },
       "post": {
-        "operationId": "likes-store",
-        "description": "Store a new like action",
+        "summary": "Like the post.",
         "tags": [
           "Likes"
         ],
         "responses": {
           "201": {
-            "description": "The new like action created."
+            "description": "The post liked successfully."
           }
         }
       }
     },
     "/likes/{likeId}": {
       "delete": {
-        "description": "Delete the like",
+        "summary": "Delete the like (unlike related post).",
         "tags": [
           "Likes"
         ],
         "responses": {
           "201": {
-            "description": "The post deleted."
-          },
-          "403": {
-            "description": "You do not have permission to perform this action."
-          },
-          "default": {
-            "description": "Error!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "The like deleted successfully."
           }
         }
       }
     },
     "/posts/{postId}/comments": {
       "get": {
-        "description": "Index the post comments",
+        "summary": "Index the post comments.",
         "tags": [
           "Comments"
         ],
@@ -932,7 +935,7 @@
           {
             "name": "count",
             "in": "query",
-            "description": "Number of comments to retrieve",
+            "description": "Number of items to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -943,7 +946,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last comment retrieved",
+            "description": "ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -953,7 +956,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of the comments of a post",
+            "description": "The post comments returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -975,7 +978,7 @@
     },
     "/comments": {
       "get": {
-        "description": "Index the user comments",
+        "summary": "Index my comments.",
         "tags": [
           "Comments"
         ],
@@ -1004,7 +1007,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of the comments of a post",
+            "description": "My comments returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1024,8 +1027,7 @@
         }
       },
       "post": {
-        "operationId": "comments-store",
-        "description": "Store a new comment",
+        "summary": "Create a new comment.",
         "tags": [
           "Comments"
         ],
@@ -1041,30 +1043,27 @@
         },
         "responses": {
           "201": {
-            "description": "The new comment created."
+            "description": "The new comment created successfully."
           }
         }
       }
     },
     "/comments/{commentId}": {
       "delete": {
-        "description": "Delete the comment",
+        "summary": "Delete the comment (my comment or my post's comment).",
         "tags": [
           "Comments"
         ],
         "responses": {
           "204": {
-            "description": "The comment deleted."
-          },
-          "404": {
-            "description": "The comment not found."
+            "description": "The comment deleted successfully."
           }
         }
       }
     },
     "/search/posts": {
       "get": {
-        "description": "Search posts",
+        "summary": "Search in posts.",
         "tags": [
           "Search"
         ],
@@ -1076,13 +1075,14 @@
             "required": true,
             "schema": {
               "type": "string",
-              "example": "pink floyd"
+              "example": "Rock Music",
+              "description": "The search query"
             }
           },
           {
             "name": "count",
             "in": "query",
-            "description": "Number of results to retrieve",
+            "description": "Number of items to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1093,7 +1093,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last result retrieved",
+            "description": "ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1103,7 +1103,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of results",
+            "description": "Search results returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1125,7 +1125,7 @@
     },
     "/search/users": {
       "get": {
-        "description": "Search users",
+        "summary": "Search in users.",
         "tags": [
           "Search"
         ],
@@ -1137,13 +1137,14 @@
             "required": true,
             "schema": {
               "type": "string",
-              "example": "Bon Jovi"
+              "example": "Milad Rahimi",
+              "description": "The search query"
             }
           },
           {
             "name": "count",
             "in": "query",
-            "description": "Number of results to retrieve",
+            "description": "Number of items to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1154,7 +1155,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last result retrieved",
+            "description": "ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1164,7 +1165,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of results",
+            "description": "Search results returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1186,7 +1187,7 @@
     },
     "/feed": {
       "get": {
-        "description": "Index the feed posts",
+        "summary": "Index my feed posts.",
         "tags": [
           "Feed"
         ],
@@ -1194,7 +1195,7 @@
           {
             "name": "count",
             "in": "query",
-            "description": "Number of posts to retrieve",
+            "description": "Number of items to retrieve",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1205,7 +1206,7 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last post retrieved",
+            "description": "ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
@@ -1215,7 +1216,7 @@
         ],
         "responses": {
           "200": {
-            "description": "list of posts in user's feed",
+            "description": "The feed posts returned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1264,55 +1265,59 @@
     },
     "schemas": {
       "User": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/NewUser"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of user (uint64)"
           },
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "example": 13,
-                "description": "Unique id of user (uint64)"
-              },
-              "name": {
-                "type": "string",
-                "example": "Milad",
-                "description": "The user's name (full name or nickname)"
-              },
-              "username": {
-                "type": "string",
-                "example": "username_1691_4b3a_847f_76b2ed0f00ec",
-                "description": "Unique username (English letters, numbers and underscores)"
-              },
-              "bio": {
-                "type": "string",
-                "example": "I am so funny!",
-                "description": "User biography (description)"
-              },
-              "is_banned": {
-                "type": "boolean",
-                "example": false,
-                "description": "Whether the user has been banned or not."
-              },
-              "image": {
-                "$ref": "#/components/schemas/File"
-              },
-              "image_id": {
-                "type": "integer",
-                "nullable": true,
-                "example": 13,
-                "description": "Unique id of the image file (uint64)"
-              },
-              "created_at": {
-                "type": "string",
-                "example": "2023-11-28T13:36:30.956Z",
-                "description": "Registration time"
-              }
-            }
+          "email": {
+            "type": "string",
+            "example": "i@miladrahimi.com",
+            "description": "User email address (unique)"
+          },
+          "password": {
+            "type": "string",
+            "example": "Secret69",
+            "minLength": 8,
+            "description": "User password (between 8 and 128 characters)"
+          },
+          "name": {
+            "type": "string",
+            "example": "Milad",
+            "description": "The user's name (full name or nickname)"
+          },
+          "username": {
+            "type": "string",
+            "example": "username_1691_4b3a_847f_76b2ed0f00ec",
+            "description": "Unique username (English letters, numbers and underscores)"
+          },
+          "bio": {
+            "type": "string",
+            "example": "I am so funny!",
+            "description": "User biography (description)"
+          },
+          "is_banned": {
+            "type": "boolean",
+            "example": false,
+            "description": "Whether the user has been banned or not."
+          },
+          "image": {
+            "$ref": "#/components/schemas/File"
+          },
+          "image_id": {
+            "type": "integer",
+            "nullable": true,
+            "example": 13,
+            "description": "Unique id of the image file (uint64)"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2023-11-28T13:36:30.956Z",
+            "description": "Registration time"
           }
-        ]
+        }
       },
       "File": {
         "type": "object",
@@ -1473,27 +1478,6 @@
             "nullable": true,
             "example": 13,
             "description": "Unique id of the image file (uint64)"
-          }
-        }
-      },
-      "NewUser": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "milad93x",
-            "description": "User unique username (Regex: ^[a-z0-9_]+$)"
-          },
-          "email": {
-            "type": "string",
-            "example": "i@miladrahimi.com",
-            "description": "User email address (unique)"
-          },
-          "password": {
-            "type": "string",
-            "example": "Secret69",
-            "minLength": 8,
-            "description": "User password (between 8 and 128 characters)"
           }
         }
       },
