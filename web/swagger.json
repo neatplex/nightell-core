@@ -11,10 +11,10 @@
     }
   ],
   "paths": {
-    "/auth/otp/email/generate": {
+    "/auth/otp/email/send": {
       "post": {
-        "summary": "Generate and send OTP",
-        "description": "Generate and send OTP using email in order to sign up or sign in.",
+        "summary": "Send OTP",
+        "description": "Generate and send new OTP using email in order to sign up or sign in.",
         "tags": [
           "Auth"
         ],
@@ -58,10 +58,10 @@
         }
       }
     },
-    "/auth/otp/email/submit": {
+    "/auth/otp/email/verify": {
       "post": {
-        "summary": "Submit OTP",
-        "description": "Submit OTP received by email to complete sign in or sign up process.",
+        "summary": "Verify OTP",
+        "description": "Verify OTP received by email to complete sign in or sign up process.",
         "tags": [
           "Auth"
         ],
