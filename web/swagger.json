@@ -561,6 +561,18 @@
         "tags": [
           "Users"
         ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The user details returned successfully.",
@@ -600,7 +612,20 @@
       "get": {
         "summary": "Index user followings",
         "description": "Index the followings of the user.",
+        "tags": [
+          "Users"
+        ],
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          },
           {
             "name": "count",
             "in": "query",
@@ -615,16 +640,14 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last item retrieved",
+            "description": "The ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
-        ],
-        "tags": [
-          "Users"
         ],
         "responses": {
           "200": {
@@ -657,6 +680,16 @@
         ],
         "parameters": [
           {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          },
+          {
             "name": "count",
             "in": "query",
             "description": "Number of items to retrieve",
@@ -670,11 +703,12 @@
           {
             "name": "lastId",
             "in": "query",
-            "description": "ID of the last item retrieved",
+            "description": "The ID of the last item retrieved",
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -705,6 +739,18 @@
         "tags": [
           "Users"
         ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "The user followed successfully."
@@ -716,6 +762,18 @@
         "description": "Unfollow the user (delete myself from the user followers).",
         "tags": [
           "Users"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
         ],
         "responses": {
           "204": {
@@ -730,6 +788,40 @@
         "description": "Index the posts of the user.",
         "tags": [
           "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of user (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Number of items to retrieve",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 5,
+              "default": 10
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "The ID of the last item retrieved",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 13,
+              "default": null
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -796,6 +888,18 @@
         "tags": [
           "Posts"
         ],
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "The post returned successfully.",
@@ -819,6 +923,18 @@
         "description": "Update the post.",
         "tags": [
           "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -866,6 +982,18 @@
         "tags": [
           "Posts"
         ],
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "The post deleted successfully."
@@ -881,6 +1009,16 @@
           "Likes"
         ],
         "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          },
           {
             "name": "count",
             "in": "query",
@@ -899,7 +1037,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -930,6 +1069,18 @@
         "tags": [
           "Likes"
         ],
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "The post liked successfully."
@@ -943,6 +1094,18 @@
         "description": "Delete the like (unlike related post).",
         "tags": [
           "Likes"
+        ],
+        "parameters": [
+          {
+            "name": "likeId",
+            "in": "path",
+            "description": "The ID of like (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
         ],
         "responses": {
           "201": {
@@ -959,6 +1122,16 @@
           "Comments"
         ],
         "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "The ID of post (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          },
           {
             "name": "count",
             "in": "query",
@@ -977,7 +1150,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -1029,7 +1203,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -1084,6 +1259,18 @@
         "tags": [
           "Comments"
         ],
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "The ID of comment (uint64)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "13"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "The comment deleted successfully."
@@ -1128,7 +1315,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -1169,8 +1357,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "example": "Milad Rahimi",
-              "description": "The search query"
+              "example": "Milad Rahimi"
             }
           },
           {
@@ -1191,7 +1378,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
@@ -1243,7 +1431,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "example": 13
+              "example": 13,
+              "default": null
             }
           }
         ],
