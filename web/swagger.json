@@ -13,7 +13,8 @@
   "paths": {
     "/auth/otp/email/generate": {
       "post": {
-        "summary": "Generate OTP in order to sign up or sign in.",
+        "summary": "Generate and send OTP",
+        "description": "Generate and send OTP using email in order to sign up or sign in.",
         "tags": [
           "Auth"
         ],
@@ -59,7 +60,8 @@
     },
     "/auth/otp/email/submit": {
       "post": {
-        "summary": "Submit OTP received by email to complete sign in or sign up process.",
+        "summary": "Submit OTP",
+        "description": "Submit OTP received by email to complete sign in or sign up process.",
         "tags": [
           "Auth"
         ],
@@ -114,7 +116,8 @@
     },
     "/auth/sign-in/email": {
       "post": {
-        "summary": "Sign in by email and password.",
+        "summary": "Sign in by email",
+        "description": "Sign in by email and password.",
         "tags": [
           "Auth"
         ],
@@ -167,7 +170,8 @@
     },
     "/auth/sign-in/username": {
       "post": {
-        "summary": "Sign in by username and password.",
+        "summary": "Sign in by username",
+        "description": "Sign in by username and password.",
         "tags": [
           "Auth"
         ],
@@ -220,7 +224,8 @@
     },
     "/auth/sign-in/google": {
       "post": {
-        "summary": "Sign in or sign up using Google SSO.",
+        "summary": "Sign in/up using Google",
+        "description": "Sign in or sign up using Google SSO (Single Sign On).",
         "tags": [
           "Auth"
         ],
@@ -269,7 +274,8 @@
     },
     "/profile": {
       "get": {
-        "summary": "Get my profile.",
+        "summary": "Get profile",
+        "description": "Get my profile details.",
         "tags": [
           "Profile"
         ],
@@ -300,7 +306,8 @@
         }
       },
       "delete": {
-        "summary": "Submit delete account request.",
+        "summary": "Delete account",
+        "description": "Submit delete account request for my account.",
         "tags": [
           "Profile"
         ],
@@ -313,7 +320,8 @@
     },
     "/profile/name": {
       "patch": {
-        "summary": "Update my name.",
+        "summary": "Update name",
+        "description": "Update my name.",
         "tags": [
           "Profile"
         ],
@@ -358,7 +366,8 @@
     },
     "/profile/bio": {
       "patch": {
-        "summary": "Update my bio.",
+        "summary": "Update bio",
+        "description": "Update my bio (biography).",
         "tags": [
           "Profile"
         ],
@@ -403,7 +412,8 @@
     },
     "/profile/username": {
       "patch": {
-        "summary": "Update my username.",
+        "summary": "Update username",
+        "description": "Update my username.",
         "tags": [
           "Profile"
         ],
@@ -420,7 +430,8 @@
                   "username": {
                     "type": "string",
                     "example": "jack",
-                    "description": "The new username"
+                    "description": "The new username (format: ^[a-z0-9_]+$)",
+                    "format": "^[a-z0-9_]+$"
                   }
                 }
               }
@@ -448,7 +459,8 @@
     },
     "/profile/image": {
       "patch": {
-        "summary": "Update my image (photo).",
+        "summary": "Update image",
+        "description": "Update (upload) my image (photo).",
         "tags": [
           "Profile"
         ],
@@ -494,7 +506,8 @@
     },
     "/files": {
       "post": {
-        "summary": "Upload a new file.",
+        "summary": "Upload file",
+        "description": "Upload a new file.",
         "tags": [
           "Files"
         ],
@@ -543,7 +556,8 @@
     },
     "/users/{userId}": {
       "get": {
-        "summary": "Get the user details.",
+        "summary": "Get user",
+        "description": "Get the user.",
         "tags": [
           "Users"
         ],
@@ -584,7 +598,8 @@
     },
     "/users/{userId}/followings": {
       "get": {
-        "summary": "Index followings of the user.",
+        "summary": "Index user followings",
+        "description": "Index the followings of the user.",
         "parameters": [
           {
             "name": "count",
@@ -635,7 +650,8 @@
     },
     "/users/{userId}/followers": {
       "get": {
-        "summary": "Index followers of the user.",
+        "summary": "Index user followers",
+        "description": "Index the followers of the user.",
         "tags": [
           "Users"
         ],
@@ -684,7 +700,8 @@
         }
       },
       "post": {
-        "summary": "Follow the user.",
+        "summary": "Follow user",
+        "description": "Follow the user (submit myself as the user follower).",
         "tags": [
           "Users"
         ],
@@ -695,7 +712,8 @@
         }
       },
       "delete": {
-        "summary": "Unfollow the user.",
+        "summary": "Unfollow user",
+        "description": "Unfollow the user (delete myself from the user followers).",
         "tags": [
           "Users"
         ],
@@ -708,7 +726,8 @@
     },
     "/users/{userId}/posts": {
       "get": {
-        "summary": "Index the user posts.",
+        "summary": "Index user posts",
+        "description": "Index the posts of the user.",
         "tags": [
           "Posts"
         ],
@@ -736,7 +755,8 @@
     },
     "/posts": {
       "post": {
-        "summary": "Create a new post.",
+        "summary": "Create post",
+        "description": "Create a new post.",
         "tags": [
           "Posts"
         ],
@@ -771,7 +791,8 @@
     },
     "/posts/{postId}": {
       "get": {
-        "summary": "Get the post.",
+        "summary": "Get post",
+        "description": "Get the post.",
         "tags": [
           "Posts"
         ],
@@ -794,7 +815,8 @@
         }
       },
       "put": {
-        "summary": "Update the post.",
+        "summary": "Update post",
+        "description": "Update the post.",
         "tags": [
           "Posts"
         ],
@@ -839,7 +861,8 @@
         }
       },
       "delete": {
-        "summary": "Delete the post.",
+        "summary": "Delete post",
+        "description": "Delete the post.",
         "tags": [
           "Posts"
         ],
@@ -852,7 +875,8 @@
     },
     "/posts/{postId}/likes": {
       "get": {
-        "summary": "Index the post likes.",
+        "summary": "Index post likes",
+        "description": "Index the likes of the post.",
         "tags": [
           "Likes"
         ],
@@ -901,7 +925,8 @@
         }
       },
       "post": {
-        "summary": "Like the post.",
+        "summary": "Like post",
+        "description": "Like the post (create like for the post).",
         "tags": [
           "Likes"
         ],
@@ -914,7 +939,8 @@
     },
     "/likes/{likeId}": {
       "delete": {
-        "summary": "Delete the like (unlike related post).",
+        "summary": "Unlike",
+        "description": "Delete the like (unlike related post).",
         "tags": [
           "Likes"
         ],
@@ -927,7 +953,8 @@
     },
     "/posts/{postId}/comments": {
       "get": {
-        "summary": "Index the post comments.",
+        "summary": "Index post comments",
+        "description": "Index the comments of the post.",
         "tags": [
           "Comments"
         ],
@@ -978,7 +1005,8 @@
     },
     "/comments": {
       "get": {
-        "summary": "Index my comments.",
+        "summary": "Index my comments",
+        "description": "Index all of my comments.",
         "tags": [
           "Comments"
         ],
@@ -1027,7 +1055,8 @@
         }
       },
       "post": {
-        "summary": "Create a new comment.",
+        "summary": "Create comment",
+        "description": "Create a new comment.",
         "tags": [
           "Comments"
         ],
@@ -1050,7 +1079,8 @@
     },
     "/comments/{commentId}": {
       "delete": {
-        "summary": "Delete the comment (my comment or my post's comment).",
+        "summary": "Delete comment",
+        "description": "Delete the comment (either my comment or a comment on one of my posts).",
         "tags": [
           "Comments"
         ],
@@ -1063,7 +1093,8 @@
     },
     "/search/posts": {
       "get": {
-        "summary": "Search in posts.",
+        "summary": "Search posts",
+        "description": "Search in all posts.",
         "tags": [
           "Search"
         ],
@@ -1125,7 +1156,8 @@
     },
     "/search/users": {
       "get": {
-        "summary": "Search in users.",
+        "summary": "Search users",
+        "description": "Search in all users.",
         "tags": [
           "Search"
         ],
@@ -1187,7 +1219,8 @@
     },
     "/feed": {
       "get": {
-        "summary": "Index my feed posts.",
+        "summary": "Index feed posts",
+        "description": "Index my feed posts.",
         "tags": [
           "Feed"
         ],
