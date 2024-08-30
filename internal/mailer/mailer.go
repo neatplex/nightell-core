@@ -48,7 +48,9 @@ func (m *Mailer) SendOtp(to, otp string) {
 	message := strings.Join([]string{
 		"Dear user,",
 		"Your One-Time Password (OTP) for accessing your account is:",
+		"",
 		otp,
+		"",
 		"Please enter this code within the next 3 minutes to complete your verification process.",
 		"For your security, do not share this code with anyone.",
 		"If you did not request this code, please ignore this email.",

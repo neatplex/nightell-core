@@ -31,11 +31,11 @@ type signInGoogleRequest struct {
 	Token string `json:"google_token" validate:"required"`
 }
 
-type otpEmailGetRequest struct {
+type otpEmailSendRequest struct {
 	Email string `json:"email" validate:"required,email,max=191"`
 }
 
-type otpEmailValidateRequest struct {
+type otpEmailVerifyRequest struct {
 	Email string `json:"email" validate:"required,email,max=191"`
 	Otp   string `json:"otp" validate:"required"`
 }
@@ -112,9 +112,9 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthOtpEmailGenerate(ctr *container.Container) echo.HandlerFunc {
+func AuthOtpEmailSend(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r otpEmailGetRequest
+		var r otpEmailSendRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
@@ -134,9 +134,9 @@ func AuthOtpEmailGenerate(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthOtpEmailSubmit(ctr *container.Container) echo.HandlerFunc {
+func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r otpEmailValidateRequest
+		var r otpEmailVerifyRequest
 		if err := ctx.Bind(&r); err != nil {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Cannot parse the request body.",
