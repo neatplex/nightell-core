@@ -5,7 +5,7 @@ import "time"
 type File struct {
 	Id        uint64    `gorm:"primaryKey" json:"id"`
 	UserId    uint64    `json:"user_id"`
-	User      *User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
+	User      *User     `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
 	Extension Extension `gorm:"index" json:"extension"`
 	Path      string    `gorm:"size:255" json:"path"`
 	CreatedAt time.Time `json:"created_at"`
