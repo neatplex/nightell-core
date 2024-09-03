@@ -38,7 +38,7 @@ func ProfileShow(ctr *container.Container) echo.HandlerFunc {
 }
 
 type profileUpdateNameRequest struct {
-	Name string `json:"name" validate:"required,min=0,max=20"`
+	Name string `json:"name" validate:"max=20"`
 }
 
 func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
@@ -73,7 +73,7 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 }
 
 type profileUpdateBioRequest struct {
-	Bio string `json:"bio" validate:"required,min=0,max=255"`
+	Bio string `json:"bio" validate:"max=255"`
 }
 
 func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
