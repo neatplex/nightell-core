@@ -1514,11 +1514,6 @@
             "example": "I am so funny!",
             "description": "User biography (description)"
           },
-          "is_banned": {
-            "type": "boolean",
-            "example": false,
-            "description": "Whether the user has been banned or not."
-          },
           "image": {
             "$ref": "#/components/schemas/File"
           },
