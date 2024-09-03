@@ -13,7 +13,7 @@ type User struct {
 	Bio       string    `gorm:"size:255" json:"bio"`
 	IsBanned  bool      `gorm:"index" json:"-"`
 	ImageId   *uint64   `json:"image_id"`
-	Image     *File     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"image"`
+	Image     *File     `gorm:"foreignKey:ImageId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"image"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
 }
