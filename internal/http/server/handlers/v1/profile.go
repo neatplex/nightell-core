@@ -48,14 +48,10 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateNameRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		if _, err := ctr.UserService.UpdateName(user, r.Name); err != nil {
@@ -83,14 +79,10 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateBioRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		if _, err := ctr.UserService.UpdateBio(user, r.Bio); err != nil {
@@ -118,14 +110,10 @@ func ProfileUpdatePassword(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdatePasswordRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
@@ -158,14 +146,10 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateUsernameRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		if !utils.ValidateUsername(r.Username) {
@@ -206,14 +190,10 @@ func ProfileUpdateEmail(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateEmailRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		if user.Email == r.Email {
@@ -241,14 +221,10 @@ func ProfileUpdateEmailVerify(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateEmailVerifyRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		isValid := ctr.OtpService.Check(r.Email, r.Otp)
@@ -296,14 +272,10 @@ func ProfileUpdateImage(ctr *container.Container) echo.HandlerFunc {
 
 		var r profileUpdateImageRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		image, err := ctr.FileService.FindByID(*r.ImageID)

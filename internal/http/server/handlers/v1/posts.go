@@ -47,14 +47,10 @@ func PostsStore(ctr *container.Container) echo.HandlerFunc {
 
 		var r postsStoreRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		audio, err := ctr.FileService.FindByID(r.AudioID)
@@ -178,14 +174,10 @@ func PostsUpdate(ctr *container.Container) echo.HandlerFunc {
 
 		var r postsUpdateCaptionRequest
 		if err = ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err = ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		s := ctr.PostService.UpdateFields(post, r.Title, r.Description)

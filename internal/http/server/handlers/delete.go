@@ -16,14 +16,10 @@ func DeleteRequest(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r deleteRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		user, err := ctr.UserService.FindBy("email", r.Email)

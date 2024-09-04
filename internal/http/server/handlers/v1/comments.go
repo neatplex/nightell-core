@@ -64,14 +64,10 @@ func CommentsStore(ctr *container.Container) echo.HandlerFunc {
 
 		var r commentsStoreRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		post, err := ctr.PostService.FindById(r.PostId)

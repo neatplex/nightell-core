@@ -44,14 +44,10 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signUpRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		if !utils.ValidateUsername(r.Username) {
@@ -116,14 +112,10 @@ func AuthOtpEmailSend(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r otpEmailSendRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		ttl := ctr.OtpService.Email(r.Email)
@@ -138,14 +130,10 @@ func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r otpEmailVerifyRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		isValid := ctr.OtpService.Check(r.Email, r.Otp)
@@ -203,14 +191,10 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signInEmailRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		user, err := ctr.UserService.FindBy("email", r.Email)
@@ -247,14 +231,10 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signInUsernameRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		user, err := ctr.UserService.FindBy("username", r.Username)
@@ -291,14 +271,10 @@ func AuthSignInGoogle(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r signInGoogleRequest
 		if err := ctx.Bind(&r); err != nil {
-			return ctx.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Cannot parse the request body.",
-			})
+			return err
 		}
 		if err := ctx.Validate(r); err != nil {
-			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
-				"message": err.Error(),
-			})
+			return err
 		}
 
 		payload, err := idtoken.Validate(ctx.Request().Context(), r.Token, ctr.Config.Google.OAuthClientId)
