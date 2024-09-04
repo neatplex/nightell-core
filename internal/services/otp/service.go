@@ -38,9 +38,13 @@ func (s *Service) Email(email string) int {
 
 func (s *Service) Check(identifier string, password string) bool {
 	if p, found := s.passwords[identifier]; found {
-		defer delete(s.passwords, identifier)
 		if p.ExpireAt.Before(time.Now().Add(min3)) {
-			return p.Value == password
+			if p.Value == password {
+				delete(s.passwords, identifier)
+				return true
+			}
+		} else {
+			delete(s.passwords, identifier)
 		}
 	}
 	return false
