@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/http/server/validator"
 	"github.com/neatplex/nightell-core/internal/utils"
@@ -79,6 +80,8 @@ func (c *Config) Init() error {
 			return errors.WithStack(err)
 		}
 	}
+
+	fmt.Println("Config:", *c)
 
 	return validator.New().Validate(c)
 }

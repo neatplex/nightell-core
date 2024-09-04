@@ -3,7 +3,18 @@ FROM golang:1.21.7-bookworm AS build
 
 WORKDIR /app
 
-COPY . .
+COPY cmd ./cmd
+COPY configs/main.defaults.json ./configs/
+COPY internal ./internal
+COPY storage/logs/.gitignore ./storage/logs
+COPY web ./web
+COPY Makefile ./
+COPY main.go ./
+COPY go.sum ./
+COPY go.mod ./
+
+RUN ls -l
+
 RUN go mod tidy && \
     go build -o nightell-core && \
     tar -zcf web.tar.gz web
@@ -23,8 +34,10 @@ COPY --from=build /app/configs/main.defaults.json configs/main.defaults.json
 COPY --from=build /app/storage/logs/.gitignore storage/logs/.gitignore
 COPY --from=build /app/web.tar.gz web.tar.gz
 
-RUN tar -xvf web.tar.gz && \
-    rm web.tar.gz
+RUN tar -xvf web.tar.gz && rm web.tar.gz
+
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser && chown -R appuser:appgroup /app
+USER appuser
 
 EXPOSE 8080
 

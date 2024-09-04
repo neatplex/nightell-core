@@ -3,3 +3,4 @@
 .env
 
 configs/main.json
+configs/main.local.json
