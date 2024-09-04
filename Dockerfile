@@ -1,5 +1,5 @@
 ## Build
-FROM golang:1.21.7-bookworm AS build
+FROM golang:1.22.6-bookworm AS build
 
 WORKDIR /app
 
@@ -32,9 +32,12 @@ COPY --from=build /app/configs/main.defaults.json configs/main.defaults.json
 COPY --from=build /app/storage/logs/.gitignore storage/logs/.gitignore
 COPY --from=build /app/web.tar.gz web.tar.gz
 
-RUN tar -xvf web.tar.gz && rm web.tar.gz
+RUN tar -xvf web.tar.gz && \
+    rm web.tar.gz
 
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser && chown -R appuser:appgroup /app
+RUN groupadd -r appgroup && \
+    useradd -r -g appgroup appuser && \
+    chown -R appuser:appgroup /app
 USER appuser
 
 EXPOSE 8080
