@@ -5,6 +5,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/database"
 	"github.com/neatplex/nightell-core/internal/mailer"
 	"github.com/neatplex/nightell-core/internal/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,10 @@ func (s *Service) FindBy(field string, value interface{}) (*models.User, error) 
 		return nil, nil
 	}
 	return &user, errors.Wrapf(r.Error, "field: %v, value: %v", field, value)
+}
+
+func (s *Service) CheckPassword(user *models.User, password string) bool {
+	return user != nil && bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) == nil
 }
 
 func (s *Service) Search(q string, lastId uint64, count int) ([]*models.User, error) {
