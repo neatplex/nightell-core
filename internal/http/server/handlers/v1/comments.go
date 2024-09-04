@@ -54,7 +54,7 @@ func CommentsIndexByPost(ctr *container.Container) echo.HandlerFunc {
 }
 
 type commentsStoreRequest struct {
-	Text   string `json:"text" validate:"max=255"`
+	Text   string `json:"text" validate:"min=1,max=255"`
 	PostId uint64 `json:"post_id" validate:"required"`
 }
 

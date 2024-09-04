@@ -7,6 +7,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/models"
 	userService "github.com/neatplex/nightell-core/internal/services/user"
 	"github.com/neatplex/nightell-core/internal/utils"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -93,6 +94,46 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		if _, err := ctr.UserService.UpdateBio(user, r.Bio); err != nil {
+			return errors.WithStack(err)
+		}
+
+		u, err := ctr.UserService.FindBy("id", user.Id)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *u,
+		})
+	}
+}
+
+type profileUpdatePasswordRequest struct {
+	Password string `json:"password" validate:"min=8,max=255"`
+}
+
+func ProfileUpdatePassword(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r profileUpdatePasswordRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		if _, err = ctr.UserService.UpdatePassword(user, string(hashedPassword)); err != nil {
 			return errors.WithStack(err)
 		}
 

@@ -29,8 +29,7 @@
                 ],
                 "properties": {
                   "email": {
-                    "type": "string",
-                    "example": "i@miladrahimi.com"
+                    "$ref": "#/components/schemas/User_Email"
                   }
                 }
               }
@@ -77,9 +76,7 @@
                 ],
                 "properties": {
                   "email": {
-                    "type": "string",
-                    "example": "i@miladrahimi.com",
-                    "description": "The email that OTP is requested for"
+                    "$ref": "#/components/schemas/User_Email"
                   },
                   "otp": {
                     "type": "string",
@@ -133,12 +130,10 @@
                 ],
                 "properties": {
                   "email": {
-                    "type": "string",
-                    "example": "i@miladrahimi.com"
+                    "$ref": "#/components/schemas/User_Email"
                   },
                   "password": {
-                    "type": "string",
-                    "example": "safe-password"
+                    "$ref": "#/components/schemas/User_Password"
                   }
                 }
               }
@@ -187,12 +182,10 @@
                 ],
                 "properties": {
                   "username": {
-                    "type": "string",
-                    "example": "jack"
+                    "$ref": "#/components/schemas/User_Username"
                   },
                   "password": {
-                    "type": "string",
-                    "example": "safe-password"
+                    "$ref": "#/components/schemas/User_Password"
                   }
                 }
               }
@@ -333,9 +326,7 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "example": "Milad",
-                    "description": "The new name"
+                    "$ref": "#/components/schemas/User_Name"
                   }
                 }
               }
@@ -376,9 +367,7 @@
                 "type": "object",
                 "properties": {
                   "bio": {
-                    "type": "string",
-                    "example": "I am so funny!",
-                    "description": "The new bio"
+                    "$ref": "#/components/schemas/User_Bio"
                   }
                 }
               }
@@ -422,10 +411,51 @@
                 ],
                 "properties": {
                   "username": {
-                    "type": "string",
-                    "example": "jack",
-                    "description": "The new username (format: ^[a-z0-9_]+$)",
-                    "format": "^[a-z0-9_]+$"
+                    "$ref": "#/components/schemas/User_Username"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The username updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/password": {
+      "patch": {
+        "summary": "Update password",
+        "description": "Update my password.",
+        "tags": [
+          "Profile"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password"
+                ],
+                "properties": {
+                  "password": {
+                    "$ref": "#/components/schemas/User_Password"
                   }
                 }
               }
@@ -469,10 +499,7 @@
                 ],
                 "properties": {
                   "image_id": {
-                    "type": "integer",
-                    "nullable": true,
-                    "example": 13,
-                    "description": "Unique id of the image (uint64)"
+                    "$ref": "#/components/schemas/User_ImageId"
                   }
                 }
               }
@@ -522,7 +549,7 @@
                     "description": "The file to upload"
                   },
                   "extension": {
-                    "$ref": "#/components/schemas/Extension"
+                    "$ref": "#/components/schemas/File_Extension"
                   }
                 }
               }
@@ -851,7 +878,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPost"
+                "$ref": "#/components/schemas/Post_New"
               }
             }
           }
@@ -938,14 +965,10 @@
                 "type": "object",
                 "properties": {
                   "title": {
-                    "type": "string",
-                    "example": "Blind Owl",
-                    "description": "The new title"
+                    "$ref": "#/components/schemas/Post_Title"
                   },
                   "description": {
-                    "type": "string",
-                    "example": "This is my first update! #first_update",
-                    "description": "The new description"
+                    "$ref": "#/components/schemas/Post_Description"
                   }
                 }
               }
@@ -1234,7 +1257,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewComment"
+                "$ref": "#/components/schemas/Comment_New"
               }
             }
           }
@@ -1486,49 +1509,81 @@
           "id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of user (uint64)"
+            "description": "Unique id of the user",
+            "format": "uint64"
           },
           "email": {
-            "type": "string",
-            "example": "i@miladrahimi.com",
-            "description": "User email address (unique)"
+            "$ref": "#/components/schemas/User_Email"
           },
           "password": {
-            "type": "string",
-            "example": "Secret69",
-            "minLength": 8,
-            "description": "User password (between 8 and 128 characters)"
+            "$ref": "#/components/schemas/User_Password"
           },
           "name": {
-            "type": "string",
-            "example": "Milad",
-            "description": "The user's name (full name or nickname)"
+            "$ref": "#/components/schemas/User_Name"
           },
           "username": {
-            "type": "string",
-            "example": "username_1691_4b3a_847f_76b2ed0f00ec",
-            "description": "Unique username (English letters, numbers and underscores)"
+            "$ref": "#/components/schemas/User_Username"
           },
           "bio": {
-            "type": "string",
-            "example": "I am so funny!",
-            "description": "User biography (description)"
+            "$ref": "#/components/schemas/User_Bio"
+          },
+          "image_id": {
+            "$ref": "#/components/schemas/User_ImageId"
           },
           "image": {
             "$ref": "#/components/schemas/File"
           },
-          "image_id": {
-            "type": "integer",
-            "nullable": true,
-            "example": 13,
-            "description": "Unique id of the image file (uint64)"
-          },
           "created_at": {
             "type": "string",
             "example": "2023-11-28T13:36:30.956Z",
-            "description": "Registration time"
+            "description": "Registration time",
+            "format": "date-time"
           }
         }
+      },
+      "User_Email": {
+        "type": "string",
+        "example": "i@miladrahimi.com",
+        "description": "User email address (unique)",
+        "format": "email",
+        "maxLength": 191
+      },
+      "User_Username": {
+        "type": "string",
+        "example": "milad_rahimi",
+        "description": "Unique username (english letters, numbers and underscores)",
+        "pattern": "^[a-z0-9_]+$",
+        "minLength": 5,
+        "maxLength": 20
+      },
+      "User_Password": {
+        "type": "string",
+        "example": "Secret69",
+        "format": "password",
+        "minLength": 8,
+        "maxLength": 255,
+        "description": "User password (between 8 and 128 characters)"
+      },
+      "User_Name": {
+        "type": "string",
+        "example": "Milad",
+        "description": "The user's name (full name or nickname)",
+        "minLength": 0,
+        "maxLength": 20
+      },
+      "User_Bio": {
+        "type": "string",
+        "example": "I am so funny!",
+        "description": "User biography (description)",
+        "minLength": 0,
+        "maxLength": 255
+      },
+      "User_ImageId": {
+        "type": "integer",
+        "nullable": true,
+        "example": 13,
+        "description": "Unique id of the image file used for user profile photo",
+        "format": "uint64"
       },
       "File": {
         "type": "object",
@@ -1537,24 +1592,26 @@
           "id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of file (uint64)"
+            "description": "Unique id of the file",
+            "format": "uint64"
           },
           "user_id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of file (uint64)"
+            "description": "Unique id of the user (file owner)",
+            "format": "uint64"
           },
           "path": {
             "type": "string",
             "example": "2023/12/22/audio_1691_4b3a_847f_76b2ed0f00ec.mp3",
-            "description": "File path in server storage"
+            "description": "File path (uri) in the server storage"
           },
           "extension": {
-            "$ref": "#/components/schemas/Extension"
+            "$ref": "#/components/schemas/File_Extension"
           }
         }
       },
-      "Extension": {
+      "File_Extension": {
         "type": "string",
         "enum": [
           "MP3",
@@ -1569,12 +1626,14 @@
           "id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id (uint64)"
+            "description": "Unique id of the like entity",
+            "format": "uint64"
           },
           "user_id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of user (uint64)"
+            "description": "Unique id of the user (like actor)",
+            "format": "uint64"
           },
           "user": {
             "$ref": "#/components/schemas/User"
@@ -1582,14 +1641,15 @@
           "created_at": {
             "type": "string",
             "example": "2023-11-28T13:36:30.956Z",
-            "description": "Registration time"
+            "description": "Creation time",
+            "format": "date-time"
           }
         }
       },
       "Comment": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/NewPost"
+            "$ref": "#/components/schemas/Post_New"
           },
           {
             "type": "object",
@@ -1597,7 +1657,14 @@
               "id": {
                 "type": "integer",
                 "example": 13,
-                "description": "Unique id (uint64)"
+                "description": "Unique id for the comment",
+                "format": "uint64"
+              },
+              "user_id": {
+                "type": "integer",
+                "example": 13,
+                "description": "Unique id of the user (comment author)",
+                "format": "uint64"
               },
               "user": {
                 "$ref": "#/components/schemas/User"
@@ -1608,16 +1675,35 @@
               "created_at": {
                 "type": "string",
                 "example": "2023-11-28T13:36:30.956Z",
-                "description": "Registration time"
+                "description": "Creation time",
+                "format": "date-time"
               }
             }
           }
         ]
       },
+      "Comment_New": {
+        "type": "object",
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "example": 13,
+            "description": "Unique id of the related post",
+            "format": "uint64"
+          },
+          "text": {
+            "type": "string",
+            "example": "Wow! Nice...",
+            "description": "The comment text",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        }
+      },
       "Post": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/NewPost"
+            "$ref": "#/components/schemas/Post_New"
           },
           {
             "type": "object",
@@ -1625,7 +1711,8 @@
               "id": {
                 "type": "integer",
                 "example": 13,
-                "description": "Unique id of post (uint64)"
+                "description": "Unique id of the post",
+                "format": "uint64"
               },
               "image": {
                 "$ref": "#/components/schemas/File"
@@ -1636,7 +1723,8 @@
               "user_id": {
                 "type": "integer",
                 "example": 13,
-                "description": "Unique id of user (uint64)"
+                "description": "Unique id of the user (post author)",
+                "format": "uint64"
               },
               "user": {
                 "$ref": "#/components/schemas/User"
@@ -1645,80 +1733,68 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/Like"
-                }
+                },
+                "description": "List of the distinguished likes"
               },
               "likes_count": {
                 "type": "integer",
                 "example": 0,
-                "description": "Numbers of likes"
+                "description": "Numbers of total likes",
+                "format": "uint64"
               },
               "comments_count": {
                 "type": "integer",
                 "example": 0,
-                "description": "Numbers of comments"
+                "description": "Numbers of total comments",
+                "format": "uint64"
               },
               "created_at": {
                 "type": "string",
                 "example": "2023-11-28T13:36:30.956Z",
-                "description": "Registration time"
+                "description": "Creation time",
+                "format": "date-time"
               }
             }
           }
         ]
       },
-      "NewPost": {
+      "Post_New": {
         "type": "object",
         "properties": {
           "title": {
-            "type": "string",
-            "example": "Blind Owl",
-            "description": "The post title"
+            "$ref": "#/components/schemas/Post_Title"
           },
           "description": {
-            "type": "string",
-            "example": "This is my first post! #first_post",
-            "description": "The post description (content)"
+            "$ref": "#/components/schemas/Post_Description"
           },
           "audio_id": {
             "type": "integer",
             "example": 13,
-            "description": "Unique id of the audio file (uint64)"
+            "description": "Unique id of the audio file",
+            "format": "uint64"
           },
           "image_id": {
             "type": "integer",
             "nullable": true,
             "example": 13,
-            "description": "Unique id of the image file (uint64)"
+            "description": "Unique id of the image (cover) file",
+            "format": "uint64"
           }
         }
       },
-      "NewComment": {
-        "type": "object",
-        "properties": {
-          "user_id": {
-            "type": "integer",
-            "example": 13,
-            "description": "Unique id of user (uint64)"
-          },
-          "post_id": {
-            "type": "integer",
-            "example": 13,
-            "description": "Unique id of post (uint64)"
-          },
-          "text": {
-            "type": "string",
-            "example": "Wow! Nice...",
-            "description": "The comment text"
-          }
-        }
+      "Post_Title": {
+        "type": "string",
+        "example": "Blind Owl",
+        "description": "The post title",
+        "minLength": 1,
+        "maxLength": 30
       },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        }
+      "Post_Description": {
+        "type": "string",
+        "example": "This is my first post! #first_post",
+        "description": "The post description (content)",
+        "minLength": 0,
+        "maxLength": 255
       }
     }
   }

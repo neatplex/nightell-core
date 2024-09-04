@@ -41,6 +41,12 @@ func (s *Service) UpdateName(user *models.User, name string) (*models.User, erro
 	return user, errors.Wrapf(r.Error, "user: %v", user)
 }
 
+func (s *Service) UpdatePassword(user *models.User, password string) (*models.User, error) {
+	user.Password = password
+	r := s.database.Handler().Save(user)
+	return user, errors.Wrapf(r.Error, "user: %v", user)
+}
+
 func (s *Service) UpdateImage(user *models.User, imageID uint64) (*models.User, error) {
 	user.ImageId = &imageID
 	r := s.database.Handler().Save(user)
