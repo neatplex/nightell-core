@@ -142,47 +142,20 @@ func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		user, err := ctr.UserService.FindBy("email", r.Email)
+		user, err := ctr.UserService.FindByEmailOrCreate(r.Email)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		if user != nil {
-			token, err := ctr.TokenService.Create(user)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			return ctx.JSON(http.StatusCreated, map[string]interface{}{
-				"user":  user,
-				"token": token,
-			})
-		} else {
-			err = ctr.UserService.Create(&models.User{
-				Username: r.Email,
-				Email:    r.Email,
-				IsBanned: false,
-				Password: "",
-			})
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			user, err = ctr.UserService.FindBy("email", r.Email)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			token, err := ctr.TokenService.Create(user)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			return ctx.JSON(http.StatusCreated, map[string]interface{}{
-				"user":  user,
-				"token": token,
-			})
+		token, err := ctr.TokenService.Create(user)
+		if err != nil {
+			return errors.WithStack(err)
 		}
+
+		return ctx.JSON(http.StatusCreated, map[string]interface{}{
+			"user":  user,
+			"token": token,
+		})
 	}
 }
 

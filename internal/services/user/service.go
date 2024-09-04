@@ -95,6 +95,25 @@ func (s *Service) Create(user *models.User) error {
 	return errors.Wrapf(r.Error, "user: %v", user)
 }
 
+func (s *Service) FindByEmailOrCreate(email string) (*models.User, error) {
+	user, err := s.FindBy("email", email)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if user != nil {
+		return user, nil
+	}
+
+	user = &models.User{
+		Username: email,
+		Email:    email,
+		IsBanned: false,
+		Password: "",
+	}
+
+	return user, errors.WithStack(s.Create(user))
+}
+
 func New(database *database.Database, mailer *mailer.Mailer) *Service {
 	return &Service{database: database, mailer: mailer}
 }
