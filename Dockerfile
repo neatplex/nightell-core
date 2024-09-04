@@ -4,16 +4,14 @@ FROM golang:1.21.7-bookworm AS build
 WORKDIR /app
 
 COPY cmd ./cmd
-COPY configs/main.defaults.json ./configs/
+COPY configs/main.defaults.json ./configs/main.defaults.json
 COPY internal ./internal
-COPY storage/logs/.gitignore ./storage/logs
+COPY storage/logs/.gitignore ./storage/logs/.gitignore
 COPY web ./web
 COPY Makefile ./
 COPY main.go ./
 COPY go.sum ./
 COPY go.mod ./
-
-RUN ls -l
 
 RUN go mod tidy && \
     go build -o nightell-core && \
@@ -31,7 +29,7 @@ WORKDIR /app
 
 COPY --from=build /app/nightell-core nightell-core
 COPY --from=build /app/configs/main.defaults.json configs/main.defaults.json
-COPY --from=build /app/storage/logs/.gitignore storage/logs/
+COPY --from=build /app/storage/logs/.gitignore storage/logs/.gitignore
 COPY --from=build /app/web.tar.gz web.tar.gz
 
 RUN tar -xvf web.tar.gz && rm web.tar.gz
