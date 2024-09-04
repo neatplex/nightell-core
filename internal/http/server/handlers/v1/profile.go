@@ -227,16 +227,9 @@ func ProfileUpdateEmailVerify(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		isValid := ctr.OtpService.Check(r.Email, r.Otp)
-		if !isValid {
+		if !ctr.OtpService.Check(r.Email, r.Otp) {
 			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{
 				"message": "The OTP (one-time password) is incorrect.",
-			})
-		}
-
-		if user.Email == r.Email {
-			return ctx.JSON(http.StatusOK, map[string]models.User{
-				"user": *user,
 			})
 		}
 
@@ -246,9 +239,8 @@ func ProfileUpdateEmailVerify(ctr *container.Container) echo.HandlerFunc {
 				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
 					"message": "Email already exist.",
 				})
-			} else {
-				return errors.WithStack(err)
 			}
+			return errors.WithStack(err)
 		}
 
 		u, err := ctr.UserService.FindBy("id", user.Id)

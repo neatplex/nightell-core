@@ -136,8 +136,7 @@ func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 			return err
 		}
 
-		isValid := ctr.OtpService.Check(r.Email, r.Otp)
-		if !isValid {
+		if !ctr.OtpService.Check(r.Email, r.Otp) {
 			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{
 				"message": "The OTP (one-time password) is incorrect.",
 			})

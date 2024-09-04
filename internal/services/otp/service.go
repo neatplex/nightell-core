@@ -47,7 +47,7 @@ func (s *Service) Check(identifier string, password string) bool {
 }
 
 func (s *Service) ttl(t time.Time) int {
-	return int(t.Sub(time.Now()).Seconds())
+	return int(time.Until(t).Seconds())
 }
 
 func New(m *mailer.Mailer) *Service {
