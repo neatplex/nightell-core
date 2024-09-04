@@ -96,15 +96,7 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		token, err := ctr.TokenService.Create(user)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"user":  user,
-			"token": token,
-		})
+		return createSignInResponse(ctx, ctr, user)
 	}
 }
 
@@ -147,15 +139,7 @@ func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		token, err := ctr.TokenService.Create(user)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"user":  user,
-			"token": token,
-		})
+		return createSignInResponse(ctx, ctr, user)
 	}
 }
 
@@ -186,15 +170,7 @@ func AuthSignInEmail(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		token, err := ctr.TokenService.FindOrCreate(user)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		return ctx.JSON(http.StatusCreated, map[string]interface{}{
-			"user":  user,
-			"token": token,
-		})
+		return createSignInResponse(ctx, ctr, user)
 	}
 }
 
@@ -212,29 +188,20 @@ func AuthSignInUsername(ctr *container.Container) echo.HandlerFunc {
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		if user != nil {
-			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password)); err == nil {
-				if user.IsBanned {
-					return ctx.JSON(http.StatusForbidden, map[string]interface{}{
-						"message": "Your account is banned.",
-					})
-				}
 
-				token, err := ctr.TokenService.FindOrCreate(user)
-				if err != nil {
-					return errors.WithStack(err)
-				}
-
-				return ctx.JSON(http.StatusCreated, map[string]interface{}{
-					"user":  user,
-					"token": token,
-				})
-			}
+		if !ctr.UserService.CheckPassword(user, r.Password) {
+			return ctx.JSON(http.StatusUnauthorized, map[string]string{
+				"message": "Username or password is incorrect.",
+			})
 		}
 
-		return ctx.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Email or password is incorrect.",
-		})
+		if user.IsBanned {
+			return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+				"message": "Your account is banned.",
+			})
+		}
+
+		return createSignInResponse(ctx, ctr, user)
 	}
 }
 
@@ -263,46 +230,23 @@ func AuthSignInGoogle(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		email := payload.Claims["email"].(string)
-		user, err := ctr.UserService.FindBy("email", email)
+		user, err := ctr.UserService.FindByEmailOrCreate(email)
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		if user != nil {
-			token, err := ctr.TokenService.Create(user)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			return ctx.JSON(http.StatusCreated, map[string]interface{}{
-				"user":  user,
-				"token": token,
-			})
-		} else {
-			err = ctr.UserService.Create(&models.User{
-				Username: email,
-				Email:    email,
-				IsBanned: false,
-				Password: "",
-			})
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			user, err = ctr.UserService.FindBy("email", email)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			token, err := ctr.TokenService.Create(user)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			return ctx.JSON(http.StatusCreated, map[string]interface{}{
-				"user":  user,
-				"token": token,
-			})
-		}
+		return createSignInResponse(ctx, ctr, user)
 	}
+}
+
+func createSignInResponse(ctx echo.Context, ctr *container.Container, user *models.User) error {
+	token, err := ctr.TokenService.Create(user)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"user":  user,
+		"token": token,
+	})
 }
