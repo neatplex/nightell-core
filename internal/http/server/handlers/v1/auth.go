@@ -18,7 +18,7 @@ type signUpRequest struct {
 }
 
 type signInEmailRequest struct {
-	Email    string `json:"email" validate:"required,min=1,max=191"`
+	Email    string `json:"email" validate:"required,email,min=1,max=191"`
 	Password string `json:"password" validate:"required,min=1"`
 }
 
@@ -151,7 +151,7 @@ func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
 		isValid := ctr.OtpService.Check(r.Email, r.Otp)
 		if !isValid {
 			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"message": "The OTP (one-time password) is not valid.",
+				"message": "The OTP (one-time password) is incorrect.",
 			})
 		}
 

@@ -196,6 +196,96 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
+type profileUpdateEmailRequest struct {
+	Email string `json:"email" validate:"required,email,max=191"`
+}
+
+func ProfileUpdateEmail(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r profileUpdateEmailRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		if user.Email == r.Email {
+			return ctx.JSON(http.StatusOK, map[string]models.User{
+				"user": *user,
+			})
+		}
+
+		ttl := ctr.OtpService.Email(r.Email)
+
+		return ctx.JSON(http.StatusOK, map[string]interface{}{
+			"ttl": ttl,
+		})
+	}
+}
+
+type profileUpdateEmailVerifyRequest struct {
+	Email string `json:"email" validate:"required,email,max=191"`
+	Otp   string `json:"otp" validate:"required"`
+}
+
+func ProfileUpdateEmailVerify(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r profileUpdateEmailVerifyRequest
+		if err := ctx.Bind(&r); err != nil {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Cannot parse the request body.",
+			})
+		}
+		if err := ctx.Validate(r); err != nil {
+			return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"message": err.Error(),
+			})
+		}
+
+		isValid := ctr.OtpService.Check(r.Email, r.Otp)
+		if !isValid {
+			return ctx.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"message": "The OTP (one-time password) is incorrect.",
+			})
+		}
+
+		if user.Email == r.Email {
+			return ctx.JSON(http.StatusOK, map[string]models.User{
+				"user": *user,
+			})
+		}
+
+		_, err := ctr.UserService.UpdateEmail(user, r.Email)
+		if err != nil {
+			if errors.Is(err, userService.ErrEmailAlreadyExist) {
+				return ctx.JSON(http.StatusUnprocessableEntity, map[string]string{
+					"message": "Email already exist.",
+				})
+			} else {
+				return errors.WithStack(err)
+			}
+		}
+
+		u, err := ctr.UserService.FindBy("id", user.Id)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		return ctx.JSON(http.StatusOK, map[string]models.User{
+			"user": *u,
+		})
+	}
+}
+
 type profileUpdateImageRequest struct {
 	ImageID *uint64 `json:"image_id"`
 }

@@ -36,6 +36,8 @@ func (s *Server) registerRoutes() {
 			private.PATCH("profile/username", v1.ProfileUpdateUsername(s.container))
 			private.PATCH("profile/image", v1.ProfileUpdateImage(s.container))
 			private.PATCH("profile/password", v1.ProfileUpdatePassword(s.container))
+			private.PATCH("profile/email", v1.ProfileUpdateEmail(s.container))
+			private.PATCH("profile/email/verify", v1.ProfileUpdateEmailVerify(s.container))
 			private.DELETE("profile", v1.ProfileDelete(s.container))
 			// users
 			private.GET("users/:userId", v1.UsersShow(s.container))

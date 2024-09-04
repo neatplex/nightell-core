@@ -46,7 +46,7 @@
                   "properties": {
                     "ttl": {
                       "type": "integer",
-                      "default": "300",
+                      "default": "120",
                       "description": "The time to live (number of seconds that otp is valid)"
                     }
                   }
@@ -81,7 +81,10 @@
                   "otp": {
                     "type": "string",
                     "example": "012345",
-                    "description": "The OTP received by email"
+                    "description": "The OTP received by email",
+                    "pattern": "^[0-9]{6}$",
+                    "maxLength": 6,
+                    "minLength": 6
                   }
                 }
               }
@@ -509,6 +512,105 @@
         "responses": {
           "200": {
             "description": "The image updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/email": {
+      "patch": {
+        "summary": "Update email",
+        "description": "Update my email (It generates OTP and needs email verification process).",
+        "tags": [
+          "Profile"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "$ref": "#/components/schemas/User_Email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The OTP generated and sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ttl": {
+                      "type": "integer",
+                      "default": "120",
+                      "description": "The time to live (number of seconds that otp is valid)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/email/verify": {
+      "patch": {
+        "summary": "Verify my new email",
+        "description": "Verify OTP received by email to complete the process of updating my email.",
+        "tags": [
+          "Profile"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "$ref": "#/components/schemas/User_Email"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "012345",
+                    "description": "The OTP received by email",
+                    "pattern": "^[0-9]{6}$",
+                    "maxLength": 6,
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The email updated successfully.",
             "content": {
               "application/json": {
                 "schema": {

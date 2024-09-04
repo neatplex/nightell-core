@@ -41,6 +41,17 @@ func (s *Service) UpdateName(user *models.User, name string) (*models.User, erro
 	return user, errors.Wrapf(r.Error, "user: %v", user)
 }
 
+func (s *Service) UpdateEmail(user *models.User, email string) (*models.User, error) {
+	oldUser, _ := s.FindBy("email", email)
+	if oldUser != nil && oldUser.Id != user.Id {
+		return nil, ErrEmailAlreadyExist
+	}
+
+	user.Email = email
+	r := s.database.Handler().Save(user)
+	return user, errors.Wrapf(r.Error, "user: %v", user)
+}
+
 func (s *Service) UpdatePassword(user *models.User, password string) (*models.User, error) {
 	user.Password = password
 	r := s.database.Handler().Save(user)
