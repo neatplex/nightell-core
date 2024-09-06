@@ -66,7 +66,7 @@ func (m *Mailer) SendDeleteAccount(to, username, link string) {
 		"Dear " + username + ",",
 		"We have received a request to delete your account associated with this email address.",
 		"Please note that deleting your account is a permanent action and cannot be undone. " +
-			"All your data, including any saved preferences and history, will be permanently erased.",
+			"Get your data, including any saved preferences and history, will be permanently erased.",
 		"If you did not make this request, please ignore this email. Your account will remain unchanged.",
 		"To confirm the deletion of your account, please click the link below:",
 		link,

@@ -34,6 +34,10 @@ type Config struct {
 	HttpClient struct {
 		Timeout int `json:"timeout"`
 	} `json:"http_client"`
+	Settings struct {
+		AndroidLastVersion          string `json:"android_last_version"`
+		AndroidLastSupportedVersion string `json:"android_last_supported_version"`
+	} `json:"settings"`
 	MySQL struct {
 		Host     string `yaml:"host" validate:"required"`
 		Port     int    `yaml:"port" validate:"required"`

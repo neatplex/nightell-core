@@ -13,6 +13,10 @@
     "read_header_timeout": 1,
     "idle_timeout": 3
   },
+  "settings": {
+    "android_last_version": "1.0.7",
+    "android_last_supported_version": "1.0.0"
+  },
   "http_client": {
     "timeout": 10000
   },

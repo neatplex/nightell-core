@@ -18,6 +18,8 @@ func (s *Server) registerRoutes() {
 	{
 		public := v1Api.Group("/", middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(1)))
 		{
+			// settings
+			public.GET("settings", v1.SettingsIndex(s.container))
 			// auth
 			public.POST("auth/sign-up", v1.AuthSignUp(s.container))
 			public.POST("auth/sign-in/email", v1.AuthSignInEmail(s.container))

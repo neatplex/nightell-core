@@ -14,6 +14,7 @@ import (
 	"github.com/neatplex/nightell-core/internal/services/otp"
 	"github.com/neatplex/nightell-core/internal/services/post"
 	"github.com/neatplex/nightell-core/internal/services/remove"
+	"github.com/neatplex/nightell-core/internal/services/setting"
 	"github.com/neatplex/nightell-core/internal/services/token"
 	"github.com/neatplex/nightell-core/internal/services/user"
 )
@@ -25,6 +26,7 @@ type Container struct {
 	Database          *database.Database
 	Mailer            *mailer.Mailer
 	GC                *gc.Gc
+	SettingService    *setting.Service
 	UserService       *user.Service
 	TokenService      *token.Service
 	RemoveService     *remove.Service
@@ -51,6 +53,7 @@ func New(
 		Database:          db,
 		Mailer:            mailer,
 		GC:                gc,
+		SettingService:    setting.New(config),
 		UserService:       user.New(db, mailer),
 		TokenService:      token.New(db),
 		RemoveService:     remove.New(db),
