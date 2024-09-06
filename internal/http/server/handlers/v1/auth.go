@@ -31,11 +31,11 @@ type signInGoogleRequest struct {
 	Token string `json:"google_token" validate:"required"`
 }
 
-type otpEmailSendRequest struct {
+type otpEmailRequest struct {
 	Email string `json:"email" validate:"required,email,max=191"`
 }
 
-type otpEmailVerifyRequest struct {
+type otpEmailVerificationRequest struct {
 	Email string `json:"email" validate:"required,email,max=191"`
 	Otp   string `json:"otp" validate:"required"`
 }
@@ -100,9 +100,9 @@ func AuthSignUp(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthOtpEmailSend(ctr *container.Container) echo.HandlerFunc {
+func AuthOtpEmail(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r otpEmailSendRequest
+		var r otpEmailRequest
 		if err := ctx.Bind(&r); err != nil {
 			return err
 		}
@@ -118,9 +118,9 @@ func AuthOtpEmailSend(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func AuthOtpEmailVerify(ctr *container.Container) echo.HandlerFunc {
+func AuthOtpEmailVerification(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var r otpEmailVerifyRequest
+		var r otpEmailVerificationRequest
 		if err := ctx.Bind(&r); err != nil {
 			return err
 		}

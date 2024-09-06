@@ -46,6 +46,52 @@
     },
     "/auth/otp/email/send": {
       "post": {
+        "summary": "Send OTP (DEPRECATED)",
+        "description": "Generate and send new OTP using email in order to sign up or sign in. [DEPRECATED]",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "$ref": "#/components/schemas/User_Email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The OTP generated and sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ttl": {
+                      "type": "integer",
+                      "default": "120",
+                      "description": "The time to live (number of seconds that otp is valid)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/otp/email": {
+      "post": {
         "summary": "Send OTP",
         "description": "Generate and send new OTP using email in order to sign up or sign in.",
         "tags": [
@@ -91,6 +137,63 @@
       }
     },
     "/auth/otp/email/verify": {
+      "post": {
+        "summary": "Verify OTP (DEPRECATED)",
+        "description": "Verify OTP received by email to complete sign in or sign up process. [DEPRECATED]",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp"
+                ],
+                "properties": {
+                  "email": {
+                    "$ref": "#/components/schemas/User_Email"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "012345",
+                    "description": "The OTP received by email",
+                    "pattern": "^[0-9]{6}$",
+                    "maxLength": 6,
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user signed in or signed up successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "The bearer token for authentication"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/otp/email/verification": {
       "post": {
         "summary": "Verify OTP",
         "description": "Verify OTP received by email to complete sign in or sign up process.",
