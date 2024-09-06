@@ -55,12 +55,13 @@ func (s *Server) registerRoutes() {
 			private.DELETE("posts/:postId", v1.PostsDelete(s.container))
 			// comments
 			private.GET("posts/:postId/comments", v1.CommentsIndexByPost(s.container))
-			private.GET("comments", v1.CommentsIndex(s.container))
+			private.GET("users/:userId/comments", v1.CommentsIndexByUser(s.container))
 			private.POST("comments", v1.CommentsStore(s.container))
 			private.DELETE("comments/:commentId", v1.CommentsDelete(s.container))
 			// likes
 			private.GET("posts/:postId/likes", v1.LikesIndex(s.container))
-			private.POST("posts/:postId/likes", v1.LikesStore(s.container))
+			private.POST("posts/:postId/likes", v1.LikesStoreForPort(s.container))
+			private.POST("likes", v1.LikesStore(s.container))
 			private.DELETE("likes/:likeId", v1.LikesDelete(s.container))
 			// files
 			private.POST("files", v1.FilesStore(s.container))

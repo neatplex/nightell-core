@@ -721,11 +721,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -775,11 +776,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           },
           {
@@ -838,11 +840,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           },
           {
@@ -899,11 +902,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -923,11 +927,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -949,11 +954,12 @@
           {
             "name": "userId",
             "in": "path",
-            "description": "The ID of user (uint64)",
+            "description": "The ID of the user",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           },
           {
@@ -1048,11 +1054,12 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -1084,11 +1091,12 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -1138,11 +1146,12 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -1164,11 +1173,12 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           },
           {
@@ -1216,8 +1226,8 @@
         }
       },
       "post": {
-        "summary": "Like post",
-        "description": "Like the post (create like for the post).",
+        "summary": "Like post (DEPRECATED)",
+        "description": "Like the post (create like for the post). [DEPRECATED]",
         "tags": [
           "Likes"
         ],
@@ -1225,14 +1235,47 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
+        "responses": {
+          "201": {
+            "description": "The post liked successfully."
+          }
+        }
+      }
+    },
+    "/likes": {
+      "post": {
+        "summary": "Like post",
+        "description": "Like the post (create like for the post).",
+        "tags": [
+          "Likes"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "post_id": {
+                    "type": "integer",
+                    "example": 13,
+                    "description": "Unique id of the related post",
+                    "format": "uint64"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "The post liked successfully."
@@ -1251,11 +1294,12 @@
           {
             "name": "likeId",
             "in": "path",
-            "description": "The ID of like (uint64)",
+            "description": "The ID of like",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],
@@ -1277,11 +1321,12 @@
           {
             "name": "postId",
             "in": "path",
-            "description": "The ID of post (uint64)",
+            "description": "The ID of the post",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           },
           {
@@ -1329,14 +1374,25 @@
         }
       }
     },
-    "/comments": {
+    "/users/{userId}/comments": {
       "get": {
-        "summary": "Index my comments",
-        "description": "Index all of my comments.",
+        "summary": "Index user comments",
+        "description": "Index all of the user comments.",
         "tags": [
           "Comments"
         ],
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "The ID of the user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "uint64",
+              "example": "13"
+            }
+          },
           {
             "name": "count",
             "in": "query",
@@ -1380,7 +1436,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/comments": {
       "post": {
         "summary": "Create comment",
         "description": "Create a new comment.",
@@ -1415,11 +1473,12 @@
           {
             "name": "commentId",
             "in": "path",
-            "description": "The ID of comment (uint64)",
+            "description": "The ID of the comment",
             "required": true,
             "schema": {
               "type": "integer",
-              "example": "13"
+              "example": "13",
+              "format": "uint64"
             }
           }
         ],

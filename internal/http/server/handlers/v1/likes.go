@@ -25,7 +25,7 @@ func LikesIndex(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-func LikesStore(ctr *container.Container) echo.HandlerFunc {
+func LikesStoreForPort(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
@@ -49,6 +49,44 @@ func LikesStore(ctr *container.Container) echo.HandlerFunc {
 		})
 	}
 }
+
+type likesStoreRequest struct {
+	PostId uint64 `json:"post_id" validate:"required"`
+}
+
+func LikesStore(ctr *container.Container) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user := ctx.Get("user").(*models.User)
+
+		var r likesStoreRequest
+		if err := ctx.Bind(&r); err != nil {
+			return err
+		}
+		if err := ctx.Validate(r); err != nil {
+			return err
+		}
+
+		post, err := ctr.PostService.FindById(r.PostId)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if post == nil {
+			return ctx.JSON(http.StatusNotFound, map[string]string{
+				"message": "Post not found.",
+			})
+		}
+
+		like, err := ctr.LikeService.Create(user, post)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		return ctx.JSON(http.StatusCreated, map[string]*models.Like{
+			"like": like,
+		})
+	}
+}
+
 func LikesDelete(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)

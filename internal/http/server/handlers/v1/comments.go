@@ -9,9 +9,18 @@ import (
 	"net/http"
 )
 
-func CommentsIndex(ctr *container.Container) echo.HandlerFunc {
+func CommentsIndexByUser(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		user := ctx.Get("user").(*models.User)
+		user, err := ctr.UserService.FindBy("id", utils.StringToID(ctx.Param("userId"), 0))
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if user == nil {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		if user.Id != ctx.Get("user").(*models.User).Id {
+			return ctx.NoContent(http.StatusForbidden)
+		}
 
 		comments, err := ctr.CommentService.IndexByUser(
 			user.Id,
