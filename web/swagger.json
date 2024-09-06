@@ -607,8 +607,8 @@
         }
       }
     },
-    "/profile/email/verify": {
-      "patch": {
+    "/profile/email/verification": {
+      "post": {
         "summary": "Verify my new email",
         "description": "Verify OTP received by email to complete the process of updating my email.",
         "tags": [

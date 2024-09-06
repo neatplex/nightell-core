@@ -210,16 +210,16 @@ func ProfileUpdateEmail(ctr *container.Container) echo.HandlerFunc {
 	}
 }
 
-type profileUpdateEmailVerifyRequest struct {
+type profileUpdateEmailVerificationRequest struct {
 	Email string `json:"email" validate:"required,email,max=191"`
 	Otp   string `json:"otp" validate:"required"`
 }
 
-func ProfileUpdateEmailVerify(ctr *container.Container) echo.HandlerFunc {
+func ProfileUpdateEmailVerification(ctr *container.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user := ctx.Get("user").(*models.User)
 
-		var r profileUpdateEmailVerifyRequest
+		var r profileUpdateEmailVerificationRequest
 		if err := ctx.Bind(&r); err != nil {
 			return err
 		}
