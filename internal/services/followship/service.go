@@ -27,6 +27,7 @@ func (s *Service) IndexFollowers(userId uint64, lastUserId uint64, count int) ([
 	var followships []*models.Followship
 	r := s.database.Handler().
 		Preload("Follower").
+		Preload("Follower.Image").
 		Where("followee_id = ?", userId).
 		Where("follower_id < ? ORDER BY follower_id DESC LIMIT ?", lastUserId, count).
 		Find(&followships)
@@ -37,6 +38,7 @@ func (s *Service) IndexFollowings(userId uint64, lastUserId uint64, count int) (
 	var followships []*models.Followship
 	r := s.database.Handler().
 		Preload("Followee").
+		Preload("Followee.Image").
 		Where("follower_id = ?", userId).
 		Where("followee_id < ? ORDER BY followee_id DESC LIMIT ?", lastUserId, count).
 		Find(&followships)
