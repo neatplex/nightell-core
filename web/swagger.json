@@ -11,6 +11,39 @@
     }
   ],
   "paths": {
+    "/settings": {
+      "get": {
+        "summary": "Settings",
+        "description": "Get default settings for applications.",
+        "tags": [
+          "Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "The settings returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "android_last_version": {
+                      "type": "string",
+                      "example": "1.2.3",
+                      "description": "The version of the last Android application"
+                    },
+                    "android_last_supported_version": {
+                      "type": "string",
+                      "example": "1.2.3",
+                      "description": "The version of the last supported Android application"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/otp/email/send": {
       "post": {
         "summary": "Send OTP",
