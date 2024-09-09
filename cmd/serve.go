@@ -18,10 +18,13 @@ func init() {
 
 func serveFunc(_ *cobra.Command, _ []string) {
 	a, err := app.New()
-	defer a.Close()
 	if err != nil {
+		if a != nil {
+			a.Close()
+		}
 		panic(fmt.Sprintf("%+v\n", err))
 	}
+	defer a.Close()
 	a.HttpServer.Serve()
 	a.Wait()
 }

@@ -18,10 +18,14 @@ func init() {
 
 func mailFunc(_ *cobra.Command, _ []string) {
 	a, err := app.New()
-	defer a.Close()
 	if err != nil {
+		if a != nil {
+			a.Close()
+		}
 		panic(fmt.Sprintf("%+v\n", err))
 	}
+	defer a.Close()
+
 	fmt.Printf("%+v\n", a.Container.Config)
 	a.Container.Mailer.Send("realmiladrahimi@gmail.com", "Hello", "Hello from the other side!")
 	fmt.Println("Done!")
