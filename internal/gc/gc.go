@@ -18,6 +18,7 @@ type Gc struct {
 }
 
 func (g *Gc) Init() {
+	g.cleanup()
 	go func() {
 		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
@@ -36,28 +37,46 @@ func (g *Gc) cleanup() {
 	}
 
 	for _, file := range files {
-		var post *models.Post
-		r = g.database.Handler().
-			Where("audio_id = ?", file.Id).
-			Or("image_id = ?", file.Id).
-			First(&post)
-		if r.Error != nil && !errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			g.l.Error("gc: cannot fetch post", zap.Error(errors.WithStack(r.Error)))
+		if g.IsUsedForUsers(file) {
+			continue
+		}
+		if g.IsUsedForPosts(file) {
+			continue
+		}
+
+		if err := g.s3.Delete(file.Path); err != nil {
+			g.l.Error("gc: cannot delete s3 file", zap.Error(errors.WithStack(err)))
 			return
 		}
-		if post == nil || post.Id == 0 {
-			if err := g.s3.Delete(file.Path); err != nil {
-				g.l.Error("gc: cannot delete s3 file", zap.Error(errors.WithStack(err)))
-				return
-			}
-			r = g.database.Handler().Delete(&file)
-			if r.Error != nil {
-				g.l.Error("gc: cannot delete db file", zap.Error(errors.WithStack(r.Error)))
-			} else {
-				g.l.Info("gc: cleaned", zap.Uint64("id", file.Id), zap.String("path", file.Path))
-			}
+
+		r = g.database.Handler().Delete(&file)
+		if r.Error != nil {
+			g.l.Error("gc: cannot delete db file", zap.Error(errors.WithStack(r.Error)))
+		} else {
+			g.l.Info("gc: cleaned", zap.Uint64("id", file.Id), zap.String("path", file.Path))
 		}
 	}
+}
+
+func (g *Gc) IsUsedForPosts(file *models.File) bool {
+	var post models.Post
+	r := g.database.Handler().
+		Where("audio_id = ?", file.Id).
+		Or("image_id = ?", file.Id).
+		First(&post)
+	if r.Error != nil && !errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		g.l.Error("gc: query failed", zap.Error(errors.WithStack(r.Error)))
+	}
+	return post.Id != 0
+}
+
+func (g *Gc) IsUsedForUsers(file *models.File) bool {
+	var user models.User
+	r := g.database.Handler().Where("image_id = ?", file.Id).First(&user)
+	if r.Error != nil && !errors.Is(r.Error, gorm.ErrRecordNotFound) {
+		g.l.Error("gc: query failed", zap.Error(errors.WithStack(r.Error)))
+	}
+	return user.Id != 0
 }
 
 func New(database *database.Database, s3 *s3.S3, l *logger.Logger) *Gc {
