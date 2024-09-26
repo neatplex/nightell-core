@@ -10,3 +10,9 @@ https://nightell.neatplex.com
 ## API Documentation
 
 https://nightell-swagger.neatplex.com
+
+## Future Development
+
+- Add Tests
+- Use DI container
+- Add user chat feature
