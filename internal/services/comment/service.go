@@ -29,7 +29,7 @@ func (s *Service) IndexByPost(postId uint64, lastId uint64, count int) ([]*model
 	r := s.database.Handler().
 		Where("post_id = ?", postId).
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
-		Preload("Post").
+		Preload("User").
 		Find(&comments)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "postId: %v", postId)
