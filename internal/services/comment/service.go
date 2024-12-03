@@ -17,6 +17,8 @@ func (s *Service) IndexByUser(userId uint64, lastId uint64, count int) ([]*model
 		Where("user_id = ?", userId).
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("Post").
+		Preload("User").
+		Preload("User.Image").
 		Find(&comments)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "userId: %v", userId)
@@ -30,6 +32,7 @@ func (s *Service) IndexByPost(postId uint64, lastId uint64, count int) ([]*model
 		Where("post_id = ?", postId).
 		Where("id < ? ORDER BY id DESC LIMIT ?", lastId, count).
 		Preload("User").
+		Preload("User.Image").
 		Find(&comments)
 	if r.Error != nil {
 		return nil, errors.Wrapf(r.Error, "postId: %v", postId)
