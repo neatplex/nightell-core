@@ -15,4 +15,4 @@ https://nightell-swagger.neatplex.com
 
 - Add Tests
 - Use DI container
-- Add user chat feature
+- Use DDD and Clean Arch
