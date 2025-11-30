@@ -1,34 +1,107 @@
 package mailer
 
 import (
-	"fmt"
-	"net/smtp"
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/neatplex/nightell-core/internal/config"
 	"github.com/neatplex/nightell-core/internal/logger"
 	"go.uber.org/zap"
 )
 
+const (
+	defaultMailerEndpoint = "https://api.zeptomail.eu/v1.1/email"
+)
+
 type Mailer struct {
-	c *config.Config
-	l *logger.Logger
+	c      *config.Config
+	l      *logger.Logger
+	client *http.Client
+}
+
+type zeptoAddress struct {
+	Address string `json:"address"`
+}
+
+type zeptoRecipient struct {
+	EmailAddress zeptoAddress `json:"email_address"`
+}
+
+type zeptoMailRequest struct {
+	From     zeptoAddress     `json:"from"`
+	To       []zeptoRecipient `json:"to"`
+	Subject  string           `json:"subject"`
+	HTMLBody string           `json:"htmlbody"`
 }
 
 func (m *Mailer) Send(to, topic, message string) {
-	body := []byte(strings.Join([]string{
-		"Subject: " + topic,
-		"From: " + "Nightell" + " <" + m.c.Mailer.Sender + ">",
-		"To: " + to,
-		"\r\n" + message,
-	}, "\r\n"))
+	if m.client == nil {
+		m.l.Error("mailer: http client not initialized")
+		return
+	}
 
-	auth := smtp.PlainAuth("", m.c.Mailer.Username, m.c.Mailer.Password, m.c.Mailer.SmtpServer)
-	server := m.c.Mailer.SmtpServer + ":" + fmt.Sprintf("%d", m.c.Mailer.SmtpPort)
+	if strings.TrimSpace(m.c.Mailer.Sender) == "" {
+		m.l.Error("mailer: sender email is not configured")
+		return
+	}
 
-	err := smtp.SendMail(server, auth, m.c.Mailer.Username, []string{to}, body)
+	if strings.TrimSpace(m.c.Mailer.APIKey) == "" {
+		m.l.Error("mailer: api key is not configured")
+		return
+	}
+
+	endpoint := m.c.Mailer.APIEndpoint
+	if strings.TrimSpace(endpoint) == "" {
+		endpoint = defaultMailerEndpoint
+	}
+
+	requestBody := zeptoMailRequest{
+		From: zeptoAddress{
+			Address: m.c.Mailer.Sender,
+		},
+		To: []zeptoRecipient{
+			{EmailAddress: zeptoAddress{Address: to}},
+		},
+		Subject:  topic,
+		HTMLBody: formatHTMLBody(message),
+	}
+
+	payload, err := json.Marshal(requestBody)
+	if err != nil {
+		m.l.Error("mailer: failed to marshal request", zap.Error(err))
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewReader(payload))
+	if err != nil {
+		m.l.Error("mailer: failed to create request", zap.Error(err))
+		return
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Zoho-enczapikey "+m.c.Mailer.APIKey)
+
+	resp, err := m.client.Do(req)
 	if err != nil {
 		m.l.Info("mailer: failed", zap.String("to", to), zap.Error(err))
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		if err = Body.Close(); err != nil {
+			m.l.Error("mailer: failed to close response body", zap.Error(err))
+		}
+	}(resp.Body)
+
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		m.l.Error("mailer: api returned error",
+			zap.String("to", to),
+			zap.Int("status", resp.StatusCode),
+			zap.String("response", string(body)))
 		return
 	}
 
@@ -81,8 +154,18 @@ func (m *Mailer) SendDeleteAccount(to, username, link string) {
 }
 
 func New(c *config.Config, l *logger.Logger) *Mailer {
-	return &Mailer{
-		l: l,
-		c: c,
+	timeout := time.Duration(c.HttpClient.Timeout) * time.Millisecond
+	if timeout <= 0 {
+		timeout = 10 * time.Second
 	}
+
+	return &Mailer{
+		l:      l,
+		c:      c,
+		client: &http.Client{Timeout: timeout},
+	}
+}
+
+func formatHTMLBody(message string) string {
+	return message
 }

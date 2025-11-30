@@ -39,10 +39,8 @@
     "oauth_client_id": "848368311039-h05kiqlnad6ol0d6hpfdv5d1d3tnc4l7.apps.googleusercontent.com"
   },
   "mailer": {
-    "smtp_server": "",
-    "smtp_port": 587,
-    "sender": "neatplex.com",
-    "username": "",
-    "password": ""
+    "api_endpoint": "https://api.zeptomail.eu/v1.1/email",
+    "sender": "noreply@neatplex.com",
+    "api_key": ""
   }
 }
