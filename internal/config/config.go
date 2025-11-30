@@ -3,10 +3,11 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/cockroachdb/errors"
 	"github.com/neatplex/nightell-core/internal/http/server/validator"
 	"github.com/neatplex/nightell-core/internal/utils"
-	"os"
 )
 
 const AppName = "Nightell"
@@ -56,6 +57,7 @@ type Config struct {
 	Mailer struct {
 		SmtpServer string `json:"smtp_server"`
 		SmtpPort   int    `json:"smtp_port"`
+		Sender     string `json:"sender"`
 		Username   string `json:"username"`
 		Password   string `json:"password"`
 	} `json:"mailer"`

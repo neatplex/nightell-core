@@ -2,11 +2,12 @@ package mailer
 
 import (
 	"fmt"
+	"net/smtp"
+	"strings"
+
 	"github.com/neatplex/nightell-core/internal/config"
 	"github.com/neatplex/nightell-core/internal/logger"
 	"go.uber.org/zap"
-	"net/smtp"
-	"strings"
 )
 
 type Mailer struct {
@@ -17,7 +18,7 @@ type Mailer struct {
 func (m *Mailer) Send(to, topic, message string) {
 	body := []byte(strings.Join([]string{
 		"Subject: " + topic,
-		"From: " + "Nightell" + " <" + m.c.Mailer.Username + ">",
+		"From: " + "Nightell" + " <" + m.c.Mailer.Sender + ">",
 		"To: " + to,
 		"\r\n" + message,
 	}, "\r\n"))
