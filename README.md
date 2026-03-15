@@ -3,7 +3,7 @@
 
 # Nightell Core
 
-## Download
+## Homepage
 
 https://nightell.neatplex.com
 
