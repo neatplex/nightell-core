@@ -15,4 +15,4 @@ https://nightell-swagger.neatplex.com
 
 - Add Tests
 - Use DI container
-- Use DDD and Clean Arch
+- Use DDD and Clean Architecture
