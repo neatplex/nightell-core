@@ -55,9 +55,17 @@ type Config struct {
 		Bucket    string `yaml:"bucket" validate:"required"`
 	} `json:"s3"`
 	Mailer struct {
+		Driver      string `json:"driver"`
 		APIEndpoint string `json:"api_endpoint"`
 		Sender      string `json:"sender"`
 		APIKey      string `json:"api_key"`
+		SMTP        struct {
+			Host       string `json:"host"`
+			Port       int    `json:"port"`
+			Username   string `json:"username"`
+			Password   string `json:"password"`
+			Encryption string `json:"encryption"`
+		} `json:"smtp"`
 	} `json:"mailer"`
 	Google struct {
 		OAuthClientId string `yaml:"oauth_client_id"`
