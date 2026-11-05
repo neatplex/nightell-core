@@ -14,7 +14,7 @@ type Post struct {
 	Audio         *File     `gorm:"foreignKey:AudioId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"audio"`
 	ImageId       *uint64   `json:"image_id"`
 	Image         *File     `gorm:"foreignKey:ImageId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"image"`
-	Likes         []*Like   `json:"likes"`
+	Likes         []*Like   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"likes"`
 	LikesCount    uint64    `json:"likes_count"`
 	CommentsCount uint64    `json:"comments_count"`
 	CreatedAt     time.Time `json:"created_at"`

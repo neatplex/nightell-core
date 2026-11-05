@@ -138,8 +138,9 @@ func (s *Service) UpdateFields(post *models.Post, title, description string) *mo
 	return post
 }
 
-func (s *Service) Delete(post *models.Post) {
-	s.database.Handler().Delete(post)
+func (s *Service) Delete(post *models.Post) error {
+	r := s.database.Handler().Delete(post)
+	return errors.Wrapf(r.Error, "postId: %v", post.Id)
 }
 
 func (s *Service) FindById(id uint64) (*models.Post, error) {

@@ -89,7 +89,40 @@ func (d *Database) migrate() error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	if err = d.migratePostsLikesConstraint(); err != nil {
+		return errors.WithStack(err)
+	}
 	d.l.Debug("database: migrations ran successfully")
+	return nil
+}
+
+// migratePostsLikesConstraint recreates fk_posts_likes with ON DELETE CASCADE.
+// AutoMigrate does not alter existing constraints, and older databases have it
+// without cascade, which blocks deleting liked posts (and their users).
+func (d *Database) migratePostsLikesConstraint() error {
+	var rule string
+	r := d.handler.Raw(
+		"SELECT DELETE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS "+
+			"WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = ?",
+		"fk_posts_likes",
+	).Scan(&rule)
+	if r.Error != nil {
+		return errors.WithStack(r.Error)
+	}
+	if rule == "CASCADE" {
+		return nil
+	}
+
+	m := d.handler.Migrator()
+	if rule != "" {
+		if err := m.DropConstraint(&models.Post{}, "Likes"); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+	if err := m.CreateConstraint(&models.Post{}, "Likes"); err != nil {
+		return errors.WithStack(err)
+	}
+	d.l.Info("database: recreated fk_posts_likes with ON DELETE CASCADE")
 	return nil
 }
 

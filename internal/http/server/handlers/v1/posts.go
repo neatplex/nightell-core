@@ -206,7 +206,9 @@ func PostsDelete(ctr *container.Container) echo.HandlerFunc {
 			})
 		}
 
-		ctr.PostService.Delete(post)
+		if err = ctr.PostService.Delete(post); err != nil {
+			return errors.WithStack(err)
+		}
 
 		return ctx.NoContent(http.StatusNoContent)
 	}
