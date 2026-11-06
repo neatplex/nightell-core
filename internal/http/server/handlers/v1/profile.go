@@ -31,7 +31,7 @@ func ProfileShow(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		return ctx.JSON(http.StatusOK, map[string]interface{}{
-			"user":             u,
+			"user":             u.Private(),
 			"followers_count":  followersCount,
 			"followings_count": followingsCount,
 		})
@@ -63,8 +63,8 @@ func ProfileUpdateName(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }
@@ -94,8 +94,8 @@ func ProfileUpdateBio(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }
@@ -130,8 +130,8 @@ func ProfileUpdatePassword(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }
@@ -174,8 +174,8 @@ func ProfileUpdateUsername(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }
@@ -197,8 +197,8 @@ func ProfileUpdateEmail(ctr *container.Container) echo.HandlerFunc {
 		}
 
 		if user.Email == r.Email {
-			return ctx.JSON(http.StatusOK, map[string]models.User{
-				"user": *user,
+			return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+				"user": user.Private(),
 			})
 		}
 
@@ -248,8 +248,8 @@ func ProfileUpdateEmailVerification(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]models.User{
-			"user": *u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }
@@ -310,8 +310,8 @@ func ProfileUpdateImage(ctr *container.Container) echo.HandlerFunc {
 			return errors.WithStack(err)
 		}
 
-		return ctx.JSON(http.StatusOK, map[string]*models.User{
-			"user": u,
+		return ctx.JSON(http.StatusOK, map[string]*models.PrivateUser{
+			"user": u.Private(),
 		})
 	}
 }

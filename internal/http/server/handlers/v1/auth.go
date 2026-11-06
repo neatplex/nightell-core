@@ -246,7 +246,7 @@ func createSignInResponse(ctx echo.Context, ctr *container.Container, user *mode
 	}
 
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"user":  user,
+		"user":  user.Private(),
 		"token": token,
 	})
 }
