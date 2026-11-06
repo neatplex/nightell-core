@@ -109,8 +109,13 @@ func (s *Service) FindByEmailOrCreate(email string) (*models.User, error) {
 		return user, nil
 	}
 
+	username, err := s.generateUsername(email)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
 	user = &models.User{
-		Username: email,
+		Username: username,
 		Email:    email,
 		IsBanned: false,
 		Password: "",

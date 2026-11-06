@@ -4,7 +4,10 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
+
+var usernamePattern = regexp.MustCompile("^[a-z0-9_.]+$")
 
 func StringToID(id string, placeholder uint64) uint64 {
 	r, err := strconv.ParseUint(id, 10, 64)
@@ -33,6 +36,11 @@ func FileExist(path string) bool {
 	return true
 }
 
+// ValidateUsername accepts lowercase letters, digits, underscores and dots,
+// with no leading, trailing or consecutive dots (like Instagram).
 func ValidateUsername(username string) bool {
-	return regexp.MustCompile("^[a-z0-9_]+$").MatchString(username)
+	return usernamePattern.MatchString(username) &&
+		!strings.HasPrefix(username, ".") &&
+		!strings.HasSuffix(username, ".") &&
+		!strings.Contains(username, "..")
 }

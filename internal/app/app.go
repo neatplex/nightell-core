@@ -54,6 +54,14 @@ func New() (a *App, err error) {
 	m := mailer.New(c, l)
 
 	a.Container = container.New(c, l, awsS3, db, m, s3gc)
+
+	fixed, err := a.Container.UserService.FixUsernames()
+	if err != nil {
+		return a, errors.WithStack(err)
+	}
+	if fixed > 0 {
+		l.Warn("app: replaced invalid usernames", zap.Int("count", fixed))
+	}
 	a.HttpServer = httpServer.New(a.Container)
 
 	a.setupSignalListener()
